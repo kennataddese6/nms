@@ -72,7 +72,7 @@ Create high-fidelity public-facing pages for Bubbly Day Nursery.
   - Daily routine lists, room gallery, and age-specific learning goals.
 - [ ] **4.4 Curriculum & EYFS Page**
   - Educational explanation of the Early Years Foundation Stage framework and how Bubbly Day Nursery supports child development.
-- [ ] **4.5 Careers Page**
+- [x] **4.5 Careers Page**
   - Active job postings (e.g. "Early Years Educator", "Room Leader").
   - Inline job application form supporting file attachments (CV upload).
 - [ ] **4.6 Contact & Tour Booking System**

@@ -46,7 +46,7 @@ Focuses on establishing the database model, setting up secure authentication, co
     *   [x] About Us (safeguarding and EYFS overview).
     *   [x] Rooms page displaying daily routines and activities.
     *   [ ] Curriculum detail page.
-    *   [ ] Careers page with job application and CV upload.
+    *   [x] Careers page with job application and CV upload.
     *   [ ] Contact Us with booking system for nursery tours.
 
 ---
