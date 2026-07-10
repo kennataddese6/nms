@@ -62,7 +62,7 @@ Create high-fidelity public-facing pages for Bubbly Day Nursery.
 
 - [x] **4.1 Home Page**
   - Modern hero banner, nursery value highlights, reviews/testimonials carousel, and dynamic visit scheduling.
-- [ ] **4.2 About Us Page**
+- [x] **4.2 About Us Page**
   - Safeguarding commitment statement, learning philosophy, and key management/staff profiles.
 - [ ] **4.3 Rooms Page**
   - Detail sections for:

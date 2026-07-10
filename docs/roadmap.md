@@ -43,7 +43,7 @@ Focuses on establishing the database model, setting up secure authentication, co
     *   Create multi-step registration forms for Parents and Children.
 *   [ ] **1.4 Public Website & CMS**
     *   [x] Homepage with hero, testimonials, and highlights.
-    *   [ ] About Us (safeguarding and EYFS overview).
+    *   [x] About Us (safeguarding and EYFS overview).
     *   [ ] Rooms page displaying daily routines and activities.
     *   [ ] Curriculum detail page.
     *   [ ] Careers page with job application and CV upload.
