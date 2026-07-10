@@ -1,86 +1,87 @@
+"use client";
+
+import * as React from "react";
+
 import Link from "next/link";
 
-import { Baby, DoorOpen, Sparkles } from "lucide-react";
+import { Baby, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
 import { NurseryFooter } from "../_components/nursery-footer";
 import { NurseryHeader } from "../_components/nursery-header";
+import { RoomDetails } from "./_components/room-details";
 
 export default function RoomsPage() {
-  const rooms = [
-    {
-      name: "Babies Room",
-      ageRange: "3 Months - 2 Years",
-      ratio: "1:3 ratio",
-      desc: "A warm, sensory-rich environment with quiet sleeping pods and soft-play creeping zones.",
-    },
-    {
-      name: "Toddlers Room",
-      ageRange: "2 - 3 Years",
-      ratio: "1:4 ratio",
-      desc: "Designed for budding independence, speech progression, and messy play exploration.",
-    },
-    {
-      name: "Preschool Room",
-      ageRange: "3 - 5 Years",
-      ratio: "1:8 ratio",
-      desc: "Focuses on early phonics, numeracy, social coordination, and primary school readiness.",
-    },
-  ];
+  const [activeTab, setActiveTab] = React.useState<"babies" | "toddlers" | "preschool">("babies");
+
+  const tabs = [
+    { key: "babies", label: "Babies Room", age: "3m - 2y" },
+    { key: "toddlers", label: "Toddlers Room", age: "2y - 3y" },
+    { key: "preschool", label: "Preschool Room", age: "3y - 5y" },
+  ] as const;
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <NurseryHeader />
       <main className="flex-grow">
         {/* Banner */}
-        <section className="bg-primary/10 py-16 text-center">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h1 className="font-heading text-4xl sm:text-5xl font-black text-foreground tracking-tight">
-              Our Nursery Classrooms
+        <section className="bg-primary/10 py-16 text-center relative overflow-hidden">
+          <div className="absolute top-0 left-1/4 -z-10 h-64 w-64 rounded-full bg-accent/15 blur-3xl" />
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative">
+            <div className="inline-flex items-center gap-2 rounded-full bg-secondary/15 text-secondary-foreground px-4 py-1.5 text-xs font-semibold mb-4">
+              <Baby className="h-4.5 w-4.5 text-primary stroke-[2.5]" />
+              Tailored Classroom Care
+            </div>
+            <h1 className="font-heading text-4xl sm:text-5xl font-black text-foreground tracking-tight leading-[1.1]">
+              Explore Our Nursery Rooms
             </h1>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-              Custom classrooms tailored exactly to early development milestones. We provide dedicated spaces for quiet
-              naps, active play, and education.
+              Select a room below to discover our age-appropriate learning goals, staffing ratios, custom classroom
+              environments, and detailed daily routines.
             </p>
           </div>
         </section>
 
-        {/* Content */}
-        <section className="py-16 sm:py-24 bg-card">
+        {/* Interactive Selector Tabs */}
+        <section className="py-8 bg-card border-b">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {rooms.map((room) => (
-                <div key={room.name} className="p-8 rounded-3xl border bg-background shadow-sm flex flex-col">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary/15 text-secondary-foreground mb-6">
-                    <DoorOpen className="h-6 w-6 stroke-[2]" />
-                  </div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-2xl font-bold text-foreground">{room.name}</h3>
-                    <span className="text-xs bg-primary/10 text-primary px-2.5 py-0.5 rounded-full font-semibold">
-                      {room.ageRange}
+            <div className="flex flex-wrap justify-center gap-3">
+              {tabs.map((tab) => {
+                const isActive = activeTab === tab.key;
+                return (
+                  <Button
+                    key={tab.key}
+                    type="button"
+                    onClick={() => setActiveTab(tab.key)}
+                    variant={isActive ? "default" : "outline"}
+                    className={`rounded-full px-6 py-2 h-auto text-sm font-semibold border-2 transition-all duration-200 ${
+                      isActive
+                        ? "shadow-md scale-105"
+                        : "hover:border-primary/50 text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <span className="mr-2">{tab.label}</span>
+                    <span
+                      className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full font-bold ${
+                        isActive
+                          ? "bg-primary-foreground/20 text-primary-foreground"
+                          : "bg-neutral-100 text-muted-foreground"
+                      }`}
+                    >
+                      {tab.age}
                     </span>
-                  </div>
-                  <p className="text-muted-foreground text-sm leading-relaxed mb-6 flex-grow">{room.desc}</p>
-                  <div className="border-t pt-4 text-xs text-muted-foreground font-medium italic">
-                    Ratio details: {room.ratio}
-                  </div>
-                </div>
-              ))}
+                  </Button>
+                );
+              })}
             </div>
+          </div>
+        </section>
 
-            {/* Placeholder info box */}
-            <div className="mt-16 p-8 rounded-3xl bg-accent/10 border border-accent/20 text-center max-w-3xl mx-auto">
-              <Sparkles className="h-8 w-8 text-accent-foreground mx-auto mb-4" />
-              <h4 className="text-lg font-bold text-foreground mb-2">Interactive Daily Schedules Coming Soon</h4>
-              <p className="text-muted-foreground text-sm mb-6">
-                We are currently building out an interactive schedule tracker. Parents will soon be able to check
-                real-time session timetables, active staff ratios, and classroom activity guides from the portal.
-              </p>
-              <Button asChild rounded-full className="rounded-full">
-                <Link href="/contact">Book a Visit to See the Rooms</Link>
-              </Button>
-            </div>
+        {/* Room details rendering area */}
+        <section className="py-16 sm:py-24">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <RoomDetails roomKey={activeTab} />
           </div>
         </section>
       </main>

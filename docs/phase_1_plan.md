@@ -64,7 +64,7 @@ Create high-fidelity public-facing pages for Bubbly Day Nursery.
   - Modern hero banner, nursery value highlights, reviews/testimonials carousel, and dynamic visit scheduling.
 - [x] **4.2 About Us Page**
   - Safeguarding commitment statement, learning philosophy, and key management/staff profiles.
-- [ ] **4.3 Rooms Page**
+- [x] **4.3 Rooms Page**
   - Detail sections for:
     - **Babies room** (0 - 2 years)
     - **Toddlers room** (2 - 3 years)

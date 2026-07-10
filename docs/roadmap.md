@@ -44,7 +44,7 @@ Focuses on establishing the database model, setting up secure authentication, co
 *   [ ] **1.4 Public Website & CMS**
     *   [x] Homepage with hero, testimonials, and highlights.
     *   [x] About Us (safeguarding and EYFS overview).
-    *   [ ] Rooms page displaying daily routines and activities.
+    *   [x] Rooms page displaying daily routines and activities.
     *   [ ] Curriculum detail page.
     *   [ ] Careers page with job application and CV upload.
     *   [ ] Contact Us with booking system for nursery tours.
