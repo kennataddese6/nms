@@ -38,9 +38,9 @@ Focuses on establishing the database model, setting up secure authentication, co
     *   [x] Implement user roles mapping and permissions tables (`user_roles`, `role_permissions`).
     *   [x] Write database helper functions (`is_super_admin`, `has_permission`, etc.).
     *   [x] Set up Row Level Security (RLS) policies for secure data access.
-*   [ ] **1.3 Authentication & Registration Flows**
-    *   Implement user login and password recovery.
-    *   Create multi-step registration forms for Parents and Children.
+*   [x] **1.3 Authentication & Registration Flows**
+    *   [x] Implement user login and password recovery.
+    *   [x] Create multi-step registration forms for Parents and Children.
 *   [ ] **1.4 Public Website & CMS**
     *   [x] Homepage with hero, testimonials, and highlights.
     *   [x] About Us (safeguarding and EYFS overview).

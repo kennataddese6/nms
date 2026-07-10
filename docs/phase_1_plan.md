@@ -47,9 +47,9 @@ Create SQL migrations to setup the Postgres schema in Supabase.
 ### 3. Authentication & Registration Flows
 Implement forms and server logic.
 
-- [ ] **3.1 Authentication Views**
+- [x] **3.1 Authentication Views**
   - Build custom login and forgot-password panels using standard shadcn inputs and buttons.
-- [ ] **3.2 Parent Self-Registration Flow**
+- [x] **3.2 Parent Self-Registration Flow**
   - Step 1: Parent personal details & contact.
   - Step 2: Child details, DOB, room preference, medical notes/allergies.
   - Step 3: Consent agreements (photo permissions, medical emergency consent).
