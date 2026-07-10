@@ -28,6 +28,14 @@ export const THEME_PRESET_OPTIONS = [
     },
   },
   {
+    label: "Bubbly Nursery",
+    value: "bubbly-nursery",
+    primary: {
+      light: "oklch(0.68 0.11 222)",
+      dark: "oklch(0.72 0.09 222)",
+    },
+  },
+  {
     label: "Soft Pop",
     value: "soft-pop",
     primary: {
