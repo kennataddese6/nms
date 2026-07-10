@@ -33,11 +33,11 @@ Focuses on establishing the database model, setting up secure authentication, co
 *   [x] **1.1 Project Structure & Theme Presets**
     *   [x] Create a Bubbly Day Nursery custom styling theme preset (`bubbly-nursery.css`).
     *   [x] Set up baseline layouts for public vs. authenticated zones.
-*   [ ] **1.2 Supabase Database Setup & Migrations**
-    *   Implement schemas for `profiles`, `parents`, `children`, `child_parents`, `rooms`, `staff`, and `enrollments`.
-    *   Implement user roles mapping and permissions tables (`user_roles`, `role_permissions`).
-    *   Write database helper functions (`is_super_admin`, `has_permission`, etc.).
-    *   Set up Row Level Security (RLS) policies for secure data access.
+*   [x] **1.2 Supabase Database Setup & Migrations**
+    *   [x] Implement schemas for `profiles`, `parents`, `children`, `child_parents`, `rooms`, `staff`, and `enrollments`.
+    *   [x] Implement user roles mapping and permissions tables (`user_roles`, `role_permissions`).
+    *   [x] Write database helper functions (`is_super_admin`, `has_permission`, etc.).
+    *   [x] Set up Row Level Security (RLS) policies for secure data access.
 *   [ ] **1.3 Authentication & Registration Flows**
     *   Implement user login and password recovery.
     *   Create multi-step registration forms for Parents and Children.

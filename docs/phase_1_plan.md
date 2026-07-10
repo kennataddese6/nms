@@ -26,19 +26,19 @@ Initialize the aesthetic foundations matching the warm nursery requirements.
 ### 2. Database Schema & Supabase Setup
 Create SQL migrations to setup the Postgres schema in Supabase.
 
-- [ ] **2.1 Core Profiles & Roles Tables**
+- [x] **2.1 Core Profiles & Roles Tables**
   - Create table `profiles` linking to Supabase auth.
   - Create table `roles` (`id`, `name` like `SUPER_ADMIN`, `PARENT`, `STAFF`).
   - Create table `user_roles` (link user profiles to multiple roles).
   - Create table `permissions` and `role_permissions` mapping.
-- [ ] **2.2 Core Nursery Domains Tables**
+- [x] **2.2 Core Nursery Domains Tables**
   - Create table `rooms` (id, name, capacity, age ranges).
   - Create table `children` (id, first_name, last_name, DOB, room_id, medical notes, allergies).
   - Create table `parents` (id, address, emergency contact, relationship).
   - Create table `child_parents` (many-to-many relationship map with `primary_contact` flag).
   - Create table `staff` (id, job_title, start_date, dbs_expiry, status).
   - Create table `enrollments` (history of child room placements).
-- [ ] **2.3 Database Helper Functions & RLS Policies**
+- [x] **2.3 Database Helper Functions & RLS Policies**
   - Implement security filters: `is_super_admin()`, `has_permission()`, and `is_parent_of_child()`.
   - Apply Row Level Security (RLS) on all tables to ensure parents only see their children, staff see their assigned rooms, and managers see everything.
 
