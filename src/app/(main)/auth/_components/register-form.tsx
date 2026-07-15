@@ -234,16 +234,6 @@ export function RegisterForm() {
         throw new Error(linkError.message);
       }
 
-      // 6. Assign PARENT role
-      const { data: roleData } = await supabase.from("roles").select("id").eq("name", "PARENT").single();
-
-      if (roleData) {
-        await supabase.from("user_roles").insert({
-          user_id: userId,
-          role_id: roleData.id,
-        });
-      }
-
       toast.success("Account Created!", {
         description: "Welcome to Bubbly Nursery. Redirecting to your portal...",
       });
