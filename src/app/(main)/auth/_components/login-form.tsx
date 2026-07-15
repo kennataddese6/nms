@@ -33,24 +33,38 @@ export function LoginForm() {
   });
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data: authData, error } = await supabase.auth.signInWithPassword({
       email: data.email,
       password: data.password,
     });
 
-    if (error) {
+    if (error || !authData.user) {
       toast.error("Authentication Failed", {
-        description: error.message,
+        description: error?.message || "Invalid credentials.",
       });
       return;
     }
+
+    // Dynamic role check
+    const { data: userRole } = await supabase
+      .from("user_roles")
+      .select("roles (name)")
+      .eq("user_id", authData.user.id)
+      .maybeSingle();
+
+    const roleName = (userRole?.roles as any)?.name || "PARENT";
 
     toast.success("Welcome back!", {
       description: "Redirecting to your dashboard...",
     });
 
     router.refresh();
-    router.push("/dashboard/default");
+    
+    if (roleName === "PARENT") {
+      router.push("/dashboard/parent");
+    } else {
+      router.push("/dashboard/default");
+    }
   }
 
   return (

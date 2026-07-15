@@ -240,7 +240,7 @@ export function RegisterForm() {
 
       // Clear form and route to parent zone dashboard
       router.refresh();
-      router.push("/dashboard/default");
+      router.push("/dashboard/parent");
     } catch (err: any) {
       toast.error("Registration failed", {
         description: err.message || "An unexpected error occurred during signup.",
