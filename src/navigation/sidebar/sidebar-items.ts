@@ -57,12 +57,14 @@ export interface NavGroup {
   id: number;
   label?: string;
   items: NavMainItem[];
+  roles?: string[];
 }
 
 export const sidebarItems: NavGroup[] = [
   {
     id: 1,
     label: "Dashboards",
+    roles: ["MANAGER", "STAFF", "SUPER_ADMIN"],
     items: [
       {
         id: "default",
@@ -124,6 +126,7 @@ export const sidebarItems: NavGroup[] = [
   {
     id: 2,
     label: "Pages",
+    roles: ["MANAGER", "STAFF", "SUPER_ADMIN"],
     items: [
       {
         id: "email",
@@ -190,6 +193,7 @@ export const sidebarItems: NavGroup[] = [
   {
     id: 3,
     label: "Legacy",
+    roles: ["MANAGER", "STAFF", "SUPER_ADMIN"],
     items: [
       {
         id: "legacy-dashboards",
@@ -206,6 +210,7 @@ export const sidebarItems: NavGroup[] = [
   {
     id: 4,
     label: "Misc",
+    roles: ["MANAGER", "STAFF", "SUPER_ADMIN"],
     items: [
       {
         id: "others",
@@ -220,6 +225,7 @@ export const sidebarItems: NavGroup[] = [
   {
     id: 5,
     label: "Nursery Operations",
+    roles: ["MANAGER", "STAFF", "SUPER_ADMIN"],
     items: [
       {
         id: "nursery-crm",
@@ -232,6 +238,19 @@ export const sidebarItems: NavGroup[] = [
         title: "Website Content",
         url: "/dashboard/content-manager",
         icon: Server,
+      },
+    ],
+  },
+  {
+    id: 6,
+    label: "Parent Zone",
+    roles: ["PARENT"],
+    items: [
+      {
+        id: "parent-portal",
+        title: "My Portal",
+        url: "/dashboard/parent",
+        icon: LayoutDashboard,
       },
     ],
   },

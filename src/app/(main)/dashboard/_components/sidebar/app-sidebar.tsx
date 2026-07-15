@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 
 import { CircleHelp, ClipboardList, Command, Database, File, Search, Settings } from "lucide-react";
@@ -18,6 +19,7 @@ import { APP_CONFIG } from "@/config/app-config";
 import { rootUser } from "@/data/users";
 import { sidebarItems } from "@/navigation/sidebar/sidebar-items";
 import { usePreferencesStore } from "@/stores/preferences/preferences-provider";
+import { createClient } from "@/lib/supabase/client";
 
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
@@ -61,6 +63,28 @@ const _data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const supabase = createClient();
+  const [userRole, setUserRole] = React.useState<string>("PARENT");
+
+  React.useEffect(() => {
+    async function getRole() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const { data: roleMapping } = await supabase
+          .from("user_roles")
+          .select("roles(name)")
+          .eq("user_id", session.user.id)
+          .maybeSingle();
+
+        const name = (roleMapping?.roles as any)?.name;
+        if (name) {
+          setUserRole(name);
+        }
+      }
+    }
+    getRole();
+  }, [supabase]);
+
   const { sidebarVariant, sidebarCollapsible, isSynced } = usePreferencesStore(
     useShallow((s) => ({
       sidebarVariant: s.values.sidebar_variant,
@@ -72,13 +96,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const variant = isSynced ? sidebarVariant : props.variant;
   const collapsible = isSynced ? sidebarCollapsible : props.collapsible;
 
+  const filteredItems = sidebarItems.filter(group => {
+    if (!group.roles) return true;
+    return group.roles.includes(userRole);
+  });
+
   return (
     <Sidebar {...props} variant={variant} collapsible={collapsible}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <Link prefetch={false} href="/dashboard/default">
+              <Link prefetch={false} href={userRole === "PARENT" ? "/dashboard/parent" : "/dashboard/default"}>
                 <Command />
                 <span className="font-semibold text-base">{APP_CONFIG.name}</span>
               </Link>
@@ -87,7 +116,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={sidebarItems} />
+        <NavMain items={filteredItems} />
         {/* <NavDocuments items={data.documents} /> */}
         {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
