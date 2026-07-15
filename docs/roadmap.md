@@ -47,7 +47,7 @@ Focuses on establishing the database model, setting up secure authentication, co
     *   [x] Rooms page displaying daily routines and activities.
     *   [ ] Curriculum detail page.
     *   [x] Careers page with job application and CV upload.
-    *   [ ] Contact Us with booking system for nursery tours.
+    *   [x] Contact Us with booking system for nursery tours.
 
 ---
 

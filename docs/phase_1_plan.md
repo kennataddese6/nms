@@ -75,7 +75,7 @@ Create high-fidelity public-facing pages for Bubbly Day Nursery.
 - [x] **4.5 Careers Page**
   - Active job postings (e.g. "Early Years Educator", "Room Leader").
   - Inline job application form supporting file attachments (CV upload).
-- [ ] **4.6 Contact & Tour Booking System**
+- [x] **4.6 Contact & Tour Booking System**
   - Contact submission form, location details, opening hours.
   - Visit Booking calendar (allowing parents to choose open slots for tours).
 
