@@ -4,7 +4,7 @@ const { createClient } = require("@supabase/supabase-js");
 
 // 1. Parse args
 const email = process.argv[2];
-const roleName = process.argv[3] || "MANAGER";
+const roleName = process.argv[3] || "NURSERY_MANAGER";
 
 if (!email) {
   console.error("Error: Please provide a user email address.");

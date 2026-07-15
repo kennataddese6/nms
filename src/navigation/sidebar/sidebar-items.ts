@@ -64,7 +64,7 @@ export const sidebarItems: NavGroup[] = [
   {
     id: 1,
     label: "Dashboards",
-    roles: ["MANAGER", "STAFF", "SUPER_ADMIN"],
+    roles: ["NURSERY_MANAGER", "STAFF", "SUPER_ADMIN"],
     items: [
       {
         id: "default",
@@ -126,7 +126,7 @@ export const sidebarItems: NavGroup[] = [
   {
     id: 2,
     label: "Pages",
-    roles: ["MANAGER", "STAFF", "SUPER_ADMIN"],
+    roles: ["NURSERY_MANAGER", "STAFF", "SUPER_ADMIN"],
     items: [
       {
         id: "email",
@@ -193,7 +193,7 @@ export const sidebarItems: NavGroup[] = [
   {
     id: 3,
     label: "Legacy",
-    roles: ["MANAGER", "STAFF", "SUPER_ADMIN"],
+    roles: ["NURSERY_MANAGER", "STAFF", "SUPER_ADMIN"],
     items: [
       {
         id: "legacy-dashboards",
@@ -210,7 +210,7 @@ export const sidebarItems: NavGroup[] = [
   {
     id: 4,
     label: "Misc",
-    roles: ["MANAGER", "STAFF", "SUPER_ADMIN"],
+    roles: ["NURSERY_MANAGER", "STAFF", "SUPER_ADMIN"],
     items: [
       {
         id: "others",
@@ -225,7 +225,7 @@ export const sidebarItems: NavGroup[] = [
   {
     id: 5,
     label: "Nursery Operations",
-    roles: ["MANAGER", "STAFF", "SUPER_ADMIN"],
+    roles: ["NURSERY_MANAGER", "STAFF", "SUPER_ADMIN"],
     items: [
       {
         id: "nursery-crm",
