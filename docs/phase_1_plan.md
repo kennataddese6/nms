@@ -70,7 +70,7 @@ Create high-fidelity public-facing pages for Bubbly Day Nursery.
     - **Toddlers room** (2 - 3 years)
     - **Preschool room** (3 - 5 years)
   - Daily routine lists, room gallery, and age-specific learning goals.
-- [ ] **4.4 Curriculum & EYFS Page**
+- [x] **4.4 Curriculum & EYFS Page**
   - Educational explanation of the Early Years Foundation Stage framework and how Bubbly Day Nursery supports child development.
 - [x] **4.5 Careers Page**
   - Active job postings (e.g. "Early Years Educator", "Room Leader").
