@@ -59,7 +59,7 @@ Focuses on establishing the database model, setting up secure authentication, co
 ### 🔴 Phase 2: Parent Portal & Communication
 Focuses on the parent portal UI, message flows, and notifications.
 
-*   [ ] Child Profile Dashboard access.
+*   [x] Parent Portal Dashboard page (welcomes parents, list linked children, notices).
 *   [ ] Message board (real-time chat with room leaders and staff).
 *   [ ] Announcement feed and push notifications.
 *   [ ] Daily child reports visualizer.
