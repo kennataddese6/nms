@@ -78,11 +78,25 @@ Create high-fidelity public-facing pages for Bubbly Day Nursery.
 - [x] **4.6 Contact & Tour Booking System**
   - Contact submission form, location details, opening hours.
   - Visit Booking calendar (allowing parents to choose open slots for tours).
+- [x] **4.7 Gallery Page**
+  - Category-grouped grids (classrooms, activities, events) reading from `gallery_media` table.
+- [x] **4.8 Parent Info Page**
+  - Rates table, government funding guide, policies download links, and FAQ accordions.
 
 ---
 
 ### 5. Navigation & Sidebar Config
 Integrate new routes into the main app shell navigation.
 
-- [ ] **5.1 Update Sidebar Items**
-  - Add links for parent view (`/parent/dashboard`, `/parent/messages`) and manager view (`/dashboard/parents`, `/dashboard/children`, `/dashboard/rooms`) in [sidebar-items.ts](file:///home/kenna/projects/nms/src/navigation/sidebar/sidebar-items.ts).
+- [x] **5.1 Update Sidebar Items**
+  - Add links for parent views and manager views (`/dashboard/nursery-crm`, `/dashboard/content-manager`) in [sidebar-items.ts](file:///home/kenna/projects/nms/src/navigation/sidebar/sidebar-items.ts).
+
+---
+
+### 6. Nursery Admin Dashboards
+Operational screens for management and staff.
+
+- [x] **6.1 Nursery CRM**
+  - Tabbed screens listing and registering parent profiles and children (student) records.
+- [x] **6.2 Website Content Manager**
+  - Editors to publish career vacancies, calendar events, news, and gallery uploads.

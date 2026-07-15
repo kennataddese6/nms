@@ -41,13 +41,18 @@ Focuses on establishing the database model, setting up secure authentication, co
 *   [x] **1.3 Authentication & Registration Flows**
     *   [x] Implement user login and password recovery.
     *   [x] Create multi-step registration forms for Parents and Children.
-*   [ ] **1.4 Public Website & CMS**
+*   [x] **1.4 Public Website & CMS**
     *   [x] Homepage with hero, testimonials, and highlights.
     *   [x] About Us (safeguarding and EYFS overview).
     *   [x] Rooms page displaying daily routines and activities.
     *   [x] Curriculum detail page.
     *   [x] Careers page with job application and CV upload.
     *   [x] Contact Us with booking system for nursery tours.
+    *   [x] Gallery page showcasing nursery classroom activities.
+    *   [x] Parent Info page detailing fees, funding, and FAQs.
+*   [x] **1.5 Nursery Admin Dashboard (Staff & Managers)**
+    *   [x] Nursery CRM listing and registering parents and students.
+    *   [x] Content Manager to publish jobs, news events, and gallery media.
 
 ---
 
