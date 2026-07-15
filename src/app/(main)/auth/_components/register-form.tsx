@@ -213,7 +213,7 @@ export function RegisterForm() {
           photo_consent: data.photoConsent,
           emergency_medical_consent: data.medicalConsent,
           status: "WAITING_LIST",
-          room_id: cleanRoomId ?? null,
+          room_id: cleanRoomId || null,
         })
         .select("id")
         .single();
