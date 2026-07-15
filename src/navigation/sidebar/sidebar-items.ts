@@ -217,4 +217,22 @@ export const sidebarItems: NavGroup[] = [
       },
     ],
   },
+  {
+    id: 5,
+    label: "Nursery Operations",
+    items: [
+      {
+        id: "nursery-crm",
+        title: "Nursery CRM",
+        url: "/dashboard/nursery-crm",
+        icon: Users,
+      },
+      {
+        id: "content-manager",
+        title: "Website Content",
+        url: "/dashboard/content-manager",
+        icon: Server,
+      },
+    ],
+  },
 ];
