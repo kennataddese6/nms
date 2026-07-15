@@ -533,7 +533,14 @@ export function ContentManager({ initialJobs, initialNewsEvents, initialGalleryI
                       <tr key={post.id} className="hover:bg-neutral-50/50 transition-colors">
                         <td className="p-4 font-bold text-foreground">{post.title}</td>
                         <td className="p-4">
-                          <Badge variant={post.category === "event" ? "accent" : "success"}>
+                          <Badge
+                            variant="outline"
+                            className={
+                              post.category === "event"
+                                ? "bg-purple-50 text-purple-700 border-purple-200"
+                                : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                            }
+                          >
                             {post.category}
                           </Badge>
                         </td>
