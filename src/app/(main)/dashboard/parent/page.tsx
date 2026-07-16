@@ -153,11 +153,13 @@ export default async function ParentDashboardPage() {
                         </div>
                       )}
                       
-                      {/* Placeholder portal logs triggers */}
+                      {/* Active portal log triggers */}
                       <div className="pt-2 border-t flex gap-2">
-                        <Button variant="outline" size="xs" className="w-full rounded-full text-[10px] py-1.5 h-auto cursor-not-allowed" disabled>
-                          Daily Logs (Soon)
-                        </Button>
+                        <Link href={`/dashboard/child/${child.id}`} className="w-full">
+                          <Button variant="outline" size="xs" className="w-full rounded-full text-[10px] py-1.5 h-auto">
+                            Daily Logs
+                          </Button>
+                        </Link>
                         <Button variant="outline" size="xs" className="w-full rounded-full text-[10px] py-1.5 h-auto cursor-not-allowed" disabled>
                           Journal (Soon)
                         </Button>
