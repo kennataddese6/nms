@@ -19,6 +19,7 @@ import {
   ShoppingBag,
   SquareArrowUpRight,
   Users,
+  Layers,
 } from "lucide-react";
 
 export type NavBadge = "new" | "soon";
@@ -90,6 +91,12 @@ export const sidebarItems: NavGroup[] = [
         title: "Website Content",
         url: "/dashboard/content-manager",
         icon: Server,
+      },
+      {
+        id: "rooms-manager",
+        title: "Rooms Manager",
+        url: "/dashboard/rooms",
+        icon: Layers,
       },
     ],
   },
