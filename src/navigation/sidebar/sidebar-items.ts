@@ -98,6 +98,12 @@ export const sidebarItems: NavGroup[] = [
         url: "/dashboard/rooms",
         icon: Layers,
       },
+      {
+        id: "messages-manager",
+        title: "Messages",
+        url: "/dashboard/messages",
+        icon: MessageSquare,
+      },
     ],
   },
   {
@@ -110,6 +116,12 @@ export const sidebarItems: NavGroup[] = [
         title: "My Portal",
         url: "/dashboard/parent",
         icon: LayoutDashboard,
+      },
+      {
+        id: "parent-messages",
+        title: "Messages",
+        url: "/dashboard/messages",
+        icon: MessageSquare,
       },
     ],
   },

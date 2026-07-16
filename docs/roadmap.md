@@ -69,6 +69,7 @@ Focuses on the parent portal UI, message flows, and notifications.
 ### 🔴 Phase 3: Attendance, Rooms & Staff Dashboard
 Focuses on staff workflows inside the nursery rooms.
 
+*   [x] Rooms Management Dashboard (create classrooms, monitor capacities, review staff/rosters).
 *   [ ] Staff dashboard and attendance registers.
 *   [ ] Child check-in / check-out.
 *   [ ] Live staff-to-child ratio compliance alerts.
