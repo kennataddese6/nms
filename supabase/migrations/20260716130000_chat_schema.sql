@@ -96,7 +96,7 @@ begin
   limit 1;
 
   -- Locate a Manager or Staff profile to act as responder
-  select profile_id into staff_profile_id 
+  select user_id into staff_profile_id 
   from public.user_roles ur
   join public.roles r on ur.role_id = r.id
   where r.name in ('NURSERY_MANAGER', 'STAFF', 'SUPER_ADMIN')
