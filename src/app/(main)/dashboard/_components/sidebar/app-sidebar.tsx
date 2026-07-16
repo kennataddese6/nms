@@ -70,15 +70,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     async function getRole() {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
-        const { data: roleMapping } = await supabase
+        const { data: roleMappings } = await supabase
           .from("user_roles")
           .select("roles(name)")
-          .eq("user_id", session.user.id)
-          .maybeSingle();
+          .eq("user_id", session.user.id);
 
-        const name = (roleMapping?.roles as any)?.name;
-        if (name) {
-          setUserRole(name);
+        const roleNames = roleMappings?.map((rm: any) => rm.roles?.name) || [];
+        if (
+          roleNames.includes("NURSERY_MANAGER") ||
+          roleNames.includes("STAFF") ||
+          roleNames.includes("SUPER_ADMIN")
+        ) {
+          setUserRole("NURSERY_MANAGER");
+        } else {
+          setUserRole("PARENT");
         }
       }
     }

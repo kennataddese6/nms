@@ -46,13 +46,16 @@ export function LoginForm() {
     }
 
     // Dynamic role check
-    const { data: userRole } = await supabase
+    const { data: roleMappings } = await supabase
       .from("user_roles")
       .select("roles (name)")
-      .eq("user_id", authData.user.id)
-      .maybeSingle();
+      .eq("user_id", authData.user.id);
 
-    const roleName = (userRole?.roles as any)?.name || "PARENT";
+    const roleNames = roleMappings?.map((rm: any) => rm.roles?.name) || [];
+    const isStaff =
+      roleNames.includes("NURSERY_MANAGER") ||
+      roleNames.includes("STAFF") ||
+      roleNames.includes("SUPER_ADMIN");
 
     toast.success("Welcome back!", {
       description: "Redirecting to your dashboard...",
@@ -60,10 +63,10 @@ export function LoginForm() {
 
     router.refresh();
     
-    if (roleName === "PARENT") {
-      router.push("/dashboard/parent");
-    } else {
+    if (isStaff) {
       router.push("/dashboard/default");
+    } else {
+      router.push("/dashboard/parent");
     }
   }
 
