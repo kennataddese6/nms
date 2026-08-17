@@ -19,7 +19,7 @@ export function RoomsPreview() {
       name: "Toddlers Room",
       ageRange: "2 - 3 Years",
       ratio: "1:4 staff to child ratio",
-      focus: ["Language acquisition", "Creative arts & crafts", "Social peer interaction"],
+      focus: ["Language development", "Expressive Art and Design", "Building friendships and relationships"],
       borderColor: "border-secondary/20",
       pillBg: "bg-secondary/10 text-secondary-foreground",
       ctaHref: "/rooms#toddlers",
@@ -28,7 +28,7 @@ export function RoomsPreview() {
       name: "Preschool Room",
       ageRange: "3 - 5 Years",
       ratio: "1:8 staff to child ratio",
-      focus: ["Early numbers & reading", "Independence skills", "School transition prep"],
+      focus: ["Number recognition", "Building confidence and independence", "Transition to school"],
       borderColor: "border-accent/20",
       pillBg: "bg-accent/15 text-accent-foreground",
       ctaHref: "/rooms#preschool",
@@ -41,7 +41,7 @@ export function RoomsPreview() {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
           <div className="max-w-2xl">
             <h2 className="font-heading text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
-              Our Nursery Classrooms & Rooms
+              Our Nursery Rooms
             </h2>
             <p className="mt-4 text-lg text-muted-foreground">
               We separate our classes into specific rooms tailored exactly to your child's age group and development

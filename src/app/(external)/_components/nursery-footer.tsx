@@ -20,8 +20,8 @@ export function NurseryFooter() {
               </span>
             </Link>
             <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">
-              A warm, stimulating, and child-centric environment giving babies, toddlers, and preschool children a
-              bubbly headstart.
+              A warm, stimulating, and child-centric environment providing babies, toddlers, and preschool children a
+              significant bubbly headstart in their learning and development.
             </p>
           </div>
 

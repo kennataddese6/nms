@@ -6,7 +6,7 @@ export function Highlights() {
       icon: Sparkles,
       title: "Play-Based Learning",
       description:
-        "Our curriculum centers on child-led play, ensuring toddlers build natural curiosity, communication, and cognitive skills.",
+        "Our curriculum focuses on child-led play, ensuring toddlers build natural curiosity, communication, and cognitive skills.",
       bgColor: "bg-primary/10 text-primary",
       cardBg: "hover:bg-primary/5",
     },
@@ -14,15 +14,14 @@ export function Highlights() {
       icon: ShieldCheck,
       title: "Ofsted & DBS Cleared Staff",
       description:
-        "Peace of mind for parents. Our nursery operates with strict safeguarding compliance, security, and child-to-staff ratios.",
+        "Your child’s safety comes first — all our staff are fully DBS checked and vetted. Our nursery operates with strict safeguarding compliance, security, and child-to-staff ratios.",
       bgColor: "bg-secondary/10 text-secondary-foreground",
       cardBg: "hover:bg-secondary/5",
     },
     {
       icon: Apple,
       title: "Healthy & Balanced Meals",
-      description:
-        "Freshly prepared, balanced lunches and snacks crafted daily by our chefs to fuel busy learning schedules.",
+      description: "A variety of healthy snacks and freshly prepared healthy food served at lunch and at tea time.",
       bgColor: "bg-accent/15 text-accent-foreground",
       cardBg: "hover:bg-accent/5",
     },
@@ -30,7 +29,7 @@ export function Highlights() {
       icon: Trees,
       title: "Secure Outdoor Play",
       description:
-        "A wide, secure garden and sensory exploration area allowing kids to build motor skills, explore nature, and enjoy fresh air.",
+        "A wide, secure garden and sensory exploration area allowing children to build motor skills, explore nature, and enjoy learning environment 👏.",
       bgColor: "bg-destructive/10 text-destructive",
       cardBg: "hover:bg-destructive/5",
     },
@@ -44,8 +43,8 @@ export function Highlights() {
             Why Parents Love Bubbly Day Nursery
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            We offer more than just childcare. We provide a nurturing foundation that prepares children for school and a
-            lifelong love of learning.
+            We offer excellent childcare including a nurturing. We provide a nurturing foundation that prepares children
+            for school.
           </p>
         </div>
 
