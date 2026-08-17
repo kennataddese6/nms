@@ -121,7 +121,7 @@ export function ContactForms() {
   return (
     <div className="space-y-6">
       {/* Form Tabs Switcher */}
-      <div className="flex bg-neutral-100 p-1.5 rounded-2xl gap-1">
+      <div className="flex bg-neutral-100 dark:bg-neutral-800 p-1.5 rounded-2xl gap-1">
         <button
           type="button"
           onClick={() => setActiveForm("enquiry")}
