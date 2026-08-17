@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 import { ArrowRight, Sparkles } from "lucide-react";
 
@@ -14,6 +15,7 @@ export function RoomsPreview() {
       borderColor: "border-primary/20",
       pillBg: "bg-primary/10 text-primary",
       ctaHref: "/rooms#babies",
+      imageSrc: "/images/classroom-babies.png",
     },
     {
       name: "Toddlers Room",
@@ -23,6 +25,7 @@ export function RoomsPreview() {
       borderColor: "border-secondary/20",
       pillBg: "bg-secondary/10 text-secondary-foreground",
       ctaHref: "/rooms#toddlers",
+      imageSrc: "/images/classroom-toddlers.png",
     },
     {
       name: "Preschool Room",
@@ -32,6 +35,7 @@ export function RoomsPreview() {
       borderColor: "border-accent/20",
       pillBg: "bg-accent/15 text-accent-foreground",
       ctaHref: "/rooms#preschool",
+      imageSrc: "/images/classroom-preschool.png",
     },
   ];
 
@@ -62,6 +66,17 @@ export function RoomsPreview() {
               key={room.name}
               className={`flex flex-col p-8 rounded-3xl border bg-background shadow-sm hover:shadow-xl transition-shadow ${room.borderColor}`}
             >
+              {/* Card Header Image */}
+              <div className="relative aspect-[16/10] w-full rounded-2xl overflow-hidden mb-6 border bg-neutral-50">
+                <Image
+                  src={room.imageSrc}
+                  alt={room.name}
+                  fill
+                  className="object-cover"
+                  sizes="(max-w-7xl) 33vw, 400px"
+                />
+              </div>
+
               <div className="flex items-center justify-between mb-6">
                 <span
                   className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${room.pillBg}`}

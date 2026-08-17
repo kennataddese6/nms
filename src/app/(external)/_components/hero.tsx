@@ -17,8 +17,8 @@ export function Hero() {
           {/* Text Content */}
           <div className="lg:col-span-6 flex flex-col justify-center text-center lg:text-left">
             {/* Trust badge */}
-            <div className="mx-auto lg:mx-0 mb-6 inline-flex items-center gap-2 rounded-full bg-accent/20 px-4 py-1.5 text-xs font-semibold text-accent-foreground tracking-wide">
-              <Star className="h-4.5 w-4.5 fill-accent stroke-accent-foreground" />
+            <div className="mx-auto lg:mx-0 mb-6 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary tracking-wide">
+              <Star className="h-4 w-4.5 fill-primary stroke-primary" />
               Ofsted Registered • Excellent Care Standards
             </div>
 
@@ -70,7 +70,7 @@ export function Hero() {
           <div className="lg:col-span-6 flex justify-center">
             <div className="relative w-full max-w-[540px] aspect-square rounded-3xl overflow-hidden shadow-2xl bg-white border-8 border-white ring-1 ring-border">
               <Image
-                src="/images/hero.png"
+                src="/images/hero1.png"
                 alt="Bubbly Day Nursery illustration of children playing"
                 fill
                 priority
