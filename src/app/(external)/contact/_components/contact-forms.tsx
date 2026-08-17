@@ -51,6 +51,7 @@ const tourSchema = z.object({
   ),
   timeSlot: z.string().min(1, { message: "Please select a time slot." }),
   childAge: z.string().min(1, { message: "Please specify child age / age range." }),
+  branch: z.string().min(1, { message: "Please select a branch location." }),
 });
 
 type TourFormValues = z.infer<typeof tourSchema>;
@@ -84,6 +85,7 @@ export function ContactForms() {
       visitDate: "",
       timeSlot: "10:00 AM - 11:00 AM",
       childAge: "",
+      branch: "Branch 1 (Manor Methodist Church, Galleywall Road, SE16 3PB)",
     },
     mode: "onTouched",
   });
@@ -284,6 +286,25 @@ export function ContactForms() {
               )}
             />
           </div>
+
+          <Controller
+            control={tourForm.control}
+            name="branch"
+            render={({ field, fieldState }) => (
+              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor="tour-branch">Select Nursery Branch Location</FieldLabel>
+                <NativeSelect {...field} id="tour-branch">
+                  <option value="Branch 1 (Manor Methodist Church, Galleywall Road, SE16 3PB)">
+                    Branch 1: Manor Methodist Church, Galleywall Road, SE16 3PB
+                  </option>
+                  <option value="Branch 2 (St Gertrudes Church Hall, Corbetts Lane, London, SE16 2BQ)">
+                    Branch 2: St Gertrudes Church Hall, Corbetts Lane, London, SE16 2BQ
+                  </option>
+                </NativeSelect>
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </Field>
+            )}
+          />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Controller
