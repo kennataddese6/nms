@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 import { CircleHelp, ClipboardList, Command, Database, File, Search, Settings } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
@@ -111,10 +112,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link prefetch={false} href={userRole === "PARENT" ? "/dashboard/parent" : "/dashboard/default"}>
-                <Command />
-                <span className="font-semibold text-base">{APP_CONFIG.name}</span>
+            <SidebarMenuButton asChild className="h-12 py-2">
+              <Link prefetch={false} href={userRole === "PARENT" ? "/dashboard/parent" : "/dashboard/default"} className="flex items-center gap-2">
+                <div className="relative h-7 w-7 overflow-hidden rounded-full shrink-0 border bg-background">
+                  <Image
+                    src="/images/logo.png"
+                    alt="Bubbly Day Nursery logo"
+                    fill
+                    className="object-cover"
+                    sizes="28px"
+                  />
+                </div>
+                <span className="font-semibold text-sm leading-none">{APP_CONFIG.name}</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

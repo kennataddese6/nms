@@ -3,6 +3,7 @@
 import * as React from "react";
 
 import Link from "next/link";
+import Image from "next/image";
 
 import { Baby, Menu, X } from "lucide-react";
 
@@ -24,8 +25,15 @@ export function NurseryHeader() {
       <div className="mx-auto flex max-w-7xl h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 text-primary transition-transform group-hover:scale-110">
-            <Baby className="h-6 w-6 stroke-[2.5]" />
+          <div className="relative h-10 w-10 overflow-hidden rounded-full bg-primary/10 transition-transform group-hover:scale-110">
+            <Image
+              src="/images/logo.png"
+              alt="Bubbly Day Nursery logo"
+              fill
+              className="object-cover"
+              sizes="40px"
+              priority
+            />
           </div>
           <span className="font-heading font-bold text-xl tracking-tight text-foreground">
             Bubbly <span className="text-primary">Nursery</span>

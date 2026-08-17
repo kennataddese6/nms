@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 import { Baby, Clock, Mail, MapPin, Phone } from "lucide-react";
 
@@ -12,8 +13,14 @@ export function NurseryFooter() {
           {/* Logo & Intro */}
           <div className="flex flex-col gap-4">
             <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 text-primary">
-                <Baby className="h-6 w-6 stroke-[2.5]" />
+              <div className="relative h-10 w-10 overflow-hidden rounded-full bg-primary/10">
+                <Image
+                  src="/images/logo.png"
+                  alt="Bubbly Day Nursery logo"
+                  fill
+                  className="object-cover"
+                  sizes="40px"
+                />
               </div>
               <span className="font-heading font-bold text-xl tracking-tight text-foreground">
                 Bubbly <span className="text-primary">Nursery</span>
