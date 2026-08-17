@@ -19,10 +19,14 @@ export function NurseryFooter() {
                 Bubbly <span className="text-primary">Nursery</span>
               </span>
             </Link>
-            <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">
+            <p className="text-muted-foreground text-xs leading-relaxed max-w-xs">
               A warm, stimulating, and child-centric environment providing babies, toddlers, and preschool children a
               significant bubbly headstart in their learning and development.
             </p>
+            <div className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold space-y-0.5 mt-2">
+              <span className="block text-foreground font-bold">BUBBLY DAY NURSERY LIMITED</span>
+              <span className="block">Company number 15176895</span>
+            </div>
           </div>
 
           {/* Quick Links */}
@@ -71,29 +75,38 @@ export function NurseryFooter() {
 
           {/* Contact Details */}
           <div>
-            <h4 className="text-sm font-bold text-foreground uppercase tracking-wider mb-4">Get In Touch</h4>
-            <ul className="space-y-3">
-              <li className="flex items-center gap-2.5 text-sm text-muted-foreground">
-                <Phone className="h-4.5 w-4.5 text-primary shrink-0" />
-                <a href="tel:+441234567890" className="hover:text-primary">
-                  +44 123 456 7890
-                </a>
-              </li>
-              <li className="flex items-center gap-2.5 text-sm text-muted-foreground">
-                <Mail className="h-4.5 w-4.5 text-primary shrink-0" />
-                <a href="mailto:hello@bubblydaynursery.com" className="hover:text-primary break-all">
-                  hello@bubblydaynursery.com
-                </a>
-              </li>
-              <li className="flex items-start gap-2.5 text-sm text-muted-foreground">
-                <MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                <span>
-                  12 Bubbles Road,
-                  <br />
-                  London, SW1A 1AA
+            <h4 className="text-sm font-bold text-foreground uppercase tracking-wider mb-4">Our Settings</h4>
+            <div className="space-y-6 text-xs text-muted-foreground">
+              {/* Branch 1 */}
+              <div className="space-y-1.5">
+                <span className="block font-bold text-primary text-[10px] uppercase tracking-wider">Branch 1 (Main)</span>
+                <span className="flex items-start gap-2 text-xs">
+                  <MapPin className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                  <span>Manor Methodist Church, Galleywall Road, SE16 3PB</span>
                 </span>
-              </li>
-            </ul>
+                <span className="flex items-start gap-2 text-xs">
+                  <Phone className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                  <span className="leading-relaxed">07359760335 /<br />07863862973 /<br />020 8109 8601</span>
+                </span>
+                <span className="flex items-center gap-2 text-xs">
+                  <Mail className="h-4 w-4 text-primary shrink-0" />
+                  <a href="mailto:info@bubblydnursery.co.uk" className="hover:text-primary">info@bubblydnursery.co.uk</a>
+                </span>
+              </div>
+
+              {/* Branch 2 */}
+              <div className="space-y-1.5 pt-4 border-t border-border">
+                <span className="block font-bold text-secondary-foreground text-[10px] uppercase tracking-wider">Branch 2 (New Setting)</span>
+                <span className="flex items-start gap-2 text-xs">
+                  <MapPin className="h-4 w-4 text-secondary-foreground shrink-0 mt-0.5" />
+                  <span>St Gertrudes Church Hall, Corbetts Lane, London, SE16 2BQ</span>
+                </span>
+                <span className="flex items-center gap-2 text-xs">
+                  <Mail className="h-4 w-4 text-secondary-foreground shrink-0" />
+                  <a href="mailto:bubblyd2nursery@gmail.com" className="hover:text-primary">bubblyd2nursery@gmail.com</a>
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
