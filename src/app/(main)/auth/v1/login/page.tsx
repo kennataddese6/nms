@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 import { Command } from "lucide-react";
 
@@ -8,16 +9,16 @@ import { GoogleButton } from "../../_components/social-auth/google-button";
 export default function LoginV1() {
   return (
     <div className="flex h-dvh">
-      <div className="hidden bg-primary lg:block lg:w-1/3">
-        <div className="flex h-full flex-col items-center justify-center p-12 text-center">
-          <div className="space-y-6">
-            <Command className="mx-auto size-12 text-primary-foreground" />
-            <div className="space-y-2">
-              <h1 className="font-light text-5xl text-primary-foreground">Hello again</h1>
-              <p className="text-primary-foreground/80 text-xl">Login to continue</p>
-            </div>
-          </div>
-        </div>
+      <div className="hidden lg:block lg:w-1/3 relative overflow-hidden bg-neutral-100 border-r">
+        <Image
+          src="/images/about-nursery.png"
+          alt="Bubbly Day Nursery illustration"
+          fill
+          className="object-cover animate-fade-in"
+          sizes="33vw"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-primary/30 to-transparent mix-blend-multiply" />
       </div>
 
       <div className="flex w-full items-center justify-center bg-background p-8 lg:w-2/3">
