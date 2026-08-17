@@ -96,13 +96,13 @@ export function NurseryFooter() {
 
               {/* Branch 2 */}
               <div className="space-y-1.5 pt-4 border-t border-border">
-                <span className="block font-bold text-secondary-foreground text-[10px] uppercase tracking-wider">Branch 2 (New Setting)</span>
+                <span className="block font-bold text-teal-600 dark:text-teal-400 text-[10px] uppercase tracking-wider">Branch 2 (New Setting)</span>
                 <span className="flex items-start gap-2 text-xs">
-                  <MapPin className="h-4 w-4 text-secondary-foreground shrink-0 mt-0.5" />
+                  <MapPin className="h-4 w-4 text-teal-600 dark:text-teal-400 shrink-0 mt-0.5" />
                   <span>St Gertrudes Church Hall, Corbetts Lane, London, SE16 2BQ</span>
                 </span>
                 <span className="flex items-center gap-2 text-xs">
-                  <Mail className="h-4 w-4 text-secondary-foreground shrink-0" />
+                  <Mail className="h-4 w-4 text-teal-600 dark:text-teal-400 shrink-0" />
                   <a href="mailto:bubblyd2nursery@gmail.com" className="hover:text-primary">bubblyd2nursery@gmail.com</a>
                 </span>
               </div>

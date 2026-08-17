@@ -79,11 +79,11 @@ export default function ContactPage() {
                   {/* Branch 2 */}
                   <div className="p-6 rounded-3xl border bg-card space-y-4">
                     <div className="flex gap-3.5 items-start">
-                      <div className="h-10 w-10 shrink-0 flex items-center justify-center rounded-xl bg-secondary/15 text-secondary-foreground">
+                      <div className="h-10 w-10 shrink-0 flex items-center justify-center rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-600 dark:text-teal-400">
                         <MapPin className="h-5 w-5" />
                       </div>
                       <div>
-                        <span className="block text-xs font-semibold text-secondary-foreground uppercase tracking-wider">
+                        <span className="block text-xs font-semibold text-teal-600 dark:text-teal-400 uppercase tracking-wider">
                           Branch 2 (New Setting)
                         </span>
                         <h4 className="text-lg font-bold text-foreground mt-1">Bubbly Day Nursery</h4>
