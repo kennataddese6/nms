@@ -1,5 +1,7 @@
-import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+
+import { createClient } from "@/lib/supabase/server";
+
 import { RoomsWorkspace } from "./_components/rooms-workspace";
 
 export const revalidate = 0;
@@ -8,22 +10,19 @@ export default async function RoomsPage() {
   const supabase = await createClient();
 
   // 1. Get logged in Auth identity
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) {
     redirect("/auth/v1/login");
   }
 
   // 2. Verify User has staff/admin permissions
-  const { data: roleMappings } = await supabase
-    .from("user_roles")
-    .select("roles(name)")
-    .eq("user_id", user.id);
+  const { data: roleMappings } = await supabase.from("user_roles").select("roles(name)").eq("user_id", user.id);
 
   const roleNames = roleMappings?.map((rm: any) => rm.roles?.name) || [];
   const isStaff =
-    roleNames.includes("NURSERY_MANAGER") ||
-    roleNames.includes("STAFF") ||
-    roleNames.includes("SUPER_ADMIN");
+    roleNames.includes("NURSERY_MANAGER") || roleNames.includes("STAFF") || roleNames.includes("SUPER_ADMIN");
 
   if (!isStaff) {
     redirect("/dashboard/parent");
@@ -38,6 +37,7 @@ export default async function RoomsPage() {
       age_group,
       capacity,
       description,
+      branch,
       children (
         id,
         first_name,
@@ -55,9 +55,7 @@ export default async function RoomsPage() {
   }
 
   // 4. Fetch Staff assignments
-  const { data: staff, error: staffError } = await supabase
-    .from("staff")
-    .select(`
+  const { data: staff, error: staffError } = await supabase.from("staff").select(`
       id,
       room_id,
       profiles!staff_profile_id_fkey (
@@ -71,10 +69,5 @@ export default async function RoomsPage() {
     console.error("Failed to load staff:", staffError.message);
   }
 
-  return (
-    <RoomsWorkspace 
-      initialRooms={rooms || []} 
-      initialStaff={staff || []} 
-    />
-  );
+  return <RoomsWorkspace initialRooms={rooms || []} initialStaff={staff || []} />;
 }
