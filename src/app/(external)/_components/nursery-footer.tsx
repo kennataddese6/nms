@@ -1,7 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 
 import { Baby, Clock, Mail, MapPin, Phone } from "lucide-react";
+import { ThemeSwitcher } from "@/app/(main)/dashboard/_components/sidebar/theme-switcher";
 
 export function NurseryFooter() {
   const currentYear = new Date().getFullYear();
@@ -125,13 +128,16 @@ export function NurseryFooter() {
         {/* Bottom bar */}
         <div className="border-t pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground">&copy; {currentYear} Bubbly Day Nursery. All rights reserved.</p>
-          <div className="flex gap-4">
+          <div className="flex items-center gap-6">
             <Link href="/privacy" className="text-xs text-muted-foreground hover:text-primary">
               Privacy Policy
             </Link>
             <Link href="/terms" className="text-xs text-muted-foreground hover:text-primary">
               Terms of Service
             </Link>
+            <div className="border-l pl-4 dark:border-neutral-800 flex items-center">
+              <ThemeSwitcher />
+            </div>
           </div>
         </div>
       </div>
