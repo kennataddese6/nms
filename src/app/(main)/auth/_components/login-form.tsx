@@ -65,7 +65,7 @@ export function LoginForm() {
     router.refresh();
     
     if (isStaff) {
-      router.push("/dashboard/default");
+      router.push("/dashboard/nursery-crm");
     } else {
       router.push("/dashboard/parent");
     }

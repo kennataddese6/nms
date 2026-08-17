@@ -247,7 +247,7 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
 
   return (
     <Tabs defaultValue="students" className="space-y-4">
-      <TabsList className="bg-neutral-100 p-1 rounded-xl">
+      <TabsList className="bg-neutral-100 dark:bg-neutral-800 p-1 rounded-xl">
         <TabsTrigger value="students" className="rounded-lg flex gap-2">
           <Baby className="h-4 w-4" />
           Students ({children.length})

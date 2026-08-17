@@ -63,19 +63,6 @@ export interface NavGroup {
 
 export const sidebarItems: NavGroup[] = [
   {
-    id: 1,
-    label: "Overview",
-    roles: ["NURSERY_MANAGER", "STAFF", "SUPER_ADMIN"],
-    items: [
-      {
-        id: "default",
-        title: "Overview",
-        url: "/dashboard/default",
-        icon: LayoutDashboard,
-      },
-    ],
-  },
-  {
     id: 2,
     label: "Nursery Operations",
     roles: ["NURSERY_MANAGER", "STAFF", "SUPER_ADMIN"],

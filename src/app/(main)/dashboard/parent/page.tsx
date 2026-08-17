@@ -32,8 +32,8 @@ export default async function ParentDashboardPage() {
     .single();
 
   if (!parent) {
-    // If auth user is not registered as a parent, redirect to admin home default
-    redirect("/dashboard/default");
+    // If auth user is not registered as a parent, redirect to nursery CRM dashboard
+    redirect("/dashboard/nursery-crm");
   }
 
   // 3. Fetch Linked children

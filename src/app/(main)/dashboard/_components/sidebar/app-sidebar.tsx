@@ -113,7 +113,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="h-12 py-2">
-              <Link prefetch={false} href={userRole === "PARENT" ? "/dashboard/parent" : "/dashboard/default"} className="flex items-center gap-2">
+              <Link prefetch={false} href={userRole === "PARENT" ? "/dashboard/parent" : "/dashboard/nursery-crm"} className="flex items-center gap-2">
                 <div className="relative h-7 w-7 overflow-hidden rounded-full shrink-0 border bg-background">
                   <Image
                     src="/images/logo.png"
@@ -135,7 +135,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
       <SidebarFooter>
-        <SidebarSupportCard />
         <NavUser user={rootUser} />
       </SidebarFooter>
     </Sidebar>

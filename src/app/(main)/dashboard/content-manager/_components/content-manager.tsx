@@ -383,7 +383,7 @@ export function ContentManager({ initialJobs, initialNewsEvents, initialGalleryI
 
   return (
     <Tabs defaultValue="jobs" className="space-y-4">
-      <TabsList className="bg-neutral-100 p-1 rounded-xl">
+      <TabsList className="bg-neutral-100 dark:bg-neutral-800 p-1 rounded-xl">
         <TabsTrigger value="jobs" className="rounded-lg flex gap-2">
           <Briefcase className="h-4 w-4" />
           Careers ({jobs.length})

@@ -300,7 +300,7 @@ export function ChatWorkspace({
       <div className="flex-1 min-h-0 border rounded-3xl overflow-hidden grid grid-cols-1 md:grid-cols-12 bg-card">
         
         {/* Left Side: Threads Sidebar */}
-        <div className="md:col-span-4 border-r flex flex-col h-full bg-neutral-50/50">
+        <div className="md:col-span-4 border-r flex flex-col h-full bg-neutral-50/50 dark:bg-neutral-950/20">
           <div className="p-4 border-b shrink-0">
             <h3 className="font-bold text-sm text-foreground flex items-center gap-1.5">
               <Inbox className="h-4 w-4 text-primary" /> Active Enquiries
@@ -322,8 +322,8 @@ export function ChatWorkspace({
                   <div
                     key={t.id}
                     onClick={() => setActiveThreadId(t.id)}
-                    className={`p-4 cursor-pointer hover:bg-neutral-100/50 transition-colors ${
-                      isSelected ? "bg-white border-l-4 border-primary" : ""
+                    className={`p-4 cursor-pointer hover:bg-neutral-100/50 dark:hover:bg-neutral-800/30 transition-colors ${
+                      isSelected ? "bg-white dark:bg-neutral-900/40 border-l-4 border-primary" : ""
                     }`}
                   >
                     <div className="flex justify-between items-start gap-2">
@@ -345,11 +345,11 @@ export function ChatWorkspace({
         </div>
 
         {/* Right Side: Chat Window */}
-        <div className="md:col-span-8 flex flex-col h-full bg-white">
+        <div className="md:col-span-8 flex flex-col h-full bg-white dark:bg-neutral-900/20">
           {activeThread ? (
             <>
               {/* Header */}
-              <div className="p-4 border-b shrink-0 flex items-center justify-between bg-neutral-50/20">
+              <div className="p-4 border-b shrink-0 flex items-center justify-between bg-neutral-50/20 dark:bg-neutral-900/25">
                 <div>
                   <h3 className="font-bold text-sm text-foreground">{activeThread.subject}</h3>
                   <span className="text-[10px] text-muted-foreground">
@@ -389,7 +389,7 @@ export function ChatWorkspace({
                           className={`max-w-md rounded-2xl p-3 text-xs leading-relaxed ${
                             isOwnMessage
                               ? "bg-primary text-primary-foreground rounded-tr-none"
-                              : "bg-neutral-100 text-neutral-800 rounded-tl-none border"
+                              : "bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 rounded-tl-none border"
                           }`}
                         >
                           {msg.message}
@@ -405,7 +405,7 @@ export function ChatWorkspace({
               </div>
 
               {/* Message Input Form */}
-              <form onSubmit={handleSendMessage} className="p-4 border-t shrink-0 flex gap-2 bg-neutral-50/20">
+              <form onSubmit={handleSendMessage} className="p-4 border-t shrink-0 flex gap-2 bg-neutral-50/20 dark:bg-neutral-900/25">
                 <Input
                   value={newMessageText}
                   onChange={(e) => setNewMessageText(e.target.value)}

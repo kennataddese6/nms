@@ -66,7 +66,7 @@ export default function RoomsPage() {
                       className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full font-bold ${
                         isActive
                           ? "bg-primary-foreground/20 text-primary-foreground"
-                          : "bg-neutral-100 text-muted-foreground"
+                          : "bg-neutral-100 dark:bg-neutral-800 text-muted-foreground"
                       }`}
                     >
                       {tab.age}
