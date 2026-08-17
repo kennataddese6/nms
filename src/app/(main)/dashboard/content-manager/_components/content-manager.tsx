@@ -523,7 +523,7 @@ export function ContentManager({ initialJobs, initialNewsEvents, initialGalleryI
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse text-left text-sm">
                   <thead>
-                    <tr className="border-b bg-neutral-50/50 text-xs font-semibold text-muted-foreground">
+                    <tr className="border-b bg-muted-foreground/10 text-xs font-semibold text-muted-foreground">
                       <th className="p-4">Title</th>
                       <th className="p-4">Type</th>
                       <th className="p-4">Salary</th>
@@ -533,7 +533,7 @@ export function ContentManager({ initialJobs, initialNewsEvents, initialGalleryI
                   </thead>
                   <tbody className="divide-y">
                     {jobs.map((job) => (
-                      <tr key={job.id} className="hover:bg-neutral-50/50 transition-colors">
+                      <tr key={job.id} className="hover:bg-muted/40 transition-colors">
                         <td className="p-4 font-bold text-foreground">{job.title}</td>
                         <td className="p-4"><Badge variant="outline">{job.type}</Badge></td>
                         <td className="p-4 text-muted-foreground">{job.salary}</td>
@@ -666,7 +666,7 @@ export function ContentManager({ initialJobs, initialNewsEvents, initialGalleryI
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse text-left text-sm">
                   <thead>
-                    <tr className="border-b bg-neutral-50/50 text-xs font-semibold text-muted-foreground">
+                    <tr className="border-b bg-muted-foreground/10 text-xs font-semibold text-muted-foreground">
                       <th className="p-4">Title</th>
                       <th className="p-4">Category</th>
                       <th className="p-4">Event Date</th>
@@ -676,7 +676,7 @@ export function ContentManager({ initialJobs, initialNewsEvents, initialGalleryI
                   </thead>
                   <tbody className="divide-y">
                     {newsEvents.map((post) => (
-                      <tr key={post.id} className="hover:bg-neutral-50/50 transition-colors">
+                      <tr key={post.id} className="hover:bg-muted/40 transition-colors">
                         <td className="p-4 font-bold text-foreground">{post.title}</td>
                         <td className="p-4">
                           <Badge
@@ -796,7 +796,7 @@ export function ContentManager({ initialJobs, initialNewsEvents, initialGalleryI
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse text-left text-sm">
                   <thead>
-                    <tr className="border-b bg-neutral-50/50 text-xs font-semibold text-muted-foreground">
+                    <tr className="border-b bg-muted-foreground/10 text-xs font-semibold text-muted-foreground">
                       <th className="p-4">Title</th>
                       <th className="p-4">Category</th>
                       <th className="p-4">Image Preview</th>
@@ -805,7 +805,7 @@ export function ContentManager({ initialJobs, initialNewsEvents, initialGalleryI
                   </thead>
                   <tbody className="divide-y">
                     {galleryItems.map((item) => (
-                      <tr key={item.id} className="hover:bg-neutral-50/50 transition-colors">
+                      <tr key={item.id} className="hover:bg-muted/40 transition-colors">
                         <td className="p-4 font-bold text-foreground">{item.title}</td>
                         <td className="p-4"><Badge variant="outline">{item.category}</Badge></td>
                         <td className="p-4">
@@ -1009,7 +1009,7 @@ export function ContentManager({ initialJobs, initialNewsEvents, initialGalleryI
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse text-left text-sm">
                   <thead>
-                    <tr className="border-b bg-neutral-50/50 text-xs font-semibold text-muted-foreground">
+                    <tr className="border-b bg-muted-foreground/10 text-xs font-semibold text-muted-foreground">
                       <th className="p-4">Menu Name</th>
                       <th className="p-4">Status</th>
                       <th className="p-4">Date Created</th>
@@ -1018,7 +1018,7 @@ export function ContentManager({ initialJobs, initialNewsEvents, initialGalleryI
                   </thead>
                   <tbody className="divide-y">
                     {menus.map((m) => (
-                      <tr key={m.id} className="hover:bg-neutral-50/50 transition-colors">
+                      <tr key={m.id} className="hover:bg-muted/40 transition-colors">
                         <td className="p-4 font-bold text-foreground">{m.name}</td>
                         <td className="p-4">
                           {m.is_active ? (

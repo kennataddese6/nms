@@ -17,7 +17,6 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { APP_CONFIG } from "@/config/app-config";
-import { rootUser } from "@/data/users";
 import { sidebarItems } from "@/navigation/sidebar/sidebar-items";
 import { usePreferencesStore } from "@/stores/preferences/preferences-provider";
 import { createClient } from "@/lib/supabase/client";
@@ -66,11 +65,35 @@ const _data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const supabase = createClient();
   const [userRole, setUserRole] = React.useState<string>("PARENT");
+  const [currentUser, setCurrentUser] = React.useState({
+    name: "Staff / Parent",
+    email: "user@bubblydnursery.co.uk",
+    avatar: "https://api.dicebear.com/7.x/initials/svg?seed=U",
+  });
 
   React.useEffect(() => {
     async function getRole() {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
+        // Query user profile info
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("first_name, last_name, email")
+          .eq("id", session.user.id)
+          .maybeSingle();
+
+        const name = profile 
+          ? `${profile.first_name || ""} ${profile.last_name || ""}`.trim() || "Nursery User"
+          : session.user.email?.split("@")[0] || "Nursery User";
+        const email = profile?.email || session.user.email || "user@bubblydnursery.co.uk";
+        const avatarSeed = profile?.first_name || name[0] || "U";
+
+        setCurrentUser({
+          name,
+          email,
+          avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(avatarSeed)}`,
+        });
+
         const { data: roleMappings } = await supabase
           .from("user_roles")
           .select("roles(name)")
@@ -135,7 +158,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={rootUser} />
+        <NavUser user={currentUser} />
       </SidebarFooter>
     </Sidebar>
   );
