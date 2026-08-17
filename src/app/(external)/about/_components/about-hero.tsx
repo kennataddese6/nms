@@ -1,4 +1,5 @@
 import { Sparkles } from "lucide-react";
+import Image from "next/image";
 
 export function AboutHero() {
   return (
@@ -23,6 +24,19 @@ export function AboutHero() {
             home-away-from-home. We believe every child deserves a bubbly, happy childhood loaded with opportunities to
             explore, wonder, and build confidence.
           </p>
+        </div>
+
+        <div className="mt-12 mx-auto max-w-4xl rounded-[2rem] overflow-hidden shadow-xl border bg-white p-2">
+          <div className="relative aspect-[16/9] w-full rounded-[1.75rem] overflow-hidden">
+            <Image
+              src="/images/about-nursery.png"
+              alt="Bubbly Day Nursery environment"
+              fill
+              className="object-cover"
+              sizes="(max-w-7xl) 100vw, 1024px"
+              priority
+            />
+          </div>
         </div>
       </div>
     </section>

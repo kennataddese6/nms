@@ -1,4 +1,5 @@
 import * as React from "react";
+import Image from "next/image";
 
 import { BookOpen, Clock, Compass, Shield, Sparkles, Users } from "lucide-react";
 
@@ -31,6 +32,7 @@ export function RoomDetails({ roomKey }: RoomDetailsProps) {
       ageRange: "3 Months - 2 Years",
       ratio: "1:3 staff to child ratio",
       capacity: "9 Babies",
+      imageSrc: "/images/classroom-babies.png",
       description:
         "A peaceful, sensory-rich nursery room tailored to infant milestones. Features soft-creeping zones, safe sensory pools, and dedicated dark nap pods to match your child's home sleep schedules.",
       learningGoals: [
@@ -95,6 +97,7 @@ export function RoomDetails({ roomKey }: RoomDetailsProps) {
       ageRange: "2 - 3 Years",
       ratio: "1:4 staff to child ratio",
       capacity: "16 Toddlers",
+      imageSrc: "/images/classroom-toddlers.png",
       description:
         "An active, exploratory classroom focused on budding speech, motor coordination, and peer-to-peer social dynamics. Fully equipped with messy art stations, creative sandpits, and child-height tables.",
       learningGoals: [
@@ -167,6 +170,7 @@ export function RoomDetails({ roomKey }: RoomDetailsProps) {
       ageRange: "3 - 5 Years",
       ratio: "1:8 staff to child ratio",
       capacity: "24 Preschoolers",
+      imageSrc: "/images/classroom-preschool.png",
       description:
         "A bright, structured pre-school classroom preparing children for the transition to primary school. Focuses on phonics, numbers, independence, science observation, and collaborative problem-solving.",
       learningGoals: [
@@ -243,7 +247,17 @@ export function RoomDetails({ roomKey }: RoomDetailsProps) {
       {/* Left Column: Details & Goals */}
       <div className="lg:col-span-5 space-y-8">
         {/* Core Specs Card */}
-        <Card className="p-8 rounded-3xl border shadow-sm space-y-6 bg-background">
+        <Card className="p-8 rounded-3xl border shadow-sm space-y-6 bg-background overflow-hidden">
+          <div className="relative aspect-[16/10] w-full rounded-2xl overflow-hidden border">
+            <Image
+              src={currentRoom.imageSrc}
+              alt={currentRoom.name}
+              fill
+              className="object-cover"
+              sizes="(max-w-7xl) 50vw, 400px"
+              priority
+            />
+          </div>
           <div>
             <h3 className="text-3xl font-extrabold text-foreground mb-2">{currentRoom.name}</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">{currentRoom.description}</p>
