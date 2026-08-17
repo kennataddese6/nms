@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -131,8 +132,15 @@ export function LoginForm() {
           )}
         />
       </FieldGroup>
-      <Button className="w-full" type="submit">
-        Login
+      <Button className="w-full" type="submit" disabled={form.formState.isSubmitting}>
+        {form.formState.isSubmitting ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Logging in...
+          </>
+        ) : (
+          "Login"
+        )}
       </Button>
     </form>
   );
