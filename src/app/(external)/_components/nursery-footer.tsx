@@ -51,6 +51,11 @@ export function NurseryFooter() {
                 </Link>
               </li>
               <li>
+                <Link href="/menu" className="text-sm text-muted-foreground hover:text-primary">
+                  Nursery Food Menu
+                </Link>
+              </li>
+              <li>
                 <Link href="/careers" className="text-sm text-muted-foreground hover:text-primary">
                   Careers & Jobs
                 </Link>

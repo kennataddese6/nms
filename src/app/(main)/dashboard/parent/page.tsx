@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { Baby, Info, Calendar, Sparkles, BookOpen, Clock, Heart } from "lucide-react";
+import { Baby, Info, Calendar, Sparkles, BookOpen, Clock, Heart, Utensils } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -64,6 +64,18 @@ export default async function ParentDashboardPage() {
     .select("*")
     .order("created_at", { ascending: false })
     .limit(3);
+
+  // 5. Fetch active nutrition menu
+  const { data: activeMenu } = await supabase
+    .from("nursery_menus")
+    .select("*")
+    .eq("is_active", true)
+    .maybeSingle();
+
+  const weekdayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const todayIndex = new Date().getDay();
+  // Fallback to Monday on weekends
+  const currentWeekday = (todayIndex === 0 || todayIndex === 6) ? "Monday" : weekdayNames[todayIndex];
 
   const profiles = parent.profiles as any;
   const parentName = `${profiles?.first_name || ""} ${profiles?.last_name || ""}`;
@@ -200,6 +212,62 @@ export default async function ParentDashboardPage() {
                   </div>
                 ))
               )}
+            </CardContent>
+          </Card>
+
+          {/* Today's Nutrition */}
+          <Card className="rounded-3xl shadow-sm bg-gradient-to-br from-background to-primary/5">
+            <CardHeader className="pb-3 flex flex-row items-center justify-between">
+              <div>
+                <CardTitle className="text-base font-bold flex items-center gap-2">
+                  <Utensils className="h-5 w-5 text-primary" /> Today's Nutrition
+                </CardTitle>
+                <CardDescription className="text-[10px]">
+                  {activeMenu ? activeMenu.name : "Healthy & Balanced Eating"}
+                </CardDescription>
+              </div>
+              <Badge className="bg-primary text-white font-bold text-[9px]">
+                {currentWeekday}
+              </Badge>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {activeMenu ? (
+                <>
+                  <div className="p-3 border rounded-2xl bg-white dark:bg-neutral-900/50">
+                    <span className="text-[9px] font-bold text-accent-foreground uppercase tracking-wider block">Lunch Meal (11:45)</span>
+                    <span className="text-xs text-foreground font-semibold mt-1 block">
+                      {activeMenu.lunch[currentWeekday] || "Seasonal Cooked Lunch"}
+                    </span>
+                  </div>
+                  <div className="p-3 border rounded-2xl bg-white dark:bg-neutral-900/50">
+                    <span className="text-[9px] font-bold text-pink-600 dark:text-pink-400 uppercase tracking-wider block">Afternoon Tea (16:15)</span>
+                    <span className="text-xs text-foreground font-semibold mt-1 block">
+                      {activeMenu.afternoon_tea[currentWeekday] || "Healthy snacks and tea finger foods"}
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="p-3 border rounded-2xl bg-white dark:bg-neutral-900/50">
+                    <span className="text-[9px] font-bold text-accent-foreground uppercase tracking-wider block">Lunch Meal (11:45)</span>
+                    <span className="text-xs text-foreground font-semibold mt-1 block">
+                      Creamy Cheese & Broccoli Pasta
+                    </span>
+                  </div>
+                  <div className="p-3 border rounded-2xl bg-white dark:bg-neutral-900/50">
+                    <span className="text-[9px] font-bold text-pink-600 dark:text-pink-400 uppercase tracking-wider block">Afternoon Tea (16:15)</span>
+                    <span className="text-xs text-foreground font-semibold mt-1 block">
+                      White bean soup with homemade croutons
+                    </span>
+                  </div>
+                </>
+              )}
+
+              <Link href="/menu" className="block w-full">
+                <Button variant="outline" className="w-full text-xs font-bold rounded-2xl">
+                  View Full Week Menu
+                </Button>
+              </Link>
             </CardContent>
           </Card>
 

@@ -16,6 +16,7 @@ export function NurseryHeader() {
     { name: "About Us", href: "/about" },
     { name: "Rooms", href: "/rooms" },
     { name: "Curriculum", href: "/curriculum" },
+    { name: "Menu", href: "/menu" },
     { name: "Careers", href: "/careers" },
     { name: "Contact", href: "/contact" },
   ];

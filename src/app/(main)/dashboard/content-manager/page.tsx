@@ -24,12 +24,18 @@ export default async function ContentManagerPage() {
     .select("*")
     .order("created_at", { ascending: false });
 
+  // 4. Fetch nutrition menus
+  const { data: menus } = await supabase
+    .from("nursery_menus")
+    .select("*")
+    .order("created_at", { ascending: false });
+
   return (
     <div className="py-6 px-4 md:px-8 space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Website Content Manager</h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Publish active career postings, list nursery news / events, and update the public photo gallery.
+          Publish active career postings, list nursery news / events, update the public photo gallery, and schedule nutrition menus.
         </p>
       </div>
 
@@ -37,6 +43,7 @@ export default async function ContentManagerPage() {
         initialJobs={jobs || []} 
         initialNewsEvents={newsEvents || []} 
         initialGalleryItems={galleryItems || []} 
+        initialMenus={menus || []}
       />
     </div>
   );
