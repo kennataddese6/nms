@@ -23,7 +23,7 @@ export function Hero() {
             </div>
 
             <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-foreground leading-[1.1]">
-              Where Learning is a <span className="text-primary">Playful</span> Adventure
+              Play-based <span className="text-primary">Curriculum</span> Aligned with EYFS Framework
             </h1>
             <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto lg:mx-0">
               Welcome to Bubbly Day Nursery, a warm and child-friendly environment where babies, toddlers, and
