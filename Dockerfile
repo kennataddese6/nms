@@ -1,21 +1,24 @@
-FROM node:22
+FROM node:22-alpine AS deps
+WORKDIR /app
 
-WORKDIR /
+COPY package*.json ./
+RUN npm ci
 
-ENV HUSKY=0
-ENV CI=true
+FROM node:22-alpine AS builder
+WORKDIR /app
 
-COPY package.json pnpm-lock.yaml ./
-
-RUN corepack enable
-
-ENV PNPM_ALLOW_BUILDS=msw,sharp
-
-RUN pnpm install --ignore-scripts --frozen-lockfile 
-
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN pnpm build
+RUN npm run build
+
+FROM node:22-alpine
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+COPY --from=builder /app ./
 
 EXPOSE 3000
 
