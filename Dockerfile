@@ -1,6 +1,6 @@
 FROM node:22
 
-WORKDIR /app
+WORKDIR /
 
 ENV HUSKY=0
 ENV CI=true
