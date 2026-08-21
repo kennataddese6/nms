@@ -206,9 +206,21 @@ export function Hero() {
         <div className="flex flex-col items-center text-center">
           {/* Text Content */}
           <div className="flex flex-col items-center max-w-3xl">
-            {/* Trust badge */}
-            <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full bg-white/70 backdrop-blur-sm border border-white/80 px-4 py-1.5 text-xs font-bold text-sky-700 tracking-wide shadow-sm nursery-pop-in">
-              ⭐ Ofsted Registered • Excellent Care Standards
+            {/* Nursery Logo & Brand Badge */}
+            <div className="mx-auto mb-6 inline-flex items-center gap-3 rounded-full bg-white/90 backdrop-blur-md border-2 border-orange-200 px-4.5 py-2 shadow-md nursery-pop-in">
+              <div className="relative h-9 w-9 overflow-hidden rounded-full bg-orange-100 ring-2 ring-orange-300 shrink-0">
+                <Image
+                  src="/images/logo.png"
+                  alt="Bubbly Day Nursery logo"
+                  fill
+                  className="object-cover"
+                  sizes="36px"
+                  priority
+                />
+              </div>
+              <span className="font-heading font-black text-base sm:text-lg text-sky-950">
+                Bubbly <span className="text-orange-500">Day Nursery</span> 🌟
+              </span>
             </div>
 
             <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-sky-900 leading-[1.1]">

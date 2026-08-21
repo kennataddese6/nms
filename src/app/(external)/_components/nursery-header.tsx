@@ -32,8 +32,8 @@ export function NurseryHeader() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b-2 border-orange-200/80 bg-background/95 backdrop-blur-md shadow-sm">
-      <div className="mx-auto flex max-w-7xl h-24 items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Bigger Logo & Ofsted Subtitle */}
+      <div className="mx-auto flex max-w-7xl h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
+        {/* Bigger Logo & Brand Name */}
         <Link href="/" className="flex items-center gap-3.5 group shrink-0 py-1">
           <div className="relative h-14 w-14 sm:h-16 sm:w-16 overflow-hidden rounded-2xl bg-orange-100 ring-4 ring-orange-200 group-hover:ring-orange-400 transition-all shadow-md shrink-0">
             <Image
@@ -45,14 +45,9 @@ export function NurseryHeader() {
               priority
             />
           </div>
-          <div className="flex flex-col justify-center">
-            <span className="font-heading font-black text-2xl sm:text-3xl tracking-tight text-foreground leading-none">
-              Bubbly <span className="text-orange-500">Nursery</span>
-            </span>
-            <span className="text-[11px] sm:text-xs font-black text-emerald-800 dark:text-emerald-300 flex items-center gap-1 mt-1.5 bg-emerald-100/90 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 px-2.5 py-0.5 rounded-full w-fit shadow-xs">
-              ⭐ Ofsted Registered • Excellent Care Standards
-            </span>
-          </div>
+          <span className="font-heading font-black text-2xl sm:text-3xl tracking-tight text-foreground">
+            Bubbly <span className="text-orange-500">Nursery</span> 🌟
+          </span>
         </Link>
 
         {/* Desktop Grouped Nav - Clean 4 Primary Items */}
