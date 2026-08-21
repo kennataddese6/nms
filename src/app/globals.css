@@ -382,3 +382,19 @@ html {
     -webkit-print-color-adjust: exact;
   }
 }
+
+/* Ensure Sonner toast descriptions have clear high contrast in light & dark mode */
+[data-sonner-toast] [data-description] {
+  color: var(--foreground) !important;
+  opacity: 0.85 !important;
+}
+
+[data-sonner-toast][data-type="success"] [data-description] {
+  color: var(--foreground) !important;
+  opacity: 0.9 !important;
+}
+
+[data-sonner-toast][data-type="error"] [data-description] {
+  color: var(--destructive) !important;
+  opacity: 0.95 !important;
+}
