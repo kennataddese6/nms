@@ -13,6 +13,7 @@ import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from "@/compo
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/native-select";
 import { Textarea } from "@/components/ui/textarea";
+import { submitContactFormAction } from "../actions";
 
 // ==========================================
 // SCHEMAS & TYPES
@@ -93,13 +94,19 @@ export function ContactForms() {
   const onEnquirySubmit = async (data: EnquiryFormValues) => {
     setSubmitting(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1200));
+      await submitContactFormAction({
+        type: "ENQUIRY",
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        message: data.message,
+      });
       toast.success("Enquiry Sent!", {
-        description: `Thank you, ${data.name}. Our admissions office will email you shortly at ${data.email}.`,
+        description: `Thank you, ${data.name}. Our admissions office will review your enquiry in our messages portal and email you shortly at ${data.email}.`,
       });
       enquiryForm.reset();
-    } catch {
-      toast.error("Error sending enquiry. Please try again.");
+    } catch (err: any) {
+      toast.error("Error sending enquiry", { description: err.message || "Please try again." });
     } finally {
       setSubmitting(false);
     }
@@ -108,13 +115,23 @@ export function ContactForms() {
   const onTourSubmit = async (data: TourFormValues) => {
     setSubmitting(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1200));
+      await submitContactFormAction({
+        type: "TOUR",
+        name: data.parentName,
+        email: data.email,
+        phone: data.phone,
+        classroom: data.classroom,
+        visitDate: data.visitDate,
+        timeSlot: data.timeSlot,
+        childAge: data.childAge,
+        branch: data.branch,
+      });
       toast.success("Tour Visit Requested!", {
-        description: `Your booking request for ${data.visitDate} at ${data.timeSlot} has been received. We will confirm via phone shortly!`,
+        description: `Your booking request for ${data.visitDate} at ${data.timeSlot} has been sent! Nursery managers will confirm via phone or message shortly.`,
       });
       tourForm.reset();
-    } catch {
-      toast.error("Error booking tour. Please try again.");
+    } catch (err: any) {
+      toast.error("Error booking tour", { description: err.message || "Please try again." });
     } finally {
       setSubmitting(false);
     }
