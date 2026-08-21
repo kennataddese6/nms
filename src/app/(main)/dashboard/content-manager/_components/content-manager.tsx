@@ -43,7 +43,15 @@ import { NativeSelect } from "@/components/ui/native-select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { createClient } from "@/lib/supabase/client";
-import { deleteContentItemAction, saveLeadershipMemberAction, saveMenuAction, setActiveMenuAction } from "../actions";
+import {
+  deleteContentItemAction,
+  saveGalleryMediaAction,
+  saveJobAction,
+  saveLeadershipMemberAction,
+  saveMenuAction,
+  saveNewsEventAction,
+  setActiveMenuAction,
+} from "../actions";
 
 // ==========================================
 // SCHEMAS

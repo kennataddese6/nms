@@ -1,7 +1,13 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+
+function revalidateRoomsPages() {
+  revalidatePath("/");
+  revalidatePath("/rooms");
+}
 
 export interface CreateRoomInput {
   name: string;
@@ -55,6 +61,7 @@ export async function createRoomAction(data: CreateRoomInput) {
     throw new Error(error.message || "Failed to create classroom room.");
   }
 
+  revalidateRoomsPages();
   return { success: true, room: newRoom };
 }
 
@@ -112,6 +119,7 @@ export async function updateRoomAction(data: UpdateRoomInput) {
     throw new Error(error.message || "Failed to update classroom room.");
   }
 
+  revalidateRoomsPages();
   return { success: true, room: updatedRoom };
 }
 
@@ -144,5 +152,6 @@ export async function deleteRoomAction(roomId: string) {
     throw new Error(error.message || "Failed to delete room.");
   }
 
+  revalidateRoomsPages();
   return { success: true };
 }

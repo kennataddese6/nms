@@ -6,6 +6,7 @@ import { NurseryFooter } from "../_components/nursery-footer";
 import { NurseryHeader } from "../_components/nursery-header";
 import { RoomsClientWorkspace } from "./_components/rooms-client-workspace";
 
+export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function RoomsPage() {

@@ -8,6 +8,7 @@ import { Safeguarding } from "./_components/safeguarding";
 import { Team } from "./_components/team";
 import { Vision } from "./_components/vision";
 
+export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function AboutPage() {

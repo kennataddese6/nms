@@ -5,6 +5,9 @@ import { NurseryHeader } from "./_components/nursery-header";
 import { RoomsPreview } from "./_components/rooms-preview";
 import { Testimonials } from "./_components/testimonials";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-b from-sky-50 via-emerald-50 to-amber-50 text-foreground">
