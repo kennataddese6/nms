@@ -152,6 +152,7 @@ export default async function NewsPage() {
                                   src={post.image_url}
                                   alt={post.title}
                                   fill
+                                  unoptimized
                                   className="object-cover"
                                   sizes="(max-width: 768px) 90vw, 33vw"
                                 />
