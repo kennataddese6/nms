@@ -7,6 +7,8 @@ import { Baby, Clock, Mail, MapPin, Phone } from "lucide-react";
 
 import { ThemeSwitcher } from "@/app/(main)/dashboard/_components/sidebar/theme-switcher";
 
+import { FloatingCallButton } from "./floating-call-button";
+
 export function NurseryFooter() {
   const currentYear = new Date().getFullYear();
 
@@ -203,6 +205,7 @@ export function NurseryFooter() {
           </div>
         </div>
       </div>
+      <FloatingCallButton />
     </footer>
   );
 }
