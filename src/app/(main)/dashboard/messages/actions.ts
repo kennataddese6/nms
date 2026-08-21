@@ -55,3 +55,74 @@ export async function sendChatMessageAction(threadId: string, messageText: strin
 
   return { success: true, message: newMessage };
 }
+
+export async function deleteThreadAction(threadId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized: Log in required.");
+  }
+
+  const { data: roleMappings } = await supabase.from("user_roles").select("roles(name)").eq("user_id", user.id);
+
+  const roleNames =
+    ((roleMappings as unknown) as Array<{ roles: { name: string } | null }>)
+      ?.map((rm) => rm.roles?.name)
+      .filter(Boolean) || [];
+  const isStaff =
+    roleNames.includes("NURSERY_MANAGER") || roleNames.includes("STAFF") || roleNames.includes("SUPER_ADMIN");
+
+  if (!isStaff) {
+    throw new Error("Forbidden: Only staff can delete message threads.");
+  }
+
+  const adminClient = createAdminClient();
+
+  // First delete associated messages
+  await adminClient.from("chat_messages").delete().eq("thread_id", threadId);
+
+  // Then delete thread
+  const { error } = await adminClient.from("chat_threads").delete().eq("id", threadId);
+
+  if (error) {
+    throw new Error(error.message || "Failed to delete message thread.");
+  }
+
+  return { success: true };
+}
+
+export async function deleteMessageAction(messageId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized: Log in required.");
+  }
+
+  const { data: roleMappings } = await supabase.from("user_roles").select("roles(name)").eq("user_id", user.id);
+
+  const roleNames =
+    ((roleMappings as unknown) as Array<{ roles: { name: string } | null }>)
+      ?.map((rm) => rm.roles?.name)
+      .filter(Boolean) || [];
+  const isStaff =
+    roleNames.includes("NURSERY_MANAGER") || roleNames.includes("STAFF") || roleNames.includes("SUPER_ADMIN");
+
+  if (!isStaff) {
+    throw new Error("Forbidden: Only staff can delete messages.");
+  }
+
+  const adminClient = createAdminClient();
+  const { error } = await adminClient.from("chat_messages").delete().eq("id", messageId);
+
+  if (error) {
+    throw new Error(error.message || "Failed to delete message.");
+  }
+
+  return { success: true };
+}
