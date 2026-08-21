@@ -41,6 +41,7 @@ import { NativeSelect } from "@/components/ui/native-select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { createClient } from "@/lib/supabase/client";
+import { deleteContentItemAction, setActiveMenuAction } from "../actions";
 
 // ==========================================
 // SCHEMAS
@@ -244,13 +245,7 @@ export function ContentManager({
       return;
     }
     try {
-      // 1. Set all active to false
-      const { error: err1 } = await supabase.from("nursery_menus").update({ is_active: false }).neq("id", id);
-      if (err1) throw err1;
-
-      // 2. Set this active
-      const { error: err2 } = await supabase.from("nursery_menus").update({ is_active: true }).eq("id", id);
-      if (err2) throw err2;
+      await setActiveMenuAction(id);
 
       setMenus((prev) =>
         prev.map((m) => ({
@@ -259,6 +254,7 @@ export function ContentManager({
         })),
       );
       toast.success("Active weekly menu updated!");
+      router.refresh();
     } catch (err: any) {
       toast.error("Failed to activate menu", { description: err.message });
     }
@@ -483,8 +479,7 @@ export function ContentManager({
   const deleteItem = async (table: string, id: string) => {
     if (!confirm("Are you sure you want to delete this listing?")) return;
     try {
-      const { error } = await supabase.from(table).delete().eq("id", id);
-      if (error) throw error;
+      await deleteContentItemAction(table, id);
       toast.success("Item Deleted Successfully!");
       router.refresh();
     } catch (err: any) {
