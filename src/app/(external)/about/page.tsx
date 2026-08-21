@@ -1,3 +1,5 @@
+import { createClient } from "@/lib/supabase/server";
+
 import { NurseryFooter } from "../_components/nursery-footer";
 import { NurseryHeader } from "../_components/nursery-header";
 import { AboutHero } from "./_components/about-hero";
@@ -6,7 +8,17 @@ import { Safeguarding } from "./_components/safeguarding";
 import { Team } from "./_components/team";
 import { Vision } from "./_components/vision";
 
-export default function AboutPage() {
+export const revalidate = 0;
+
+export default async function AboutPage() {
+  const supabase = await createClient();
+
+  const { data: leadershipMembers } = await supabase
+    .from("jobs")
+    .select("*")
+    .eq("type", "LEADERSHIP")
+    .order("created_at", { ascending: true });
+
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground animate-fade-in">
       <NurseryHeader />
@@ -15,7 +27,7 @@ export default function AboutPage() {
         <Philosophy />
         <Vision />
         <Safeguarding />
-        <Team />
+        <Team leadershipMembers={leadershipMembers || []} />
       </main>
       <NurseryFooter />
     </div>

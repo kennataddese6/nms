@@ -160,3 +160,69 @@ export async function saveMenuAction(data: SaveMenuInput) {
   if (error) throw new Error(error.message);
   return { success: true, menu: inserted };
 }
+
+export interface SaveLeadershipInput {
+  id?: string;
+  name: string;
+  role: string;
+  bio: string;
+  email?: string;
+  branch: string;
+}
+
+export async function saveLeadershipMemberAction(data: SaveLeadershipInput) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized: Log in required.");
+  }
+
+  const { data: roleMappings } = await supabase.from("user_roles").select("roles(name)").eq("user_id", user.id);
+
+  const roleNames =
+    ((roleMappings as unknown) as Array<{ roles: { name: string } | null }>)
+      ?.map((rm) => rm.roles?.name)
+      .filter(Boolean) || [];
+  const isStaff =
+    roleNames.includes("NURSERY_MANAGER") || roleNames.includes("STAFF") || roleNames.includes("SUPER_ADMIN");
+
+  if (!isStaff) {
+    throw new Error("Forbidden: Only nursery staff can manage content.");
+  }
+
+  const adminClient = createAdminClient();
+
+  const payload = {
+    title: data.name,
+    room: data.role,
+    description: data.bio,
+    salary: data.email || "",
+    type: "LEADERSHIP",
+    requirements: [],
+    branch: data.branch,
+  };
+
+  if (data.id) {
+    const { data: updated, error } = await adminClient
+      .from("jobs")
+      .update(payload)
+      .eq("id", data.id)
+      .select()
+      .single();
+
+    if (error) throw new Error(error.message);
+    return { success: true, member: updated };
+  }
+
+  const { data: inserted, error } = await adminClient
+    .from("jobs")
+    .insert(payload)
+    .select()
+    .single();
+
+  if (error) throw new Error(error.message);
+  return { success: true, member: inserted };
+}

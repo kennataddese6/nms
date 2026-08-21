@@ -7,8 +7,19 @@ export const revalidate = 0;
 export default async function ContentManagerPage() {
   const supabase = await createClient();
 
-  // 1. Fetch job openings
-  const { data: jobs } = await supabase.from("jobs").select("*").order("created_at", { ascending: false });
+  // 1. Fetch job openings (excluding leadership)
+  const { data: jobs } = await supabase
+    .from("jobs")
+    .select("*")
+    .neq("type", "LEADERSHIP")
+    .order("created_at", { ascending: false });
+
+  // 1b. Fetch leadership members
+  const { data: leadership } = await supabase
+    .from("jobs")
+    .select("*")
+    .eq("type", "LEADERSHIP")
+    .order("created_at", { ascending: true });
 
   // 2. Fetch news & events posts
   const { data: newsEvents } = await supabase.from("news_events").select("*").order("created_at", { ascending: false });
@@ -27,13 +38,13 @@ export default async function ContentManagerPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Website Content Manager</h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Publish active career postings, list nursery news / events, update the public photo gallery, and schedule
-          nutrition menus.
+          Manage leadership team profiles, publish career vacancies, post nursery news, update photo gallery, and manage nutrition menus.
         </p>
       </div>
 
       <ContentManager
         initialJobs={jobs || []}
+        initialLeadership={leadership || []}
         initialNewsEvents={newsEvents || []}
         initialGalleryItems={galleryItems || []}
         initialMenus={menus || []}

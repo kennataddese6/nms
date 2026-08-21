@@ -17,6 +17,7 @@ import {
   Plus,
   Search,
   Trash2,
+  Users,
   Utensils,
 } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
@@ -42,7 +43,7 @@ import { NativeSelect } from "@/components/ui/native-select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { createClient } from "@/lib/supabase/client";
-import { deleteContentItemAction, saveMenuAction, setActiveMenuAction } from "../actions";
+import { deleteContentItemAction, saveLeadershipMemberAction, saveMenuAction, setActiveMenuAction } from "../actions";
 
 // ==========================================
 // SCHEMAS
@@ -80,6 +81,16 @@ const gallerySchema = z.object({
 
 type GalleryFormValues = z.infer<typeof gallerySchema>;
 
+const leadershipSchema = z.object({
+  name: z.string().min(2, "Name is required"),
+  role: z.string().min(2, "Role title is required"),
+  bio: z.string().min(10, "Biography must be at least 10 characters"),
+  email: z.string().optional(),
+  branch: z.string().min(1, "Branch selection is required"),
+});
+
+type LeadershipFormValues = z.infer<typeof leadershipSchema>;
+
 const menuSchema = z.object({
   name: z.string().min(3, "Menu name is required"),
   breakfast: z.string().min(3, "Breakfast is required"),
@@ -115,6 +126,7 @@ type MenuFormValues = z.infer<typeof menuSchema>;
 
 interface ContentManagerProps {
   initialJobs: any[];
+  initialLeadership: any[];
   initialNewsEvents: any[];
   initialGalleryItems: any[];
   initialMenus: any[];
@@ -122,6 +134,7 @@ interface ContentManagerProps {
 
 export function ContentManager({
   initialJobs,
+  initialLeadership,
   initialNewsEvents,
   initialGalleryItems,
   initialMenus,
@@ -130,12 +143,16 @@ export function ContentManager({
   const router = useRouter();
 
   const [jobs, setJobs] = React.useState(initialJobs);
+  const [leadership, setLeadership] = React.useState(initialLeadership);
   const [newsEvents, setNewsEvents] = React.useState(initialNewsEvents);
   const [galleryItems, setGalleryItems] = React.useState(initialGalleryItems);
   const [menus, setMenus] = React.useState(initialMenus);
 
   const [jobModalOpen, setJobModalOpen] = React.useState(false);
   const [editingJob, setEditingJob] = React.useState<any | null>(null);
+  const [leadershipModalOpen, setLeadershipModalOpen] = React.useState(false);
+  const [editingLeadershipMember, setEditingLeadershipMember] = React.useState<any | null>(null);
+  const [viewingLeadershipMember, setViewingLeadershipMember] = React.useState<any | null>(null);
   const [newsModalOpen, setNewsModalOpen] = React.useState(false);
   const [galleryModalOpen, setGalleryModalOpen] = React.useState(false);
   const [menuModalOpen, setMenuModalOpen] = React.useState(false);
@@ -152,6 +169,76 @@ export function ContentManager({
   React.useEffect(() => {
     setMenus(initialMenus);
   }, [initialMenus]);
+
+  const leadershipForm = useForm<LeadershipFormValues>({
+    resolver: zodResolver(leadershipSchema),
+    defaultValues: {
+      name: "",
+      role: "",
+      bio: "",
+      email: "",
+      branch: "Both Locations",
+    },
+  });
+
+  const handleCreateLeadershipMember = () => {
+    setEditingLeadershipMember(null);
+    leadershipForm.reset({
+      name: "",
+      role: "",
+      bio: "",
+      email: "",
+      branch: "Both Locations",
+    });
+    setLeadershipModalOpen(true);
+  };
+
+  const handleEditLeadershipMember = (member: any) => {
+    setEditingLeadershipMember(member);
+    leadershipForm.reset({
+      name: member.title || "",
+      role: member.room || "",
+      bio: member.description || "",
+      email: member.salary || "",
+      branch: member.branch || "Both Locations",
+    });
+    setLeadershipModalOpen(true);
+  };
+
+  const onLeadershipSubmit = async (data: LeadershipFormValues) => {
+    setSubmitting(true);
+    try {
+      const res = await saveLeadershipMemberAction({
+        id: editingLeadershipMember?.id,
+        name: data.name,
+        role: data.role,
+        bio: data.bio,
+        email: data.email,
+        branch: data.branch,
+      });
+
+      if (editingLeadershipMember) {
+        setLeadership((prev) =>
+          prev.map((m) => (m.id === editingLeadershipMember.id ? { ...m, ...res.member } : m)),
+        );
+        toast.success("Leadership Member Updated!");
+      } else {
+        setLeadership((prev) => [...prev, res.member]);
+        toast.success("Leadership Member Added!");
+      }
+
+      setLeadershipModalOpen(false);
+      setEditingLeadershipMember(null);
+      leadershipForm.reset();
+      router.refresh();
+    } catch (err: any) {
+      toast.error(editingLeadershipMember ? "Failed to update member" : "Failed to add member", {
+        description: err.message,
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const menuForm = useForm<MenuFormValues>({
     resolver: zodResolver(menuSchema),
@@ -561,6 +648,10 @@ export function ContentManager({
 
   const filteredJobs = jobs.filter((j) => branchFilter === "All" || j.branch === branchFilter);
 
+  const filteredLeadership = leadership.filter(
+    (l) => branchFilter === "All" || l.branch === branchFilter || l.branch === "Both Locations",
+  );
+
   const filteredNewsEvents = newsEvents.filter(
     (n) => branchFilter === "All" || n.branch === branchFilter || n.branch === "Both",
   );
@@ -597,8 +688,12 @@ export function ContentManager({
         </div>
       </div>
 
-      <Tabs defaultValue="jobs" className="space-y-4">
-        <TabsList className="bg-neutral-100 dark:bg-neutral-800 p-1 rounded-xl">
+      <Tabs defaultValue="leadership" className="space-y-4">
+        <TabsList className="bg-neutral-100 dark:bg-neutral-800 p-1 rounded-xl flex-wrap">
+          <TabsTrigger value="leadership" className="rounded-lg flex gap-2">
+            <Users className="h-4 w-4" />
+            Leadership ({filteredLeadership.length})
+          </TabsTrigger>
           <TabsTrigger value="jobs" className="rounded-lg flex gap-2">
             <Briefcase className="h-4 w-4" />
             Careers ({filteredJobs.length})
@@ -616,6 +711,193 @@ export function ContentManager({
             Nutrition Menus ({filteredMenus.length})
           </TabsTrigger>
         </TabsList>
+
+        {/* ==========================================
+          LEADERSHIP TEAM TAB CONTENT
+         ========================================== */}
+        <TabsContent value="leadership" className="focus:outline-none">
+          <Card>
+            <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <CardTitle>Nursery Leadership Team</CardTitle>
+                <CardDescription>
+                  Manage management profiles, role titles, and biographies shown on the public About page.
+                </CardDescription>
+              </div>
+
+              <Dialog open={leadershipModalOpen} onOpenChange={(open) => {
+                setLeadershipModalOpen(open);
+                if (!open) setEditingLeadershipMember(null);
+              }}>
+                <Button size="sm" className="rounded-lg" onClick={handleCreateLeadershipMember}>
+                  <Plus className="h-4 w-4 mr-1" />
+                  Add Leadership Member
+                </Button>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>
+                      {editingLeadershipMember ? "Edit Leadership Member" : "Add Leadership Member"}
+                    </DialogTitle>
+                    <DialogDescription>
+                      {editingLeadershipMember
+                        ? "Update leader details and bio."
+                        : "Publish a new leadership team profile."}
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <form noValidate onSubmit={leadershipForm.handleSubmit(onLeadershipSubmit)} className="space-y-4 pt-2">
+                    <Controller
+                      control={leadershipForm.control}
+                      name="name"
+                      render={({ field, fieldState }) => (
+                        <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                          <FieldLabel htmlFor="leader-name">Full Name *</FieldLabel>
+                          <Input {...field} id="leader-name" placeholder="e.g. Clara Benson" />
+                          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                        </Field>
+                      )}
+                    />
+
+                    <Controller
+                      control={leadershipForm.control}
+                      name="role"
+                      render={({ field, fieldState }) => (
+                        <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                          <FieldLabel htmlFor="leader-role">Role / Job Title *</FieldLabel>
+                          <Input {...field} id="leader-role" placeholder="e.g. Nursery Manager" />
+                          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                        </Field>
+                      )}
+                    />
+
+                    <Controller
+                      control={leadershipForm.control}
+                      name="email"
+                      render={({ field, fieldState }) => (
+                        <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                          <FieldLabel htmlFor="leader-email">Contact Email</FieldLabel>
+                          <Input {...field} id="leader-email" type="email" placeholder="e.g. clara@bubblynursery.co.uk" />
+                          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                        </Field>
+                      )}
+                    />
+
+                    <Controller
+                      control={leadershipForm.control}
+                      name="bio"
+                      render={({ field, fieldState }) => (
+                        <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                          <FieldLabel htmlFor="leader-bio">Biography / Experience *</FieldLabel>
+                          <Textarea
+                            {...field}
+                            id="leader-bio"
+                            placeholder="Over 12 years of experience in early childcare operations..."
+                            rows={3}
+                          />
+                          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                        </Field>
+                      )}
+                    />
+
+                    <Controller
+                      control={leadershipForm.control}
+                      name="branch"
+                      render={({ field, fieldState }) => (
+                        <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                          <FieldLabel htmlFor="leader-branch">Branch Assignment *</FieldLabel>
+                          <NativeSelect {...field} id="leader-branch">
+                            <option value="Both Locations">Both Locations</option>
+                            <option value="Branch 1">Branch 1 (Galleywall Road)</option>
+                            <option value="Branch 2">Branch 2 (Corbetts Lane)</option>
+                          </NativeSelect>
+                          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                        </Field>
+                      )}
+                    />
+
+                    <DialogFooter className="pt-4 border-t gap-2">
+                      <Button type="button" variant="ghost" onClick={() => setLeadershipModalOpen(false)}>
+                        Cancel
+                      </Button>
+                      <Button type="submit" disabled={submitting}>
+                        {submitting
+                          ? "Saving..."
+                          : editingLeadershipMember
+                            ? "Update Member"
+                            : "Save Member"}
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            </CardHeader>
+            <CardContent className="p-6">
+              {filteredLeadership.length === 0 ? (
+                <div className="py-12 text-center text-muted-foreground">
+                  <p className="text-sm font-semibold">No leadership members created yet.</p>
+                  <p className="text-xs mt-1 text-neutral-400">Click "Add Leadership Member" to add team profiles.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse text-left text-sm">
+                    <thead>
+                      <tr className="border-b bg-muted-foreground/10 text-xs font-semibold text-muted-foreground">
+                        <th className="p-4">Name</th>
+                        <th className="p-4">Role Title</th>
+                        <th className="p-4">Branch</th>
+                        <th className="p-4">Contact Email</th>
+                        <th className="p-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {filteredLeadership.map((m) => (
+                        <tr key={m.id} className="hover:bg-muted/40 transition-colors">
+                          <td className="p-4 font-bold text-foreground">{m.title}</td>
+                          <td className="p-4 font-medium text-orange-600">{m.room}</td>
+                          <td className="p-4">
+                            <Badge variant="secondary">{m.branch || "Both Locations"}</Badge>
+                          </td>
+                          <td className="p-4 text-muted-foreground text-xs">{m.salary || "—"}</td>
+                          <td className="p-4 text-right">
+                            <div className="flex items-center justify-end gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-muted-foreground hover:text-foreground"
+                                onClick={() => setViewingLeadershipMember(m)}
+                                title="View Details"
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-muted-foreground hover:text-foreground"
+                                onClick={() => handleEditLeadershipMember(m)}
+                                title="Edit Member"
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                                onClick={() => deleteItem("jobs", m.id)}
+                                title="Delete Member"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         {/* ==========================================
           JOBS TAB CONTENT
@@ -1591,6 +1873,63 @@ export function ContentManager({
                 }}
               >
                 Edit This Menu
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* View Leadership Member Detail Dialog */}
+      <Dialog open={!!viewingLeadershipMember} onOpenChange={(open) => !open && setViewingLeadershipMember(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              🌟 {viewingLeadershipMember?.title}
+            </DialogTitle>
+            <DialogDescription>{viewingLeadershipMember?.room}</DialogDescription>
+          </DialogHeader>
+
+          {viewingLeadershipMember && (
+            <div className="space-y-4 py-2 text-sm">
+              <div>
+                <span className="block text-xs font-bold text-muted-foreground uppercase mb-1">
+                  Branch Assignment
+                </span>
+                <Badge variant="outline">{viewingLeadershipMember.branch || "Both Locations"}</Badge>
+              </div>
+
+              <div>
+                <span className="block text-xs font-bold text-muted-foreground uppercase mb-1">
+                  Contact Email
+                </span>
+                <p className="text-xs font-medium text-foreground">
+                  {viewingLeadershipMember.salary || "Not specified"}
+                </p>
+              </div>
+
+              <div>
+                <span className="block text-xs font-bold text-muted-foreground uppercase mb-1">
+                  Biography & Background
+                </span>
+                <p className="text-xs text-muted-foreground leading-relaxed bg-muted/30 p-3 rounded-2xl border">
+                  {viewingLeadershipMember.description}
+                </p>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setViewingLeadershipMember(null)}>
+              Close
+            </Button>
+            {viewingLeadershipMember && (
+              <Button
+                onClick={() => {
+                  const target = viewingLeadershipMember;
+                  setViewingLeadershipMember(null);
+                  handleEditLeadershipMember(target);
+                }}
+              >
+                Edit Member
               </Button>
             )}
           </DialogFooter>
