@@ -134,11 +134,11 @@ These serve as the fallback; there is no separate default.css file. */
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground text-base leading-relaxed antialiased;
     font-family: var(--font-sans), system-ui, sans-serif;
   }
   html {
-    @apply font-sans;
+    @apply font-sans text-[16px];
   }
 }
 

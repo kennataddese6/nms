@@ -109,8 +109,8 @@ export default function CurriculumPage() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-rose-400/15 blur-3xl" />
 
           <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="inline-flex items-center gap-2 rounded-full border border-orange-300 bg-orange-100 px-4 py-1.5 text-xs font-black text-orange-800 shadow-sm dark:bg-orange-900/50 dark:text-orange-200 mb-6">
-              <Sparkles className="h-4 w-4 text-orange-600 animate-spin" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-orange-300 bg-orange-100 px-4.5 py-2 text-sm font-black text-orange-800 shadow-sm dark:bg-orange-900/50 dark:text-orange-200 mb-6">
+              <Sparkles className="h-4.5 w-4.5 text-orange-600 animate-spin" />
               Play-Based EYFS Excellence Framework
             </div>
 
@@ -122,39 +122,39 @@ export default function CurriculumPage() {
               🌈
             </h1>
 
-            <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-medium">
               Our educational program follows the UK Early Years Foundation Stage (EYFS), creating joyful, vibrant learning environments across 7 essential developmental milestones.
             </p>
 
-            {/* Age Stages Highlights */}
-            <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
-              <div className="p-4 rounded-2xl bg-white/80 dark:bg-neutral-900/80 border-2 border-orange-200 shadow-sm flex items-center gap-3 text-left">
-                <div className="h-10 w-10 rounded-xl bg-orange-500 text-white flex items-center justify-center font-black text-lg">
+            {/* Age Stages Highlights - Enlarged fonts */}
+            <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-5xl mx-auto">
+              <div className="p-5 rounded-2xl bg-white/90 dark:bg-neutral-900/90 border-2 border-orange-200 shadow-md flex items-center gap-4 text-left">
+                <div className="h-12 w-12 rounded-2xl bg-orange-500 text-white flex items-center justify-center font-black text-2xl shrink-0 shadow-sm">
                   👶
                 </div>
                 <div>
-                  <h4 className="font-extrabold text-xs text-foreground">Babies (3 - 12 months)</h4>
-                  <p className="text-[11px] text-muted-foreground">Sensory exploration & nurture</p>
+                  <h4 className="font-black text-base text-foreground">Babies (3 - 12 months)</h4>
+                  <p className="text-xs sm:text-sm text-muted-foreground font-medium">Sensory exploration & nurture</p>
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-white/80 dark:bg-neutral-900/80 border-2 border-teal-200 shadow-sm flex items-center gap-3 text-left">
-                <div className="h-10 w-10 rounded-xl bg-teal-600 text-white flex items-center justify-center font-black text-lg">
+              <div className="p-5 rounded-2xl bg-white/90 dark:bg-neutral-900/90 border-2 border-teal-200 shadow-md flex items-center gap-4 text-left">
+                <div className="h-12 w-12 rounded-2xl bg-teal-600 text-white flex items-center justify-center font-black text-2xl shrink-0 shadow-sm">
                   🐥
                 </div>
                 <div>
-                  <h4 className="font-extrabold text-xs text-foreground">Toddlers (1 - 2 years)</h4>
-                  <p className="text-[11px] text-muted-foreground">Active play & speech building</p>
+                  <h4 className="font-black text-base text-foreground">Toddlers (1 - 2 years)</h4>
+                  <p className="text-xs sm:text-sm text-muted-foreground font-medium">Active play & speech building</p>
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-white/80 dark:bg-neutral-900/80 border-2 border-rose-200 shadow-sm flex items-center gap-3 text-left">
-                <div className="h-10 w-10 rounded-xl bg-rose-500 text-white flex items-center justify-center font-black text-lg">
+              <div className="p-5 rounded-2xl bg-white/90 dark:bg-neutral-900/90 border-2 border-rose-200 shadow-md flex items-center gap-4 text-left">
+                <div className="h-12 w-12 rounded-2xl bg-rose-500 text-white flex items-center justify-center font-black text-2xl shrink-0 shadow-sm">
                   🎨
                 </div>
                 <div>
-                  <h4 className="font-extrabold text-xs text-foreground">Preschool (3 - 5 years)</h4>
-                  <p className="text-[11px] text-muted-foreground">Phonics, math & school readiness</p>
+                  <h4 className="font-black text-base text-foreground">Preschool (3 - 5 years)</h4>
+                  <p className="text-xs sm:text-sm text-muted-foreground font-medium">Phonics, math & school readiness</p>
                 </div>
               </div>
             </div>
@@ -165,13 +165,13 @@ export default function CurriculumPage() {
         <section className="py-16 sm:py-24 bg-background">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <span className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-orange-600 bg-orange-100 border border-orange-200 px-3 py-1 rounded-full mb-3">
-                <Star className="h-3.5 w-3.5 fill-orange-500 text-orange-500" /> Essential Foundations
+              <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-black uppercase tracking-wider text-orange-600 bg-orange-100 border border-orange-200 px-4 py-1.5 rounded-full mb-3">
+                <Star className="h-4 w-4 fill-orange-500 text-orange-500" /> Essential Foundations
               </span>
               <h2 className="font-heading text-3xl sm:text-5xl font-black text-foreground">
                 The 3 Prime Areas of Learning 🌟
               </h2>
-              <p className="mt-4 text-base text-muted-foreground leading-relaxed">
+              <p className="mt-4 text-base sm:text-lg text-muted-foreground leading-relaxed font-medium">
                 These core pillars spark curiosity, build physical confidence, and cultivate healthy social skills right from infancy.
               </p>
             </div>
@@ -187,16 +187,16 @@ export default function CurriculumPage() {
                       <div className={`h-14 w-14 flex items-center justify-center rounded-2xl ${area.colorScheme.iconBg}`}>
                         <area.icon className="h-7 w-7 stroke-[2.5]" />
                       </div>
-                      <Badge variant="outline" className={`text-[10px] font-extrabold ${area.colorScheme.badgeBg}`}>
+                      <Badge variant="outline" className={`text-xs font-black ${area.colorScheme.badgeBg}`}>
                         {area.badge}
                       </Badge>
                     </div>
 
-                    <h3 className="font-black text-xl text-foreground mb-3">{area.title}</h3>
-                    <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">{area.desc}</p>
+                    <h3 className="font-black text-2xl text-foreground mb-3">{area.title}</h3>
+                    <p className="text-muted-foreground text-sm sm:text-base leading-relaxed font-medium">{area.desc}</p>
                   </div>
 
-                  <div className="mt-8 pt-4 border-t border-black/5 dark:border-white/10 flex items-center justify-between text-xs font-bold">
+                  <div className="mt-8 pt-4 border-t border-black/5 dark:border-white/10 flex items-center justify-between text-sm font-bold">
                     <span className={area.colorScheme.accentText}>Key EYFS Milestone</span>
                     <span className="text-muted-foreground">Daily Focus</span>
                   </div>
@@ -210,13 +210,13 @@ export default function CurriculumPage() {
         <section className="py-16 sm:py-24 bg-gradient-to-b from-teal-50/50 via-background to-orange-50/40 dark:from-teal-950/20 dark:to-orange-950/20 border-y">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <span className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-teal-700 bg-teal-100 border border-teal-200 px-3 py-1 rounded-full mb-3">
-                <Trophy className="h-3.5 w-3.5 text-teal-600" /> Academic & Creative Growth
+              <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-black uppercase tracking-wider text-teal-700 bg-teal-100 border border-teal-200 px-4 py-1.5 rounded-full mb-3">
+                <Trophy className="h-4 w-4 text-teal-600" /> Academic & Creative Growth
               </span>
               <h2 className="font-heading text-3xl sm:text-5xl font-black text-foreground">
                 The 4 Specific Areas 🚀
               </h2>
-              <p className="mt-4 text-base text-muted-foreground leading-relaxed">
+              <p className="mt-4 text-base sm:text-lg text-muted-foreground leading-relaxed font-medium">
                 These enriched learning paths develop early literacy, mathematical reasoning, scientific curiosity, and artistic expression.
               </p>
             </div>
@@ -225,25 +225,25 @@ export default function CurriculumPage() {
               {specificAreas.map((area) => (
                 <div
                   key={area.title}
-                  className={`p-6 rounded-3xl ${area.colorScheme.cardBg} ${area.colorScheme.border} flex flex-col justify-between shadow-md hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300`}
+                  className={`p-7 rounded-3xl ${area.colorScheme.cardBg} ${area.colorScheme.border} flex flex-col justify-between shadow-md hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300`}
                 >
                   <div>
                     <div className="flex items-center justify-between mb-4">
                       <div className={`h-12 w-12 flex items-center justify-center rounded-2xl ${area.colorScheme.iconBg}`}>
                         <area.icon className="h-6 w-6 stroke-[2.5]" />
                       </div>
-                      <Badge variant="outline" className={`text-[9px] font-black ${area.colorScheme.badgeBg}`}>
+                      <Badge variant="outline" className={`text-xs font-black ${area.colorScheme.badgeBg}`}>
                         {area.badge}
                       </Badge>
                     </div>
 
-                    <h3 className="font-extrabold text-foreground text-base mb-2">{area.title}</h3>
-                    <p className="text-muted-foreground text-xs leading-relaxed">{area.desc}</p>
+                    <h3 className="font-black text-foreground text-lg mb-2">{area.title}</h3>
+                    <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed font-medium">{area.desc}</p>
                   </div>
 
-                  <div className="mt-6 pt-3 border-t border-black/5 dark:border-white/10 text-[11px] font-bold text-muted-foreground flex items-center justify-between">
+                  <div className="mt-6 pt-3 border-t border-black/5 dark:border-white/10 text-xs font-bold text-muted-foreground flex items-center justify-between">
                     <span>EYFS Specific</span>
-                    <span className="text-emerald-600">✓ Enriched</span>
+                    <span className="text-emerald-600 font-extrabold">✓ Enriched</span>
                   </div>
                 </div>
               ))}
@@ -256,36 +256,36 @@ export default function CurriculumPage() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center max-w-6xl mx-auto">
               <div className="lg:col-span-5 space-y-6">
-                <span className="text-xs font-black text-orange-600 bg-orange-100 border border-orange-200 px-3 py-1 rounded-full uppercase tracking-wider inline-block">
+                <span className="text-xs font-black text-orange-600 bg-orange-100 border border-orange-200 px-3.5 py-1.5 rounded-full uppercase tracking-wider inline-block">
                   📸 Real-Time Progress Logs
                 </span>
                 <h2 className="text-3xl sm:text-4xl font-black text-foreground leading-tight">
                   How We Track & Share Learning Milestones 📲
                 </h2>
-                <p className="text-muted-foreground text-sm leading-relaxed">
+                <p className="text-muted-foreground text-base leading-relaxed font-medium">
                   Every child at Bubbly Day Nursery has a private digital **Learning Journal**. Practitioners record play achievements and photo observations live, sharing moments directly with parents.
                 </p>
 
                 <div className="space-y-4">
-                  <div className="flex gap-4 items-start p-4 rounded-2xl bg-orange-50 dark:bg-orange-950/30 border border-orange-200/80">
-                    <div className="h-8 w-8 rounded-xl bg-orange-500 text-white font-bold flex items-center justify-center shrink-0">
+                  <div className="flex gap-4 items-start p-4.5 rounded-2xl bg-orange-50 dark:bg-orange-950/30 border-2 border-orange-200/80">
+                    <div className="h-10 w-10 rounded-xl bg-orange-500 text-white font-bold flex items-center justify-center shrink-0 text-xl shadow-sm">
                       📸
                     </div>
                     <div>
-                      <h4 className="font-bold text-sm text-foreground">Photo & Video Snapshots</h4>
-                      <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                      <h4 className="font-black text-base text-foreground">Photo & Video Snapshots</h4>
+                      <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 leading-relaxed font-medium">
                         Real-time snapshots of artwork, sandbox builds, and outdoor discoveries delivered directly to parents.
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex gap-4 items-start p-4 rounded-2xl bg-teal-50 dark:bg-teal-950/30 border border-teal-200/80">
-                    <div className="h-8 w-8 rounded-xl bg-teal-600 text-white font-bold flex items-center justify-center shrink-0">
+                  <div className="flex gap-4 items-start p-4.5 rounded-2xl bg-teal-50 dark:bg-teal-950/30 border-2 border-teal-200/80">
+                    <div className="h-10 w-10 rounded-xl bg-teal-600 text-white font-bold flex items-center justify-center shrink-0 text-xl shadow-sm">
                       💬
                     </div>
                     <div>
-                      <h4 className="font-bold text-sm text-foreground">Two-Way Home Feedback</h4>
-                      <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                      <h4 className="font-black text-base text-foreground">Two-Way Home Feedback</h4>
+                      <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 leading-relaxed font-medium">
                         Parents can upload home milestone photos, comment on nursery observations, and co-author reports.
                       </p>
                     </div>
@@ -296,35 +296,35 @@ export default function CurriculumPage() {
               {/* Graphical Journal Mockup Card */}
               <div className="lg:col-span-7 p-8 rounded-3xl border-2 border-orange-200 bg-gradient-to-br from-white via-orange-50/40 to-amber-50/50 dark:from-neutral-900 dark:to-neutral-950 shadow-xl space-y-4 relative overflow-hidden">
                 <div className="flex items-center justify-between border-b pb-4">
-                  <div className="flex items-center gap-2">
-                    <div className="h-9 w-9 rounded-full bg-orange-500 text-white font-black flex items-center justify-center text-sm shadow-md">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-orange-500 text-white font-black flex items-center justify-center text-base shadow-md">
                       BD
                     </div>
                     <div>
-                      <h4 className="font-black text-sm text-foreground">Bubbly Journal Sample</h4>
-                      <p className="text-[10px] text-muted-foreground font-semibold">Live Parent Portal Update</p>
+                      <h4 className="font-black text-base text-foreground">Bubbly Journal Sample</h4>
+                      <p className="text-xs text-muted-foreground font-bold">Live Parent Portal Update</p>
                     </div>
                   </div>
-                  <Badge className="bg-emerald-500 text-white text-[10px] font-bold">
+                  <Badge className="bg-emerald-500 text-white text-xs font-bold px-3 py-1">
                     ✓ Verified EYFS
                   </Badge>
                 </div>
 
                 <div className="space-y-3">
-                  <div className="p-4 rounded-2xl border-2 border-orange-100 bg-white dark:bg-neutral-900 space-y-2 shadow-sm">
-                    <div className="flex items-center justify-between text-[10px] text-muted-foreground font-bold">
+                  <div className="p-5 rounded-2xl border-2 border-orange-100 bg-white dark:bg-neutral-900 space-y-2 shadow-sm">
+                    <div className="flex items-center justify-between text-xs text-muted-foreground font-black">
                       <span className="text-orange-600 uppercase tracking-wider">🌟 Observation Log</span>
                       <span>Today • 10:30 AM</span>
                     </div>
-                    <h4 className="font-extrabold text-sm text-foreground">Architectural Block Tower & Co-op Play 🏰</h4>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
+                    <h4 className="font-black text-base text-foreground">Architectural Block Tower & Co-op Play 🏰</h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium">
                       Leo worked cooperatively with Emily to assemble a tall 12-block wooden tower. Showed great fine motor coordination and shared blocks patiently.
                     </p>
-                    <div className="flex gap-2 flex-wrap pt-1">
-                      <Badge variant="secondary" className="text-[9px] font-bold bg-orange-100 text-orange-800 border-orange-200">
+                    <div className="flex gap-2 flex-wrap pt-2">
+                      <Badge variant="secondary" className="text-xs font-black bg-orange-100 text-orange-800 border-orange-200 px-3 py-1">
                         Physical Development
                       </Badge>
-                      <Badge variant="secondary" className="text-[9px] font-bold bg-teal-100 text-teal-800 border-teal-200">
+                      <Badge variant="secondary" className="text-xs font-black bg-teal-100 text-teal-800 border-teal-200 px-3 py-1">
                         Social Interaction
                       </Badge>
                     </div>
