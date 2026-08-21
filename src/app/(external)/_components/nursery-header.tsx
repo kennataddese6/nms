@@ -5,22 +5,29 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { Baby, Menu, X } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function NurseryHeader() {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const navLinks = [
-    { name: "About Us", href: "/about" },
-    { name: "Rooms", href: "/rooms" },
-    { name: "Curriculum", href: "/curriculum" },
-    { name: "Menu", href: "/menu" },
-    { name: "Gallery", href: "/gallery" },
-    { name: "News & Events", href: "/news" },
-    { name: "Careers", href: "/careers" },
-    { name: "Contact", href: "/contact" },
+  const nurseryLifeLinks = [
+    { name: "Classrooms & Rooms", href: "/rooms", desc: "Explore age-appropriate learning spaces & routines", emoji: "🚪" },
+    { name: "EYFS Curriculum", href: "/curriculum", desc: "Our 7 learning milestones & play framework", emoji: "📖" },
+    { name: "Nutrition Food Menu", href: "/menu", desc: "Weekly freshly prepared hot meals & healthy snacks", emoji: "🍎" },
+  ];
+
+  const communityLinks = [
+    { name: "News & Events", href: "/news", desc: "Bulletins, term dates & nursery celebrations", emoji: "📰" },
+    { name: "Photo Gallery", href: "/gallery", desc: "Playtime photos & learning moments", emoji: "🖼️" },
+    { name: "Careers & Jobs", href: "/careers", desc: "Join our passionate early years teaching team", emoji: "💼" },
   ];
 
   return (
@@ -43,17 +50,65 @@ export function NurseryHeader() {
           </span>
         </Link>
 
-        {/* Desktop Nav - Enlarge links for superior readability */}
-        <nav className="hidden lg:flex items-center gap-6 xl:gap-7">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className="text-base font-extrabold text-foreground/80 hover:text-orange-600 transition-colors py-1"
-            >
-              {link.name}
-            </Link>
-          ))}
+        {/* Desktop Grouped Nav - Clean 4 Primary Items */}
+        <nav className="hidden lg:flex items-center gap-7 xl:gap-9">
+          {/* 1. About Us */}
+          <Link
+            href="/about"
+            className="text-base font-extrabold text-foreground/90 hover:text-orange-600 transition-colors py-1"
+          >
+            About Us
+          </Link>
+
+          {/* 2. Nursery Life Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-1.5 text-base font-extrabold text-foreground/90 hover:text-orange-600 transition-colors py-1 outline-none">
+              <span>Nursery Life</span>
+              <ChevronDown className="h-4 w-4 text-orange-500 stroke-[2.5]" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-80 p-2 rounded-2xl border-2 border-orange-200 shadow-xl bg-white/95 backdrop-blur-md space-y-1">
+              {nurseryLifeLinks.map((item) => (
+                <DropdownMenuItem key={item.href} asChild className="rounded-xl p-2.5 cursor-pointer focus:bg-orange-50 focus:text-orange-900 transition-colors">
+                  <Link href={item.href} className="flex items-start gap-3">
+                    <span className="text-xl shrink-0 mt-0.5">{item.emoji}</span>
+                    <div>
+                      <span className="block font-black text-sm text-foreground">{item.name}</span>
+                      <span className="block text-xs text-muted-foreground leading-snug font-medium mt-0.5">{item.desc}</span>
+                    </div>
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* 3. News & Community Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-1.5 text-base font-extrabold text-foreground/90 hover:text-orange-600 transition-colors py-1 outline-none">
+              <span>Community & News</span>
+              <ChevronDown className="h-4 w-4 text-orange-500 stroke-[2.5]" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-80 p-2 rounded-2xl border-2 border-orange-200 shadow-xl bg-white/95 backdrop-blur-md space-y-1">
+              {communityLinks.map((item) => (
+                <DropdownMenuItem key={item.href} asChild className="rounded-xl p-2.5 cursor-pointer focus:bg-orange-50 focus:text-orange-900 transition-colors">
+                  <Link href={item.href} className="flex items-start gap-3">
+                    <span className="text-xl shrink-0 mt-0.5">{item.emoji}</span>
+                    <div>
+                      <span className="block font-black text-sm text-foreground">{item.name}</span>
+                      <span className="block text-xs text-muted-foreground leading-snug font-medium mt-0.5">{item.desc}</span>
+                    </div>
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* 4. Contact */}
+          <Link
+            href="/contact"
+            className="text-base font-extrabold text-foreground/90 hover:text-orange-600 transition-colors py-1"
+          >
+            Contact
+          </Link>
         </nav>
 
         {/* Portal Login & Tour Action Buttons */}
@@ -81,18 +136,58 @@ export function NurseryHeader() {
       {/* Mobile Menu */}
       {isOpen && (
         <div className="lg:hidden border-b-2 border-orange-200 bg-background animate-in fade-in slide-in-from-top-4 duration-200">
-          <div className="space-y-1.5 px-6 pb-6 pt-3">
-            {navLinks.map((link) => (
+          <div className="space-y-4 px-6 pb-6 pt-4">
+            <div>
               <Link
-                key={link.name}
-                href={link.href}
+                href="/about"
                 onClick={() => setIsOpen(false)}
-                className="block py-2.5 text-lg font-black text-foreground/90 hover:text-orange-600 border-b border-orange-100/50"
+                className="block py-2 text-lg font-black text-foreground hover:text-orange-600 border-b border-orange-100"
               >
-                {link.name}
+                About Us
               </Link>
-            ))}
-            <div className="mt-5 flex flex-col gap-3 pt-3">
+            </div>
+
+            <div className="space-y-2 pt-1">
+              <span className="text-xs font-black text-orange-600 uppercase tracking-wider block">Nursery Life</span>
+              {nurseryLifeLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-2.5 py-1.5 text-base font-bold text-foreground/90 hover:text-orange-600"
+                >
+                  <span>{link.emoji}</span>
+                  <span>{link.name}</span>
+                </Link>
+              ))}
+            </div>
+
+            <div className="space-y-2 pt-2 border-t border-orange-100">
+              <span className="text-xs font-black text-orange-600 uppercase tracking-wider block">Community & News</span>
+              {communityLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-2.5 py-1.5 text-base font-bold text-foreground/90 hover:text-orange-600"
+                >
+                  <span>{link.emoji}</span>
+                  <span>{link.name}</span>
+                </Link>
+              ))}
+            </div>
+
+            <div className="pt-2 border-t border-orange-100">
+              <Link
+                href="/contact"
+                onClick={() => setIsOpen(false)}
+                className="block py-2 text-lg font-black text-foreground hover:text-orange-600"
+              >
+                Contact Us
+              </Link>
+            </div>
+
+            <div className="mt-4 flex flex-col gap-3 pt-3 border-t border-orange-100">
               <Button asChild variant="outline" className="w-full justify-center rounded-full text-base font-bold h-12 border-2 border-orange-200">
                 <Link href="/auth/v1/login" onClick={() => setIsOpen(false)}>
                   Parent Portal
