@@ -18,6 +18,7 @@ interface DbRoom {
   capacity: number;
   description?: string;
   branch: string;
+  image_url?: string;
 }
 
 interface DbRoutineItem {
@@ -275,11 +276,12 @@ export function RoomsClientWorkspace({ dbRooms, dbRoutines }: RoomsClientWorkspa
               <div className="relative aspect-[16/10] w-full rounded-2xl overflow-hidden border border-orange-100 shadow-sm">
                 <Image
                   src={
-                    ageKey === "babies"
+                    selectedRoom.image_url ||
+                    (ageKey === "babies"
                       ? "/images/classroom-babies.png"
                       : ageKey === "preschool"
                         ? "/images/classroom-preschool.png"
-                        : "/images/classroom-toddlers.png"
+                        : "/images/classroom-toddlers.png")
                   }
                   alt={selectedRoom.name}
                   fill

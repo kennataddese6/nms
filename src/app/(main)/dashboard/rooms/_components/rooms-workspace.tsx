@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/native-select";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
+import { createClient } from "@/lib/supabase/client";
 
 import {
   createRoomAction,
@@ -55,6 +56,7 @@ export interface Room {
   capacity: number;
   description?: string;
   branch: string;
+  image_url?: string;
   children: Child[];
 }
 
@@ -102,6 +104,8 @@ export function RoomsWorkspace({ initialRooms, initialStaff, initialRoutines = [
   const [newCapacity, setNewCapacity] = React.useState(15);
   const [newDescription, setNewDescription] = React.useState("");
   const [newBranch, setNewBranch] = React.useState("Branch 1");
+  const [roomImageUrl, setRoomImageUrl] = React.useState("");
+  const [roomImageFile, setRoomImageFile] = React.useState<File | null>(null);
   const [branchFilter, setBranchFilter] = React.useState<"All" | "Branch 1" | "Branch 2">("All");
 
   // Routine management state
@@ -220,6 +224,8 @@ export function RoomsWorkspace({ initialRooms, initialStaff, initialRoutines = [
     setNewCapacity(15);
     setNewDescription("");
     setNewBranch("Branch 1");
+    setRoomImageUrl("");
+    setRoomImageFile(null);
     setIsDrawerOpen(true);
   };
 
@@ -231,6 +237,8 @@ export function RoomsWorkspace({ initialRooms, initialStaff, initialRoutines = [
     setNewCapacity(room.capacity);
     setNewDescription(room.description || "");
     setNewBranch(room.branch || "Branch 1");
+    setRoomImageUrl(room.image_url || "");
+    setRoomImageFile(null);
     setIsDrawerOpen(true);
   };
 
@@ -264,6 +272,29 @@ export function RoomsWorkspace({ initialRooms, initialStaff, initialRoutines = [
 
     setLoading(true);
     try {
+      let uploadedImageUrl = roomImageUrl || undefined;
+
+      if (roomImageFile) {
+        const supabase = createClient();
+        const fileExt = roomImageFile.name.split(".").pop();
+        const fileName = `room-${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+        const filePath = `rooms/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("nursery-assets")
+          .upload(filePath, roomImageFile);
+
+        if (uploadError) {
+          throw new Error(`Image upload failed: ${uploadError.message}`);
+        }
+
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from("nursery-assets").getPublicUrl(filePath);
+
+        uploadedImageUrl = publicUrl;
+      }
+
       if (editingRoom) {
         const res = await updateRoomAction({
           id: editingRoom.id,
@@ -273,6 +304,7 @@ export function RoomsWorkspace({ initialRooms, initialStaff, initialRoutines = [
           capacity: newCapacity,
           description: newDescription.trim() || undefined,
           branch: newBranch,
+          imageUrl: uploadedImageUrl,
         });
 
         setRooms((prev) => prev.map((r) => (r.id === editingRoom.id ? { ...r, ...res.room } : r)));
@@ -287,6 +319,7 @@ export function RoomsWorkspace({ initialRooms, initialStaff, initialRoutines = [
           capacity: newCapacity,
           description: newDescription.trim() || undefined,
           branch: newBranch,
+          imageUrl: uploadedImageUrl,
         });
 
         const createdRoom: Room = {
@@ -445,6 +478,30 @@ export function RoomsWorkspace({ initialRooms, initialStaff, initialRoutines = [
                 </NativeSelect>
               </div>
 
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-foreground block" htmlFor="room-image">
+                  Classroom Photo / Image
+                </label>
+                {roomImageUrl && (
+                  <div className="relative h-32 w-full overflow-hidden rounded-xl border mb-2">
+                    <img src={roomImageUrl} alt="Classroom preview" className="h-full w-full object-cover" />
+                  </div>
+                )}
+                <Input
+                  id="room-image"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] || null;
+                    setRoomImageFile(file);
+                  }}
+                  className="rounded-xl text-xs cursor-pointer"
+                />
+                <p className="text-[10px] text-muted-foreground">
+                  Upload a photo of this classroom. This image will be displayed on the public website rooms page.
+                </p>
+              </div>
+
               <div className="flex justify-end gap-3 pt-5 border-t">
                 <Button type="button" variant="outline" className="rounded-xl" onClick={() => setIsDrawerOpen(false)}>
                   Cancel
@@ -579,7 +636,11 @@ export function RoomsWorkspace({ initialRooms, initialStaff, initialRoutines = [
                         Age: {formatAgeRange(activeRoom.min_age_months, activeRoom.max_age_months)}
                       </Badge>
                     </div>
-                    <CardTitle className="text-2xl font-bold mt-2">{activeRoom.name}</CardTitle>
+                    {activeRoom.image_url && (
+                      <div className="relative h-40 w-full rounded-2xl overflow-hidden border my-3 shadow-sm">
+                        <img src={activeRoom.image_url} alt={activeRoom.name} className="h-full w-full object-cover" />
+                      </div>
+                    )}
                     {activeRoom.description && (
                       <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{activeRoom.description}</p>
                     )}

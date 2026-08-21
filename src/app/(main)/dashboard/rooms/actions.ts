@@ -17,6 +17,7 @@ export interface CreateRoomInput {
   capacity: number;
   description?: string;
   branch: string;
+  imageUrl?: string;
 }
 
 export async function createRoomAction(data: CreateRoomInput) {
@@ -54,6 +55,7 @@ export async function createRoomAction(data: CreateRoomInput) {
       capacity: data.capacity,
       description: data.description || null,
       branch: data.branch,
+      image_url: data.imageUrl || null,
     })
     .select()
     .single();
@@ -74,6 +76,7 @@ export interface UpdateRoomInput {
   capacity: number;
   description?: string;
   branch: string;
+  imageUrl?: string;
 }
 
 export async function updateRoomAction(data: UpdateRoomInput) {
@@ -111,6 +114,7 @@ export async function updateRoomAction(data: UpdateRoomInput) {
       capacity: data.capacity,
       description: data.description || null,
       branch: data.branch,
+      image_url: data.imageUrl || null,
     })
     .eq("id", data.id)
     .select()
