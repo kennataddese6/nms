@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { Baby, Clock, Mail, MapPin, Phone } from "lucide-react";
+import { Clock, Mail, MapPin, Phone } from "lucide-react";
 
 import { ThemeSwitcher } from "@/app/(main)/dashboard/_components/sidebar/theme-switcher";
 
@@ -72,7 +72,6 @@ export function NurseryFooter() {
             </p>
             <div className="text-xs text-muted-foreground uppercase tracking-wider font-bold space-y-1 mt-1">
               <span className="block text-foreground font-black text-xs">BUBBLY DAY NURSERY LIMITED</span>
-              <span className="block text-muted-foreground font-semibold">Company number 15176895</span>
             </div>
 
             {/* Fun badges */}

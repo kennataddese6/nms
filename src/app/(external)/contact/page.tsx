@@ -1,4 +1,4 @@
-import { ExternalLink, Mail, MapPin, Phone, Sparkles } from "lucide-react";
+import { ExternalLink, MapPin, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -83,7 +83,6 @@ export default function ContactPage() {
                           Branch 1 (Main)
                         </span>
                         <h4 className="text-lg font-black text-foreground mt-1">BUBBLY DAY NURSERY LIMITED</h4>
-                        <p className="text-xs text-muted-foreground font-medium">Company number 15176895</p>
                         <p className="text-sm font-bold text-foreground mt-2 leading-relaxed">
                           Manor Methodist Church, Galleywall Road, London, SE16 3PB
                         </p>
