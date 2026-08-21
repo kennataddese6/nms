@@ -1,4 +1,4 @@
-import { Brain, Heart, RefreshCw, Shield, Smile, Users } from "lucide-react";
+import { Brain, Heart, RefreshCw, Shield, Smile, Sparkles, Users } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -6,39 +6,51 @@ export function Vision() {
   const ethosPillars = [
     {
       title: "Happy Team, Happy Families",
-      desc: "We place a strong emphasis on building a healthy team. We believe that Happy Team = Happy Children = Happy Families. We aim to create a setting in which our team know that they are valued, supported, and loved.",
+      desc: "We place a strong emphasis on building a healthy team. We believe that Happy Team = Happy Children = Happy Families. We ensure our staff feel valued, supported, and loved.",
       icon: Smile,
-      color: "text-primary bg-primary/10",
+      cardBg: "bg-gradient-to-br from-orange-50 to-amber-50/60 dark:from-orange-950/30 dark:to-amber-950/20",
+      border: "border-2 border-orange-200 dark:border-orange-800/40",
+      iconBg: "bg-orange-500 text-white shadow-md shadow-orange-500/25",
     },
     {
       title: "Nurturing Every Uniqueness",
-      desc: "We focus on developing the uniqueness of every child to meet their specific development needs, providing a safe, warm, and highly supportive atmosphere for each unique child to flourish.",
+      desc: "We focus on developing the unique qualities of every child to meet their specific developmental needs in a safe, warm, and highly supportive atmosphere.",
       icon: Heart,
-      color: "text-secondary-foreground bg-secondary/15",
+      cardBg: "bg-gradient-to-br from-rose-50 to-pink-50/60 dark:from-rose-950/30 dark:to-pink-950/20",
+      border: "border-2 border-rose-200 dark:border-rose-800/40",
+      iconBg: "bg-rose-500 text-white shadow-md shadow-rose-500/25",
     },
     {
       title: "Relational Family Bonds",
-      desc: "We build strong relational bonds with families. This is nurtured and maintained through the medium of consistent, transparent, and high-quality communication.",
+      desc: "We build strong relational bonds with families, nurtured and maintained through consistent, transparent, and high-quality communication.",
       icon: Users,
-      color: "text-accent-foreground bg-accent/20",
+      cardBg: "bg-gradient-to-br from-teal-50 to-emerald-50/60 dark:from-teal-950/30 dark:to-emerald-950/20",
+      border: "border-2 border-teal-200 dark:border-teal-800/40",
+      iconBg: "bg-teal-600 text-white shadow-md shadow-teal-600/25",
     },
     {
       title: "Confident Lifelong Learners",
-      desc: "We focus on developing the right mindset in our children, enabling each child to acquire the skills to become a confident learner who goes on to lead a successful happy life.",
+      desc: "We focus on developing the right mindset in our children, enabling each child to acquire skills to become a confident, curious lifelong learner.",
       icon: Brain,
-      color: "text-amber-600 bg-amber-100/50 dark:text-amber-400 dark:bg-amber-950/20",
+      cardBg: "bg-gradient-to-br from-sky-50 to-blue-50/60 dark:from-sky-950/30 dark:to-blue-950/20",
+      border: "border-2 border-sky-200 dark:border-sky-800/40",
+      iconBg: "bg-sky-500 text-white shadow-md shadow-sky-500/25",
     },
     {
-      title: "Safe & Nurturing Well-being",
-      desc: "We provide a safe, secure, and nurturing environment where we endeavour to meet the health, security, and emotional well-being needs of every single child in our care.",
+      title: "Safe & Nurturing Wellbeing",
+      desc: "We provide a safe, secure, and nurturing environment where we endeavour to meet the health, security, and emotional well-being needs of every single child.",
       icon: Shield,
-      color: "text-destructive bg-destructive/10",
+      cardBg: "bg-gradient-to-br from-purple-50 to-indigo-50/60 dark:from-purple-950/30 dark:to-indigo-950/20",
+      border: "border-2 border-purple-200 dark:border-purple-800/40",
+      iconBg: "bg-purple-600 text-white shadow-md shadow-purple-600/25",
     },
     {
       title: "Normalizing Mistakes to Learn",
-      desc: "Our curriculum ensures that children learn through making mistakes, and that process of mistake-making is actively modeled, embraced, and normalized throughout the nursery.",
+      desc: "Our curriculum ensures that children learn through making mistakes, actively modeling, embracing, and normalizing mistake-making as a key growth step.",
       icon: RefreshCw,
-      color: "text-teal-600 bg-teal-100/50 dark:text-teal-400 dark:bg-teal-950/20",
+      cardBg: "bg-gradient-to-br from-amber-50 to-yellow-50/60 dark:from-amber-950/30 dark:to-yellow-950/20",
+      border: "border-2 border-amber-200 dark:border-amber-800/40",
+      iconBg: "bg-amber-500 text-white shadow-md shadow-amber-500/25",
     },
   ];
 
@@ -46,93 +58,97 @@ export function Vision() {
     {
       letter: "B",
       title: "Buds",
-      desc: "We nourish our children with love, care, and a remarkable curriculum and education, so they can develop and grow to a confident child.",
-      bgColor: "bg-primary/10 border-primary/20",
-      textColor: "text-primary",
+      desc: "We nourish our children with love, care, and a remarkable curriculum so they develop into confident children.",
+      badgeColor: "bg-orange-500 text-white shadow-md shadow-orange-500/30",
+      cardBg: "bg-orange-50/90 dark:bg-orange-950/30 border-2 border-orange-200",
     },
     {
       letter: "U",
       title: "Unique",
-      desc: "We celebrate and embrace every child’s uniqueness, tailoring our care to their distinct personality and learning pace.",
-      bgColor: "bg-secondary/10 border-secondary/20",
-      textColor: "text-secondary-foreground",
+      desc: "We celebrate every child's uniqueness, tailoring our care to their distinct personality and learning pace.",
+      badgeColor: "bg-teal-600 text-white shadow-md shadow-teal-600/30",
+      cardBg: "bg-teal-50/90 dark:bg-teal-950/30 border-2 border-teal-200",
     },
     {
       letter: "B",
       title: "Bright start",
-      desc: "A bright start to learning in the early years, where each child is equipped and encouraged to thrive and reach their full potential.",
-      bgColor: "bg-accent/15 border-accent/20",
-      textColor: "text-accent-foreground",
+      desc: "A bright start to early learning, equipping and encouraging each child to thrive and reach their full potential.",
+      badgeColor: "bg-rose-500 text-white shadow-md shadow-rose-500/30",
+      cardBg: "bg-rose-50/90 dark:bg-rose-950/30 border-2 border-rose-200",
     },
     {
       letter: "B",
       title: "Believe",
       desc: "Encouraging children to see their bright future, cultivating self-belief, resilience, and optimism from day one.",
-      bgColor: "bg-pink-50 dark:bg-pink-950/10 border-pink-200/50",
-      textColor: "text-pink-600 dark:text-pink-400",
+      badgeColor: "bg-sky-500 text-white shadow-md shadow-sky-500/30",
+      cardBg: "bg-sky-50/90 dark:bg-sky-950/30 border-2 border-sky-200",
     },
     {
       letter: "L",
       title: "Laugh",
-      desc: "Helping children to be happy, emotionally stable, and self-regulate their own emotions in a positive environment.",
-      bgColor: "bg-amber-50 dark:bg-amber-950/10 border-amber-200/50",
-      textColor: "text-amber-600 dark:text-amber-400",
+      desc: "Helping children to be happy, emotionally stable, and self-regulate in a warm, joyous environment.",
+      badgeColor: "bg-purple-600 text-white shadow-md shadow-purple-600/30",
+      cardBg: "bg-purple-50/90 dark:bg-purple-950/30 border-2 border-purple-200",
     },
     {
       letter: "Y",
       title: "Youth",
-      desc: "Encourage children to embrace lifelong learning that will help them to grow and succeed in their youth and adult life.",
-      bgColor: "bg-teal-50 dark:bg-teal-950/10 border-teal-200/50",
-      textColor: "text-teal-600 dark:text-teal-400",
+      desc: "Encouraging children to embrace lifelong learning that will help them grow and succeed throughout life.",
+      badgeColor: "bg-amber-500 text-white shadow-md shadow-amber-500/30",
+      cardBg: "bg-amber-50/90 dark:bg-amber-950/30 border-2 border-amber-200",
     },
   ];
 
   return (
-    <section className="py-16 sm:py-24 bg-gradient-to-b from-primary/5 via-background to-card">
+    <section className="py-16 sm:py-24 bg-gradient-to-b from-orange-50/40 via-background to-teal-50/30 dark:from-orange-950/20 dark:to-teal-950/20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Ethos Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 text-primary px-4 py-1.5 text-xs font-semibold mb-4">
-            Our Core Mission
+          <span className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-orange-800 bg-orange-100 border border-orange-300 px-3.5 py-1.5 rounded-full mb-4">
+            <Sparkles className="h-4 w-4 text-orange-600" /> Core Nursery Ethos
           </span>
-          <h2 className="font-heading text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
-            Our Vision & Ethos
+          <h2 className="font-heading text-3xl sm:text-5xl font-black text-foreground tracking-tight">
+            Our Vision & Values 💖
           </h2>
           <p className="mt-4 text-base sm:text-lg text-muted-foreground leading-relaxed">
             At Bubbly Day Nursery,{" "}
-            <strong className="text-foreground">“We want the best for all our children, families, and our team”</strong>
+            <strong className="text-foreground font-black">
+              “We want the best for all our children, families, and our team”
+            </strong>
             . We aim to create a setting in which each unique child can flourish.
           </p>
         </div>
 
         {/* Ethos Columns Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24 max-w-6xl mx-auto">
           {ethosPillars.map((pillar) => (
-            <Card
+            <div
               key={pillar.title}
-              className="rounded-3xl border bg-background shadow-sm hover:shadow-md transition-shadow"
+              className={`p-8 rounded-3xl ${pillar.cardBg} ${pillar.border} shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between`}
             >
-              <CardContent className="p-8 space-y-4">
-                <div className={`h-12 w-12 flex items-center justify-center rounded-2xl ${pillar.color}`}>
-                  <pillar.icon className="h-6 w-6 stroke-[2]" />
+              <div className="space-y-4">
+                <div className={`h-14 w-14 flex items-center justify-center rounded-2xl ${pillar.iconBg}`}>
+                  <pillar.icon className="h-7 w-7 stroke-[2.5]" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-foreground mb-2">{pillar.title}</h3>
+                  <h3 className="text-xl font-black text-foreground mb-2">{pillar.title}</h3>
                   <p className="text-muted-foreground text-xs leading-relaxed">{pillar.desc}</p>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
 
         {/* BUBBLY Core Values */}
-        <div className="border-t pt-16">
+        <div className="border-t-2 border-dashed border-orange-200 dark:border-orange-900/50 pt-16">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-xs uppercase font-bold text-muted-foreground tracking-widest">Acronym of Values</span>
-            <h3 className="text-2xl sm:text-3xl font-black text-foreground mt-2">
-              We Are <span className="text-primary">B.U.B.B.L.Y.</span>
+            <span className="text-xs font-black text-orange-600 uppercase tracking-widest bg-orange-100 px-3 py-1 rounded-full border border-orange-200">
+              Core Values Acronym
+            </span>
+            <h3 className="text-3xl sm:text-4xl font-black text-foreground mt-3">
+              We Are <span className="bg-gradient-to-r from-orange-600 via-rose-500 to-teal-600 bg-clip-text text-transparent">B.U.B.B.L.Y.</span> 🎈
             </h3>
-            <p className="text-muted-foreground text-sm mt-2">
+            <p className="text-muted-foreground text-sm mt-2 font-medium">
               Our 6 core values reflect how we guide every child towards a happy, confident start.
             </p>
           </div>
@@ -141,11 +157,13 @@ export function Vision() {
             {coreValues.map((value, idx) => (
               <div
                 key={idx}
-                className={`p-6 rounded-3xl border flex gap-4 bg-background shadow-sm hover:shadow-md transition-all ${value.bgColor}`}
+                className={`p-6 rounded-3xl ${value.cardBg} shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex gap-4 items-start`}
               >
-                <div className={`text-4xl font-black shrink-0 ${value.textColor} select-none`}>{value.letter}</div>
+                <div className={`h-14 w-14 rounded-2xl flex items-center justify-center text-3xl font-black shrink-0 ${value.badgeColor}`}>
+                  {value.letter}
+                </div>
                 <div>
-                  <h4 className="font-bold text-foreground text-sm uppercase tracking-wide mb-1">{value.title}</h4>
+                  <h4 className="font-black text-foreground text-base uppercase tracking-wide mb-1">{value.title}</h4>
                   <p className="text-muted-foreground text-xs leading-relaxed">{value.desc}</p>
                 </div>
               </div>
