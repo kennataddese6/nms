@@ -12,6 +12,7 @@ import {
   Image as ImageIcon,
   Layers,
   Newspaper,
+  Pencil,
   Plus,
   Search,
   Trash2,
@@ -132,6 +133,7 @@ export function ContentManager({
   const [menus, setMenus] = React.useState(initialMenus);
 
   const [jobModalOpen, setJobModalOpen] = React.useState(false);
+  const [editingJob, setEditingJob] = React.useState<any | null>(null);
   const [newsModalOpen, setNewsModalOpen] = React.useState(false);
   const [galleryModalOpen, setGalleryModalOpen] = React.useState(false);
   const [menuModalOpen, setMenuModalOpen] = React.useState(false);
@@ -315,6 +317,34 @@ export function ContentManager({
   });
 
   // Submissions
+  const handleCreateJob = () => {
+    setEditingJob(null);
+    jobForm.reset({
+      title: "",
+      type: "Full-time",
+      salary: "",
+      room: "All Rooms",
+      description: "",
+      requirements: "",
+      branch: "Branch 1",
+    });
+    setJobModalOpen(true);
+  };
+
+  const handleEditJob = (job: any) => {
+    setEditingJob(job);
+    jobForm.reset({
+      title: job.title || "",
+      type: job.type || "Full-time",
+      salary: job.salary || "",
+      room: job.room || "All Rooms",
+      description: job.description || "",
+      requirements: Array.isArray(job.requirements) ? job.requirements.join(", ") : job.requirements || "",
+      branch: job.branch || "Branch 1",
+    });
+    setJobModalOpen(true);
+  };
+
   const onJobSubmit = async (data: JobFormValues) => {
     setSubmitting(true);
     try {
@@ -324,7 +354,7 @@ export function ContentManager({
         .map((r) => r.trim())
         .filter((r) => r.length > 0);
 
-      const { error } = await supabase.from("jobs").insert({
+      const payload = {
         title: data.title,
         type: data.type,
         salary: data.salary,
@@ -332,16 +362,30 @@ export function ContentManager({
         description: data.description,
         requirements: reqList,
         branch: data.branch,
-      });
+      };
 
-      if (error) throw error;
+      if (editingJob) {
+        const { error } = await supabase.from("jobs").update(payload).eq("id", editingJob.id);
+        if (error) throw error;
 
-      toast.success("Job Vacancy Posted Successfully!");
+        setJobs((prev) => prev.map((j) => (j.id === editingJob.id ? { ...j, ...payload } : j)));
+        toast.success("Job Vacancy Updated Successfully!");
+      } else {
+        const { data: newJob, error } = await supabase.from("jobs").insert(payload).select().single();
+        if (error) throw error;
+
+        setJobs((prev) => [newJob, ...prev]);
+        toast.success("Job Vacancy Posted Successfully!");
+      }
+
       jobForm.reset();
+      setEditingJob(null);
       setJobModalOpen(false);
       router.refresh();
     } catch (err: any) {
-      toast.error("Failed to post job", { description: err.message });
+      toast.error(editingJob ? "Failed to update job" : "Failed to post job", {
+        description: err.message,
+      });
     } finally {
       setSubmitting(false);
     }
@@ -517,18 +561,24 @@ export function ContentManager({
                 <CardDescription>Manage active job listings shown on the careers page.</CardDescription>
               </div>
 
-              <Dialog open={jobModalOpen} onOpenChange={setJobModalOpen}>
-                <DialogTrigger asChild>
-                  <Button size="sm" className="rounded-lg">
-                    <Plus className="h-4 w-4 mr-1" />
-                    Create Job Listing
-                  </Button>
-                </DialogTrigger>
+              <Dialog
+                open={jobModalOpen}
+                onOpenChange={(open) => {
+                  setJobModalOpen(open);
+                  if (!open) setEditingJob(null);
+                }}
+              >
+                <Button size="sm" className="rounded-lg" onClick={handleCreateJob}>
+                  <Plus className="h-4 w-4 mr-1" />
+                  Create Job Listing
+                </Button>
                 <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
                   <DialogHeader>
-                    <DialogTitle>Post New Career Opening</DialogTitle>
+                    <DialogTitle>{editingJob ? "Edit Career Opening" : "Post New Career Opening"}</DialogTitle>
                     <DialogDescription>
-                      Add a vacancy that will immediately appear in the public /careers section.
+                      {editingJob
+                        ? "Update the details for this active job vacancy."
+                        : "Add a vacancy that will immediately appear in the public /careers section."}
                     </DialogDescription>
                   </DialogHeader>
                   <form noValidate onSubmit={jobForm.handleSubmit(onJobSubmit)} className="space-y-4 py-2">
@@ -636,7 +686,13 @@ export function ContentManager({
 
                     <DialogFooter>
                       <Button type="submit" className="w-full" disabled={submitting}>
-                        {submitting ? "Posting..." : "Post Job Opening"}
+                        {submitting
+                          ? editingJob
+                            ? "Updating..."
+                            : "Posting..."
+                          : editingJob
+                            ? "Update Job Opening"
+                            : "Post Job Opening"}
                       </Button>
                     </DialogFooter>
                   </form>
@@ -674,6 +730,14 @@ export function ContentManager({
                             <Badge variant="secondary">{job.branch}</Badge>
                           </td>
                           <td className="p-4 text-right">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-muted-foreground hover:text-foreground mr-1"
+                              onClick={() => handleEditJob(job)}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
                             <Button
                               variant="ghost"
                               size="sm"
