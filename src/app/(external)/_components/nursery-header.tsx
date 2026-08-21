@@ -41,7 +41,7 @@ export function NurseryHeader() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b-2 border-orange-300/60 bg-gradient-to-r from-sky-200/90 via-cyan-100/85 to-emerald-100/85 backdrop-blur-xl shadow-md dark:from-neutral-950/90 dark:via-neutral-900/90 dark:to-neutral-950/90">
+    <header className="sticky top-0 z-50 w-full border-none bg-gradient-to-r from-sky-200/90 via-cyan-100/85 to-emerald-100/85 backdrop-blur-xl dark:from-neutral-950/90 dark:via-neutral-900/90 dark:to-neutral-950/90">
       <div className="mx-auto flex max-w-7xl h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Bigger Logo & Brand Name */}
         <Link href="/" className="flex items-center gap-3.5 group shrink-0 py-1">
@@ -174,7 +174,7 @@ export function NurseryHeader() {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="lg:hidden border-b-2 border-orange-200 bg-background animate-in fade-in slide-in-from-top-4 duration-200">
+        <div className="lg:hidden border-b border-border/40 bg-background animate-in fade-in slide-in-from-top-4 duration-200">
           <div className="space-y-4 px-6 pb-6 pt-4">
             <div>
               <Link
