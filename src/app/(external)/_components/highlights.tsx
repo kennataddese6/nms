@@ -39,7 +39,7 @@ export function Highlights() {
       emoji: "🌳",
       title: "Secure Outdoor Play",
       description:
-        "A wide, secure garden and sensory exploration area allowing children to build motor skills, explore nature, and enjoy learning environment 👏.",
+        "A wide, secure garden and sensory exploration area allowing children to build motor skills, explore nature, and enjoy the learning environment.",
       cardBg: "bg-violet-100 border-violet-200",
       iconBg: "bg-violet-200 text-violet-700",
       tilt: "-rotate-1",
