@@ -34,7 +34,8 @@ export default async function RoomsPage() {
     .select(`
       id,
       name,
-      age_group,
+      min_age_months,
+      max_age_months,
       capacity,
       description,
       branch,
