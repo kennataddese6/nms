@@ -14,8 +14,12 @@ export const revalidate = 0;
 export default async function CareersPage() {
   const supabase = await createClient();
 
-  // Fetch dynamic job openings from database
-  const { data: dbJobs } = await supabase.from("jobs").select("*").order("created_at", { ascending: false });
+  // Fetch dynamic job openings from database (excluding leadership team profiles)
+  const { data: dbJobs } = await supabase
+    .from("jobs")
+    .select("*")
+    .neq("type", "LEADERSHIP")
+    .order("created_at", { ascending: false });
 
   const jobs = dbJobs || [];
 
