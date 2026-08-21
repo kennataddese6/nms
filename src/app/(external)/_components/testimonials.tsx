@@ -1,33 +1,77 @@
-import { Quote, Star } from "lucide-react";
-
 export function Testimonials() {
   const reviews = [
     {
       parent: "Sarah Jenkins",
       relation: "Mother of Leo (Toddlers Room)",
+      avatar: "👩",
+      bgColor: "bg-yellow-100 border-yellow-300",
+      starColor: "text-yellow-500",
+      tilt: "rotate-1",
       text: "Leaving my son at Bubbly Day Nursery was the best decision I made. The daily updates on the portal about his sleep and meals keep me fully informed, and the staff are incredibly warm and caring.",
     },
     {
       parent: "David Miller",
       relation: "Father of Mia (Preschool Room)",
+      avatar: "👨",
+      bgColor: "bg-emerald-100 border-emerald-300",
+      starColor: "text-emerald-500",
+      tilt: "-rotate-1",
       text: "Mia's language and confidence have skyrocketed since she started at Bubbly. She loves writing, singing, and exploring the garden. The EYFS learning journal has been wonderful to look through.",
     },
     {
       parent: "Emily Watson",
       relation: "Mother of Noah (Babies Room)",
+      avatar: "👩‍👦",
+      bgColor: "bg-pink-100 border-pink-300",
+      starColor: "text-pink-500",
+      tilt: "rotate-1",
       text: "The baby room staff are fantastic. The ratio is perfect, the room is super cozy, and Noah settled in so quickly. The team really takes the time to replicate his home routines. Highly recommend!",
     },
   ];
 
   return (
-    <section className="py-16 sm:py-24 bg-card relative overflow-hidden">
-      <div className="absolute top-1/2 left-0 -translate-y-1/2 -z-10 h-72 w-72 rounded-full bg-accent/10 blur-3xl" />
-      <div className="absolute bottom-0 right-0 -z-10 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+    <section className="relative py-16 sm:py-24 overflow-hidden">
+      {/* Ambient glow blobs */}
+      <div className="absolute top-0 left-1/4 -z-10 h-72 w-72 rounded-full bg-yellow-200/40 blur-3xl" />
+      <div className="absolute bottom-0 right-1/4 -z-10 h-72 w-72 rounded-full bg-pink-200/30 blur-3xl" />
+
+      {/* Floating decorations */}
+      <span
+        aria-hidden="true"
+        className="absolute top-8 right-10 text-4xl pointer-events-none select-none nursery-float opacity-60 hidden sm:block"
+        style={{ animationDelay: "0.3s" }}
+      >
+        💬
+      </span>
+      <span
+        aria-hidden="true"
+        className="absolute top-6 left-8 text-3xl pointer-events-none select-none nursery-twinkle opacity-60 hidden sm:block"
+        style={{ animationDelay: "1s" }}
+      >
+        ⭐
+      </span>
+      <span
+        aria-hidden="true"
+        className="absolute bottom-12 right-6 text-3xl pointer-events-none select-none nursery-wiggle opacity-50 hidden md:block"
+        style={{ animationDelay: "0.7s" }}
+      >
+        🌸
+      </span>
+      <span
+        aria-hidden="true"
+        className="absolute bottom-8 left-10 text-4xl pointer-events-none select-none nursery-float-slow opacity-50 hidden sm:block"
+        style={{ animationDelay: "0.5s" }}
+      >
+        🎈
+      </span>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
+          <div className="inline-flex items-center gap-2 bg-pink-100 border border-pink-300 text-pink-800 text-xs font-bold rounded-full px-4 py-1.5 mb-4">
+            💛 Parent Stories
+          </div>
           <h2 className="font-heading text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
-            Hear From Our Parents
+            Hear From Our Parents 🗣️
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
             We are proud to provide exceptional nursery care. Read about the experiences of our parent community.
@@ -38,25 +82,52 @@ export function Testimonials() {
           {reviews.map((review) => (
             <div
               key={review.parent}
-              className="flex flex-col p-8 rounded-3xl border bg-background relative shadow-sm hover:shadow-md transition-shadow"
+              className={`relative flex flex-col p-7 rounded-3xl border-2 shadow-sm hover:shadow-xl hover:-translate-y-2 hover:rotate-0 transition-all duration-300 ${review.bgColor} ${review.tilt}`}
             >
-              <Quote className="absolute top-6 right-6 h-8 w-8 text-primary/10 stroke-[2.5]" />
+              {/* Big quote mark */}
+              <span
+                aria-hidden="true"
+                className="absolute top-5 right-6 text-5xl font-black opacity-10 leading-none select-none pointer-events-none"
+              >
+                "
+              </span>
 
-              {/* Star Rating */}
-              <div className="flex gap-1 mb-6 text-accent-foreground">
+              {/* Stars */}
+              <div className={`flex gap-1 mb-5 ${review.starColor}`}>
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-4.5 w-4.5 fill-accent text-accent-foreground" />
+                  <span key={i} className="text-xl">
+                    ⭐
+                  </span>
                 ))}
               </div>
 
-              <p className="text-muted-foreground text-sm leading-relaxed mb-6 italic flex-grow">"{review.text}"</p>
+              <p className="text-foreground/70 text-sm leading-relaxed mb-6 italic flex-grow">
+                &ldquo;{review.text}&rdquo;
+              </p>
 
-              <div className="border-t pt-4">
-                <span className="block font-bold text-foreground text-base">{review.parent}</span>
-                <span className="text-xs text-muted-foreground">{review.relation}</span>
+              {/* Author */}
+              <div className="flex items-center gap-3 border-t border-white/60 pt-4">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-2xl shadow-sm shrink-0">
+                  {review.avatar}
+                </div>
+                <div>
+                  <span className="block font-extrabold text-foreground text-sm">{review.parent}</span>
+                  <span className="text-xs text-muted-foreground">{review.relation}</span>
+                </div>
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Bottom CTA strip */}
+        <div className="mt-16 flex flex-col items-center gap-3">
+          <p className="text-muted-foreground text-sm">Ready to give your child the best start? 🌱</p>
+          <a
+            href="/contact?tour=true"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-400 to-pink-500 text-white font-bold text-sm px-8 py-3 rounded-full shadow-lg hover:scale-105 hover:shadow-xl transition-all"
+          >
+            🎒 Book a Free Nursery Tour
+          </a>
         </div>
       </div>
     </section>
