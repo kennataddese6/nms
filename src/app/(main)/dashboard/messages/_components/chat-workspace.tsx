@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { createClient } from "@/lib/supabase/client";
+import { getThreadMessagesAction, sendChatMessageAction } from "../actions";
 
 interface Message {
   id: string;
@@ -76,18 +77,13 @@ export function ChatWorkspace({ initialThreads, currentUserProfile, isStaff, par
   // Fetch messages helper
   const fetchMessages = React.useCallback(async () => {
     if (!activeThreadId) return;
-    const { data, error } = await supabase
-      .from("chat_messages")
-      .select("*, sender:profiles!chat_messages_sender_id_fkey(first_name, last_name, email)")
-      .eq("thread_id", activeThreadId)
-      .order("created_at", { ascending: true });
-
-    if (error) {
-      console.error("Failed to load messages:", error.message);
-      return;
+    try {
+      const res = await getThreadMessagesAction(activeThreadId);
+      setMessages(res.messages || []);
+    } catch (err: any) {
+      console.error("Failed to load messages:", err.message);
     }
-    setMessages(data || []);
-  }, [activeThreadId, supabase]);
+  }, [activeThreadId]);
 
   // Handle active thread message loading and Realtime subscription
   React.useEffect(() => {
@@ -133,17 +129,13 @@ export function ChatWorkspace({ initialThreads, currentUserProfile, isStaff, par
     setNewMessageText(""); // optimistic clear
 
     try {
-      const { error } = await supabase.from("chat_messages").insert({
-        thread_id: activeThreadId,
-        sender_id: currentUserProfile.id,
-        message: messageToSend,
-      });
-
-      if (error) throw error;
+      const res = await sendChatMessageAction(activeThreadId, messageToSend);
+      if (res.message) {
+        setMessages((prev) => [...prev, res.message]);
+      }
     } catch (err: any) {
-      toast.error("Failed to send message", {
-        description: err.message || "An unexpected error occurred.",
-      });
+      toast.error("Failed to send message", { description: err.message });
+      setNewMessageText(messageToSend); // restore on error
     }
   };
 

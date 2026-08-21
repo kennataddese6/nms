@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 import { ChatWorkspace } from "./_components/chat-workspace";
@@ -41,25 +42,50 @@ export default async function MessagesPage() {
     }
   }
 
-  // 4. Query accessible threads
-  let threadsQuery = supabase.from("chat_threads").select(`
-    *,
-    parents!chat_threads_parent_id_fkey (
-      id,
-      profiles (
-        first_name,
-        last_name,
-        email
+  // 4. Query accessible threads with admin client for staff to bypass RLS restrictions
+  let threads: any[] = [];
+  let threadsError: any = null;
+
+  if (isStaff) {
+    const adminClient = createAdminClient();
+    const res = await adminClient
+      .from("chat_threads")
+      .select(`
+        *,
+        parents!chat_threads_parent_id_fkey (
+          id,
+          profiles (
+            first_name,
+            last_name,
+            email
+          )
+        )
+      `)
+      .order("created_at", { ascending: false });
+
+    threads = res.data || [];
+    threadsError = res.error;
+  } else {
+    let threadsQuery = supabase.from("chat_threads").select(`
+      *,
+      parents!chat_threads_parent_id_fkey (
+        id,
+        profiles (
+          first_name,
+          last_name,
+          email
+        )
       )
-    )
-  `);
+    `);
 
-  if (!isStaff && parentId) {
-    // Parents only see their own threads
-    threadsQuery = threadsQuery.eq("parent_id", parentId);
+    if (parentId) {
+      threadsQuery = threadsQuery.eq("parent_id", parentId);
+    }
+
+    const res = await threadsQuery.order("created_at", { ascending: false });
+    threads = res.data || [];
+    threadsError = res.error;
   }
-
-  const { data: threads, error: threadsError } = await threadsQuery.order("created_at", { ascending: false });
 
   if (threadsError) {
     console.error("Failed to query threads:", threadsError.message);
@@ -67,7 +93,7 @@ export default async function MessagesPage() {
 
   return (
     <ChatWorkspace
-      initialThreads={threads || []}
+      initialThreads={threads}
       currentUserProfile={profile}
       isStaff={isStaff}
       parentRecordId={parentId}
