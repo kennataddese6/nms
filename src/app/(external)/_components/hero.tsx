@@ -203,11 +203,11 @@ export function Hero() {
 
       {/* ── Main content ───────────────────────────────────── */}
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        <div className="flex flex-col items-center text-center">
           {/* Text Content */}
-          <div className="lg:col-span-6 flex flex-col justify-center text-center lg:text-left">
+          <div className="flex flex-col items-center max-w-3xl">
             {/* Trust badge */}
-            <div className="mx-auto lg:mx-0 mb-6 inline-flex items-center gap-2 rounded-full bg-white/70 backdrop-blur-sm border border-white/80 px-4 py-1.5 text-xs font-bold text-sky-700 tracking-wide shadow-sm nursery-pop-in">
+            <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full bg-white/70 backdrop-blur-sm border border-white/80 px-4 py-1.5 text-xs font-bold text-sky-700 tracking-wide shadow-sm nursery-pop-in">
               ⭐ Ofsted Registered • Excellent Care Standards
             </div>
 
@@ -221,12 +221,12 @@ export function Hero() {
               Aligned with <span className="text-emerald-700">EYFS</span> Framework
             </h1>
 
-            <p className="mt-6 text-lg sm:text-xl text-sky-800/90 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+            <p className="mt-6 text-lg sm:text-xl text-sky-800/90 max-w-2xl mx-auto leading-relaxed">
               Welcome to Bubbly Day Nursery — a warm, colourful environment where babies, toddlers, and preschoolers
               explore, learn, and grow through play-based discovery 🌱
             </p>
 
-            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 asChild
                 size="lg"
@@ -248,7 +248,7 @@ export function Hero() {
             </div>
 
             {/* Quick Stats */}
-            <div className="mt-12 grid grid-cols-3 gap-4 border-t border-white/40 pt-8 text-left">
+            <div className="mt-12 grid grid-cols-3 gap-4 border-t border-white/40 pt-8 w-full max-w-lg">
               <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-3">
                 <span className="block text-2xl font-extrabold text-orange-500">3m – 5y</span>
                 <span className="text-xs text-sky-700 uppercase tracking-wider font-bold">Age Range</span>
@@ -265,7 +265,7 @@ export function Hero() {
           </div>
 
           {/* Hero Image */}
-          <div className="lg:col-span-6 flex justify-center">
+          <div className="flex justify-center mt-12">
             <div className="relative">
               {/* Spinning star badge */}
               <div
