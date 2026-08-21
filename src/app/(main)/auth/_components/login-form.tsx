@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -12,7 +13,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
-import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -54,16 +54,14 @@ export function LoginForm() {
 
     const roleNames = roleMappings?.map((rm: any) => rm.roles?.name) || [];
     const isStaff =
-      roleNames.includes("NURSERY_MANAGER") ||
-      roleNames.includes("STAFF") ||
-      roleNames.includes("SUPER_ADMIN");
+      roleNames.includes("NURSERY_MANAGER") || roleNames.includes("STAFF") || roleNames.includes("SUPER_ADMIN");
 
     toast.success("Welcome back!", {
       description: "Redirecting to your dashboard...",
     });
 
     router.refresh();
-    
+
     if (isStaff) {
       router.push("/dashboard/nursery-crm");
     } else {

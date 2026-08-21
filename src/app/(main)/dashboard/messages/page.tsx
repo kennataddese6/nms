@@ -1,5 +1,7 @@
-import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+
+import { createClient } from "@/lib/supabase/server";
+
 import { ChatWorkspace } from "./_components/chat-workspace";
 
 export const revalidate = 0;
@@ -8,7 +10,9 @@ export default async function MessagesPage() {
   const supabase = await createClient();
 
   // 1. Fetch authenticated user session
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) {
     redirect("/auth/v1/login");
   }
@@ -21,25 +25,16 @@ export default async function MessagesPage() {
     .single();
 
   // 3. Determine if user is staff/manager or parent
-  const { data: roleMappings } = await supabase
-    .from("user_roles")
-    .select("roles(name)")
-    .eq("user_id", user.id);
+  const { data: roleMappings } = await supabase.from("user_roles").select("roles(name)").eq("user_id", user.id);
 
   const roleNames = roleMappings?.map((rm: any) => rm.roles?.name) || [];
   const isStaff =
-    roleNames.includes("NURSERY_MANAGER") ||
-    roleNames.includes("STAFF") ||
-    roleNames.includes("SUPER_ADMIN");
+    roleNames.includes("NURSERY_MANAGER") || roleNames.includes("STAFF") || roleNames.includes("SUPER_ADMIN");
 
   let parentId: string | null = null;
   if (!isStaff) {
     // If not staff, fetch parent details
-    const { data: parent } = await supabase
-      .from("parents")
-      .select("id")
-      .eq("profile_id", user.id)
-      .maybeSingle();
+    const { data: parent } = await supabase.from("parents").select("id").eq("profile_id", user.id).maybeSingle();
 
     if (parent) {
       parentId = parent.id;
@@ -71,9 +66,9 @@ export default async function MessagesPage() {
   }
 
   return (
-    <ChatWorkspace 
-      initialThreads={threads || []} 
-      currentUserProfile={profile} 
+    <ChatWorkspace
+      initialThreads={threads || []}
+      currentUserProfile={profile}
       isStaff={isStaff}
       parentRecordId={parentId}
     />

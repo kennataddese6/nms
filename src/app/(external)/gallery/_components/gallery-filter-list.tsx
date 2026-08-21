@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Eye, Layers, Compass, Calendar, X } from "lucide-react";
+
+import { Calendar, Compass, Eye, Layers, X } from "lucide-react";
 
 interface GalleryFilterListProps {
   initialMedia: any[];
@@ -18,9 +19,7 @@ export function GalleryFilterList({ initialMedia }: GalleryFilterListProps) {
     { id: "events", label: "Events", icon: Calendar },
   ];
 
-  const filteredMedia = activeTab === "all" 
-    ? initialMedia 
-    : initialMedia.filter((m) => m.category === activeTab);
+  const filteredMedia = activeTab === "all" ? initialMedia : initialMedia.filter((m) => m.category === activeTab);
 
   return (
     <div className="space-y-12">
@@ -47,21 +46,19 @@ export function GalleryFilterList({ initialMedia }: GalleryFilterListProps) {
 
       {/* Grid of media items */}
       {filteredMedia.length === 0 ? (
-        <div className="py-20 text-center text-muted-foreground">
-          No media items found in this category.
-        </div>
+        <div className="py-20 text-center text-muted-foreground">No media items found in this category.</div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredMedia.map((item) => (
-            <div 
-              key={item.id} 
+            <div
+              key={item.id}
               className="group cursor-pointer bg-card rounded-3xl overflow-hidden border shadow-sm hover:shadow-md transition-all duration-300"
               onClick={() => setSelectedImage(item.media_url)}
             >
               {/* Photo box */}
               <div className="aspect-video overflow-hidden bg-neutral-100 relative">
-                <img 
-                  src={item.media_url} 
+                <img
+                  src={item.media_url}
                   alt={item.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
@@ -74,12 +71,8 @@ export function GalleryFilterList({ initialMedia }: GalleryFilterListProps) {
 
               {/* Title box */}
               <div className="p-5">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
-                  {item.category}
-                </span>
-                <h3 className="font-bold text-foreground text-sm mt-1">
-                  {item.title}
-                </h3>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-primary">{item.category}</span>
+                <h3 className="font-bold text-foreground text-sm mt-1">{item.title}</h3>
               </div>
             </div>
           ))}
@@ -88,11 +81,11 @@ export function GalleryFilterList({ initialMedia }: GalleryFilterListProps) {
 
       {/* Lightbox Popout Modal */}
       {selectedImage && (
-        <div 
+        <div
           className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 animate-fade-in"
           onClick={() => setSelectedImage(null)}
         >
-          <button 
+          <button
             type="button"
             className="absolute top-4 right-4 text-white hover:text-neutral-300"
             onClick={() => setSelectedImage(null)}
@@ -100,11 +93,7 @@ export function GalleryFilterList({ initialMedia }: GalleryFilterListProps) {
             <X className="h-8 w-8" />
           </button>
           <div className="max-w-4xl max-h-[85vh] overflow-hidden rounded-2xl border bg-card shadow-2xl">
-            <img 
-              src={selectedImage} 
-              alt="Preview" 
-              className="max-w-full max-h-[80vh] object-contain"
-            />
+            <img src={selectedImage} alt="Preview" className="max-w-full max-h-[80vh] object-contain" />
           </div>
         </div>
       )}

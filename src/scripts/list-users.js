@@ -37,9 +37,7 @@ async function listUsers() {
   console.log("Fetching registered user profiles...\n");
 
   // Query profiles with roles joined
-  const { data: profiles, error } = await supabase
-    .from("profiles")
-    .select(`
+  const { data: profiles, error } = await supabase.from("profiles").select(`
       id,
       email,
       first_name,
@@ -62,11 +60,13 @@ async function listUsers() {
     process.exit(0);
   }
 
-  console.log(String.prototype.concat(
-    "----------------------------------------------------------------------------------------\n",
-    "  FULL NAME              |  EMAIL                    |  ACTIVE ROLES\n",
-    "----------------------------------------------------------------------------------------"
-  ));
+  console.log(
+    String.prototype.concat(
+      "----------------------------------------------------------------------------------------\n",
+      "  FULL NAME              |  EMAIL                    |  ACTIVE ROLES\n",
+      "----------------------------------------------------------------------------------------",
+    ),
+  );
 
   profiles.forEach((p) => {
     const fullName = `${p.first_name || ""} ${p.last_name || ""}`.padEnd(24);

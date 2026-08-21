@@ -26,7 +26,10 @@ export async function registerParentAction(data: RegisterParentInput) {
 
   const { data: roleMappings } = await supabase.from("user_roles").select("roles(name)").eq("user_id", user.id);
 
-  const roleNames = roleMappings?.map((rm: any) => rm.roles?.name) || [];
+  const roleNames =
+    (roleMappings as unknown as Array<{ roles: { name: string } | null }>)
+      ?.map((rm) => rm.roles?.name)
+      .filter(Boolean) || [];
   const isStaff =
     roleNames.includes("NURSERY_MANAGER") || roleNames.includes("STAFF") || roleNames.includes("SUPER_ADMIN");
 
@@ -111,6 +114,85 @@ export async function registerParentAction(data: RegisterParentInput) {
 
   if (parentError) {
     throw new Error(parentError.message || "Failed to create parent detail record.");
+  }
+
+  return { success: true };
+}
+
+export interface RegisterStudentInput {
+  firstName: string;
+  lastName: string;
+  dob: string;
+  gender: string;
+  branch: string;
+  roomId?: string;
+  medicalNotes?: string;
+  allergies?: string;
+  medicalConsent: boolean;
+  photoConsent: boolean;
+  parentId: string;
+  relationship: string;
+}
+
+export async function registerStudentAction(data: RegisterStudentInput) {
+  // 1. Verify caller has staff/admin authorization
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized: Log in required.");
+  }
+
+  const { data: roleMappings } = await supabase.from("user_roles").select("roles(name)").eq("user_id", user.id);
+
+  const roleNames =
+    (roleMappings as unknown as Array<{ roles: { name: string } | null }>)
+      ?.map((rm) => rm.roles?.name)
+      .filter(Boolean) || [];
+  const isStaff =
+    roleNames.includes("NURSERY_MANAGER") || roleNames.includes("STAFF") || roleNames.includes("SUPER_ADMIN");
+
+  if (!isStaff) {
+    throw new Error("Forbidden: Only nursery staff can register students.");
+  }
+
+  // 2. Perform admin database operations with admin client
+  const adminClient = createAdminClient();
+
+  // Insert child record
+  const { data: newChild, error: childError } = await adminClient
+    .from("children")
+    .insert({
+      first_name: data.firstName,
+      last_name: data.lastName,
+      date_of_birth: data.dob,
+      gender: data.gender,
+      branch: data.branch,
+      medical_notes: data.medicalNotes ?? null,
+      allergies: data.allergies ?? null,
+      photo_consent: data.photoConsent,
+      emergency_medical_consent: data.medicalConsent,
+      status: "WAITING_LIST",
+      room_id: data.roomId ?? null,
+    })
+    .select("id")
+    .single();
+
+  if (childError || !newChild) {
+    throw new Error(childError?.message || "Failed to create child record.");
+  }
+
+  // Insert child-parent link relationship mapping
+  const { error: linkError } = await adminClient.from("child_parents").insert({
+    child_id: newChild.id,
+    parent_id: data.parentId,
+    relationship: data.relationship,
+  });
+
+  if (linkError) {
+    throw new Error(linkError.message || "Failed to link parent to child record.");
   }
 
   return { success: true };

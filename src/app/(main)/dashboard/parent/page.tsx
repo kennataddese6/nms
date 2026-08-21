@@ -1,10 +1,12 @@
-import { createClient } from "@/lib/supabase/server";
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Baby, Info, Calendar, Sparkles, BookOpen, Clock, Heart, Utensils } from "lucide-react";
+
+import { Baby, BookOpen, Calendar, Clock, Heart, Info, Sparkles, Utensils } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
 
 export const revalidate = 0;
 
@@ -12,7 +14,9 @@ export default async function ParentDashboardPage() {
   const supabase = await createClient();
 
   // 1. Get logged in Auth identity
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) {
     redirect("/auth/v1/login");
   }
@@ -66,16 +70,12 @@ export default async function ParentDashboardPage() {
     .limit(3);
 
   // 5. Fetch active nutrition menu
-  const { data: activeMenu } = await supabase
-    .from("nursery_menus")
-    .select("*")
-    .eq("is_active", true)
-    .maybeSingle();
+  const { data: activeMenu } = await supabase.from("nursery_menus").select("*").eq("is_active", true).maybeSingle();
 
   const weekdayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const todayIndex = new Date().getDay();
   // Fallback to Monday on weekends
-  const currentWeekday = (todayIndex === 0 || todayIndex === 6) ? "Monday" : weekdayNames[todayIndex];
+  const currentWeekday = todayIndex === 0 || todayIndex === 6 ? "Monday" : weekdayNames[todayIndex];
 
   const profiles = parent.profiles as any;
   const parentName = `${profiles?.first_name || ""} ${profiles?.last_name || ""}`;
@@ -92,7 +92,8 @@ export default async function ParentDashboardPage() {
             Hello, {profiles?.first_name || "Parent"}!
           </h1>
           <p className="text-muted-foreground text-sm mt-1 max-w-xl">
-            Welcome to your Bubbly Nursery portal. Track your child's daily logs, check classroom routines, and read news notices.
+            Welcome to your Bubbly Nursery portal. Track your child's daily logs, check classroom routines, and read
+            news notices.
           </p>
         </div>
         <div className="flex gap-2 shrink-0">
@@ -118,7 +119,8 @@ export default async function ParentDashboardPage() {
                 <Heart className="h-10 w-10 text-muted-foreground/50 mb-3" />
                 <h3 className="font-bold text-foreground text-sm">No linked children found</h3>
                 <p className="text-xs text-muted-foreground mt-1 max-w-xs mx-auto">
-                  If you registered recently, our office is mapping your profile card. Please contact admissions if details do not show.
+                  If you registered recently, our office is mapping your profile card. Please contact admissions if
+                  details do not show.
                 </p>
               </CardContent>
             </Card>
@@ -128,7 +130,10 @@ export default async function ParentDashboardPage() {
                 const child = link.children;
                 if (!child) return null;
                 return (
-                  <Card key={idx} className="rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200">
+                  <Card
+                    key={idx}
+                    className="rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200"
+                  >
                     <CardHeader className="border-b bg-neutral-50/50 p-6 flex flex-row justify-between items-start">
                       <div>
                         <CardTitle className="text-lg font-bold">
@@ -152,19 +157,15 @@ export default async function ParentDashboardPage() {
                     <CardContent className="p-6 space-y-4">
                       <div className="flex justify-between text-xs">
                         <span className="text-muted-foreground">Classroom:</span>
-                        <span className="font-bold text-foreground">
-                          {child.rooms?.name || "Waitlist Preferred"}
-                        </span>
+                        <span className="font-bold text-foreground">{child.rooms?.name || "Waitlist Preferred"}</span>
                       </div>
                       {child.allergies && (
                         <div className="flex justify-between text-xs">
                           <span className="text-muted-foreground">Allergies:</span>
-                          <span className="font-bold text-destructive">
-                            {child.allergies}
-                          </span>
+                          <span className="font-bold text-destructive">{child.allergies}</span>
                         </div>
                       )}
-                      
+
                       {/* Active portal log triggers */}
                       <div className="pt-2 border-t flex gap-2">
                         <Link href={`/dashboard/child/${child.id}`} className="w-full">
@@ -172,7 +173,12 @@ export default async function ParentDashboardPage() {
                             Daily Logs
                           </Button>
                         </Link>
-                        <Button variant="outline" size="xs" className="w-full rounded-full text-[10px] py-1.5 h-auto cursor-not-allowed" disabled>
+                        <Button
+                          variant="outline"
+                          size="xs"
+                          className="w-full rounded-full text-[10px] py-1.5 h-auto cursor-not-allowed"
+                          disabled
+                        >
                           Journal (Soon)
                         </Button>
                       </div>
@@ -206,9 +212,7 @@ export default async function ParentDashboardPage() {
                       {post.event_date && <span>{post.event_date}</span>}
                     </div>
                     <h4 className="text-xs font-bold text-foreground">{post.title}</h4>
-                    <p className="text-[10px] text-muted-foreground leading-relaxed line-clamp-2">
-                      {post.content}
-                    </p>
+                    <p className="text-[10px] text-muted-foreground leading-relaxed line-clamp-2">{post.content}</p>
                   </div>
                 ))
               )}
@@ -226,21 +230,23 @@ export default async function ParentDashboardPage() {
                   {activeMenu ? activeMenu.name : "Healthy & Balanced Eating"}
                 </CardDescription>
               </div>
-              <Badge className="bg-primary text-white font-bold text-[9px]">
-                {currentWeekday}
-              </Badge>
+              <Badge className="bg-primary text-white font-bold text-[9px]">{currentWeekday}</Badge>
             </CardHeader>
             <CardContent className="space-y-3">
               {activeMenu ? (
                 <>
                   <div className="p-3 border rounded-2xl bg-white dark:bg-neutral-900/50">
-                    <span className="text-[9px] font-bold text-accent-foreground uppercase tracking-wider block">Lunch Meal (11:45)</span>
+                    <span className="text-[9px] font-bold text-accent-foreground uppercase tracking-wider block">
+                      Lunch Meal (11:45)
+                    </span>
                     <span className="text-xs text-foreground font-semibold mt-1 block">
                       {activeMenu.lunch[currentWeekday] || "Seasonal Cooked Lunch"}
                     </span>
                   </div>
                   <div className="p-3 border rounded-2xl bg-white dark:bg-neutral-900/50">
-                    <span className="text-[9px] font-bold text-pink-600 dark:text-pink-400 uppercase tracking-wider block">Afternoon Tea (16:15)</span>
+                    <span className="text-[9px] font-bold text-pink-600 dark:text-pink-400 uppercase tracking-wider block">
+                      Afternoon Tea (16:15)
+                    </span>
                     <span className="text-xs text-foreground font-semibold mt-1 block">
                       {activeMenu.afternoon_tea[currentWeekday] || "Healthy snacks and tea finger foods"}
                     </span>
@@ -249,13 +255,17 @@ export default async function ParentDashboardPage() {
               ) : (
                 <>
                   <div className="p-3 border rounded-2xl bg-white dark:bg-neutral-900/50">
-                    <span className="text-[9px] font-bold text-accent-foreground uppercase tracking-wider block">Lunch Meal (11:45)</span>
+                    <span className="text-[9px] font-bold text-accent-foreground uppercase tracking-wider block">
+                      Lunch Meal (11:45)
+                    </span>
                     <span className="text-xs text-foreground font-semibold mt-1 block">
                       Creamy Cheese & Broccoli Pasta
                     </span>
                   </div>
                   <div className="p-3 border rounded-2xl bg-white dark:bg-neutral-900/50">
-                    <span className="text-[9px] font-bold text-pink-600 dark:text-pink-400 uppercase tracking-wider block">Afternoon Tea (16:15)</span>
+                    <span className="text-[9px] font-bold text-pink-600 dark:text-pink-400 uppercase tracking-wider block">
+                      Afternoon Tea (16:15)
+                    </span>
                     <span className="text-xs text-foreground font-semibold mt-1 block">
                       White bean soup with homemade croutons
                     </span>
@@ -277,19 +287,28 @@ export default async function ParentDashboardPage() {
               <CardTitle className="text-base font-bold">Quick resources</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <Link href="/rooms" className="flex items-center justify-between p-3 rounded-2xl border hover:bg-neutral-50/50 transition-colors text-xs font-semibold">
+              <Link
+                href="/rooms"
+                className="flex items-center justify-between p-3 rounded-2xl border hover:bg-neutral-50/50 transition-colors text-xs font-semibold"
+              >
                 <span className="flex items-center gap-2">
                   <Clock className="h-4 w-4 text-primary" /> Class schedules
                 </span>
                 <span className="text-primary text-[10px]">View</span>
               </Link>
-              <Link href="/curriculum" className="flex items-center justify-between p-3 rounded-2xl border hover:bg-neutral-50/50 transition-colors text-xs font-semibold">
+              <Link
+                href="/curriculum"
+                className="flex items-center justify-between p-3 rounded-2xl border hover:bg-neutral-50/50 transition-colors text-xs font-semibold"
+              >
                 <span className="flex items-center gap-2">
                   <BookOpen className="h-4 w-4 text-primary" /> Learning Framework
                 </span>
                 <span className="text-primary text-[10px]">View</span>
               </Link>
-              <Link href="/parent-info" className="flex items-center justify-between p-3 rounded-2xl border hover:bg-neutral-50/50 transition-colors text-xs font-semibold">
+              <Link
+                href="/parent-info"
+                className="flex items-center justify-between p-3 rounded-2xl border hover:bg-neutral-50/50 transition-colors text-xs font-semibold"
+              >
                 <span className="flex items-center gap-2">
                   <Sparkles className="h-4 w-4 text-primary" /> Funding & Fees
                 </span>

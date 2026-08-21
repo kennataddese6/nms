@@ -57,10 +57,10 @@ export default async function NurseryCrmPage() {
   const { data: rooms } = await supabase.from("rooms").select("id, name, age_group");
 
   return (
-    <div className="py-6 px-4 md:px-8 space-y-6">
+    <div className="space-y-6 px-4 py-6 md:px-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Nursery CRM</h1>
-        <p className="text-muted-foreground text-sm mt-1">
+        <h1 className="font-bold text-3xl tracking-tight">Nursery CRM</h1>
+        <p className="mt-1 text-muted-foreground text-sm">
           Manage enrolled students, parent contact cards, and registrations.
         </p>
       </div>

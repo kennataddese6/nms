@@ -1,8 +1,10 @@
-import { createClient } from "@/lib/supabase/server";
-import { NurseryHeader } from "../_components/nursery-header";
-import { NurseryFooter } from "../_components/nursery-footer";
-import { MenuWorkspace } from "./_components/menu-workspace";
 import { Apple, Heart } from "lucide-react";
+
+import { createClient } from "@/lib/supabase/server";
+
+import { NurseryFooter } from "../_components/nursery-footer";
+import { NurseryHeader } from "../_components/nursery-header";
+import { MenuWorkspace } from "./_components/menu-workspace";
 
 export const revalidate = 0;
 
@@ -15,39 +17,35 @@ const fallbackMenu = {
     Tuesday: "Chicken Vermicelli Rice with Vegetables",
     Wednesday: "Asian Noodle stir fry with a medley of vegetables",
     Thursday: "Spaghetti with Meatballs in a rich Tomato & hidden vegetable sauce",
-    Friday: "Toma's Special Chicken Stew & Rice"
+    Friday: "Toma's Special Chicken Stew & Rice",
   },
   desserts: {
     Monday: "Toma's famous, Vegan Chocolate Cake with yoghurt or custard",
     Tuesday: "Jelly with a fruit surprise",
     Wednesday: "Greek yoghurt & Bananas (& honey for our older children)",
     Thursday: "Jam and coconut sponge",
-    Friday: "Rice Pudding"
+    Friday: "Rice Pudding",
   },
   afternoon_snack: {
     Monday: "Home-made Date Loaf",
     Tuesday: "Lemon mini muffins",
     Wednesday: "Apple cinnamon bread",
     Thursday: "Mini pinwheels",
-    Friday: "cheese, cucumber & breadsticks"
+    Friday: "cheese, cucumber & breadsticks",
   },
   afternoon_tea: {
     Monday: "White bean soup with homemade croutons",
     Tuesday: "Fish fingers with roasted vegetables",
     Wednesday: "Roasted Tomato soup",
     Thursday: "Mini Burritos",
-    Friday: "Mac & Cheese"
-  }
+    Friday: "Mac & Cheese",
+  },
 };
 
 export default async function PublicMenuPage() {
   const supabase = await createClient();
 
-  const { data: activeMenu } = await supabase
-    .from("nursery_menus")
-    .select("*")
-    .eq("is_active", true)
-    .maybeSingle();
+  const { data: activeMenu } = await supabase.from("nursery_menus").select("*").eq("is_active", true).maybeSingle();
 
   const menu = activeMenu || fallbackMenu;
 
@@ -67,7 +65,8 @@ export default async function PublicMenuPage() {
               Weekly Nursery Menu
             </h1>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-              Explore our freshly prepared daily meals and snacks. Our menus are made sweet naturally with fresh fruits and cooked in-house by our chef.
+              Explore our freshly prepared daily meals and snacks. Our menus are made sweet naturally with fresh fruits
+              and cooked in-house by our chef.
             </p>
           </div>
         </section>
@@ -76,10 +75,12 @@ export default async function PublicMenuPage() {
         <section className="py-16 sm:py-24">
           <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-10">
-              <span className="text-xs uppercase font-bold text-muted-foreground tracking-widest">Current Rotation</span>
+              <span className="text-xs uppercase font-bold text-muted-foreground tracking-widest">
+                Current Rotation
+              </span>
               <h2 className="text-2xl font-bold text-foreground mt-1">{menu.name}</h2>
             </div>
-            
+
             <MenuWorkspace menu={menu} />
 
             {/* Note on Allergies */}
@@ -88,7 +89,9 @@ export default async function PublicMenuPage() {
               <div>
                 <h4 className="font-bold text-amber-900 dark:text-amber-200 mb-1">Food Allergies & Intolerances</h4>
                 <p className="text-amber-800 dark:text-amber-300 text-xs">
-                  We cater to all individual dietary needs, religious choices, and food allergies. Please ensure your child's medical preferences are fully recorded in the Parent Portal or reported to our admissions coordinators.
+                  We cater to all individual dietary needs, religious choices, and food allergies. Please ensure your
+                  child's medical preferences are fully recorded in the Parent Portal or reported to our admissions
+                  coordinators.
                 </p>
               </div>
             </div>

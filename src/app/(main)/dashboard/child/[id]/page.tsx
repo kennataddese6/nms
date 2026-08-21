@@ -1,22 +1,24 @@
-import { createClient } from "@/lib/supabase/server";
-import { redirect, notFound } from "next/navigation";
-import { 
-  Baby, 
-  Calendar, 
-  ChevronLeft, 
-  Clock, 
-  Activity, 
-  Utensils, 
-  Coffee, 
-  ShieldAlert, 
-  CheckCircle2, 
+import Link from "next/link";
+import { notFound, redirect } from "next/navigation";
+
+import {
+  Activity,
+  Baby,
+  Calendar,
+  CheckCircle2,
+  ChevronLeft,
+  Clock,
+  Coffee,
+  ShieldAlert,
+  Sparkles,
+  Utensils,
   XCircle,
-  Sparkles
 } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
 
 export const revalidate = 0;
 
@@ -29,7 +31,9 @@ export default async function ChildProfilePage({ params }: PageProps) {
   const supabase = await createClient();
 
   // 1. Get logged in Auth identity
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) {
     redirect("/auth/v1/login");
   }
@@ -84,7 +88,7 @@ export default async function ChildProfilePage({ params }: PageProps) {
     const ageDate = new Date(diffMs);
     const years = Math.abs(ageDate.getUTCFullYear() - 1970);
     const months = ageDate.getUTCMonth();
-    
+
     if (years > 0) {
       return `${years} year${years > 1 ? "s" : ""} ${months} month${months > 1 ? "s" : ""}`;
     }
@@ -155,7 +159,7 @@ export default async function ChildProfilePage({ params }: PageProps) {
                   hour: "2-digit",
                   minute: "2-digit",
                 });
-                
+
                 // Set Icon & styles according to log type
                 let icon = <Activity className="h-4 w-4" />;
                 let colorClass = "bg-blue-100 text-blue-700 border-blue-200";
@@ -190,7 +194,9 @@ export default async function ChildProfilePage({ params }: PageProps) {
                 return (
                   <div key={log.id} className="relative">
                     {/* Timeline dot */}
-                    <div className={`absolute -left-[35px] top-1.5 h-6 w-6 rounded-full border-2 flex items-center justify-center ${colorClass}`}>
+                    <div
+                      className={`absolute -left-[35px] top-1.5 h-6 w-6 rounded-full border-2 flex items-center justify-center ${colorClass}`}
+                    >
                       {icon}
                     </div>
 
@@ -207,33 +213,65 @@ export default async function ChildProfilePage({ params }: PageProps) {
                         {/* Render details layout depending on log type */}
                         {log.activity_type === "MEAL" && (
                           <div className="space-y-1">
-                            <div>Portion Eaten: <Badge variant="outline" className="ml-1 text-[10px]">{log.details?.portion_eaten}</Badge></div>
-                            {log.details?.notes && <p className="italic mt-1 text-neutral-600">"{log.details.notes}"</p>}
+                            <div>
+                              Portion Eaten:{" "}
+                              <Badge variant="outline" className="ml-1 text-[10px]">
+                                {log.details?.portion_eaten}
+                              </Badge>
+                            </div>
+                            {log.details?.notes && (
+                              <p className="italic mt-1 text-neutral-600">"{log.details.notes}"</p>
+                            )}
                           </div>
                         )}
                         {log.activity_type === "NAP" && (
                           <div className="space-y-1">
-                            <div>Duration: <span className="font-bold text-foreground">{log.details?.duration_minutes} minutes</span></div>
-                            <div className="text-[10px]">Time frame: {log.details?.start_time} - {log.details?.end_time}</div>
-                            {log.details?.notes && <p className="italic mt-1 text-neutral-600">"{log.details.notes}"</p>}
+                            <div>
+                              Duration:{" "}
+                              <span className="font-bold text-foreground">{log.details?.duration_minutes} minutes</span>
+                            </div>
+                            <div className="text-[10px]">
+                              Time frame: {log.details?.start_time} - {log.details?.end_time}
+                            </div>
+                            {log.details?.notes && (
+                              <p className="italic mt-1 text-neutral-600">"{log.details.notes}"</p>
+                            )}
                           </div>
                         )}
                         {log.activity_type === "DIAPER" && (
                           <div className="space-y-1">
-                            <div>Status: <span className="font-bold text-foreground">{log.details?.status}</span></div>
-                            {log.details?.notes && <p className="italic mt-1 text-neutral-600">"{log.details.notes}"</p>}
+                            <div>
+                              Status: <span className="font-bold text-foreground">{log.details?.status}</span>
+                            </div>
+                            {log.details?.notes && (
+                              <p className="italic mt-1 text-neutral-600">"{log.details.notes}"</p>
+                            )}
                           </div>
                         )}
                         {log.activity_type === "CHECK_IN" && (
                           <div className="space-y-1">
-                            <div>Dropped off by: <span className="font-bold text-foreground">{log.details?.authorized_pickup || "Parent"}</span></div>
-                            {log.details?.notes && <p className="italic mt-1 text-neutral-600">"{log.details.notes}"</p>}
+                            <div>
+                              Dropped off by:{" "}
+                              <span className="font-bold text-foreground">
+                                {log.details?.authorized_pickup || "Parent"}
+                              </span>
+                            </div>
+                            {log.details?.notes && (
+                              <p className="italic mt-1 text-neutral-600">"{log.details.notes}"</p>
+                            )}
                           </div>
                         )}
                         {log.activity_type === "CHECK_OUT" && (
                           <div className="space-y-1">
-                            <div>Picked up by: <span className="font-bold text-foreground">{log.details?.authorized_pickup || "Parent"}</span></div>
-                            {log.details?.notes && <p className="italic mt-1 text-neutral-600">"{log.details.notes}"</p>}
+                            <div>
+                              Picked up by:{" "}
+                              <span className="font-bold text-foreground">
+                                {log.details?.authorized_pickup || "Parent"}
+                              </span>
+                            </div>
+                            {log.details?.notes && (
+                              <p className="italic mt-1 text-neutral-600">"{log.details.notes}"</p>
+                            )}
                           </div>
                         )}
                         {log.activity_type === "OBSERVATION" && (
@@ -289,13 +327,19 @@ export default async function ChildProfilePage({ params }: PageProps) {
             <CardContent className="space-y-3 text-xs">
               <div className="flex justify-between border-b pb-2 items-center">
                 <span className="text-muted-foreground">Emergency Medical Care:</span>
-                <Badge variant={child.emergency_medical_consent ? "outline" : "destructive"} className={child.emergency_medical_consent ? "bg-emerald-50 text-emerald-700 border-emerald-200" : ""}>
+                <Badge
+                  variant={child.emergency_medical_consent ? "outline" : "destructive"}
+                  className={child.emergency_medical_consent ? "bg-emerald-50 text-emerald-700 border-emerald-200" : ""}
+                >
                   {child.emergency_medical_consent ? "GRANTED" : "DENIED"}
                 </Badge>
               </div>
               <div className="flex justify-between border-b pb-2 items-center">
                 <span className="text-muted-foreground">Photo & Media Consent:</span>
-                <Badge variant={child.photo_consent ? "outline" : "secondary"} className={child.photo_consent ? "bg-emerald-50 text-emerald-700 border-emerald-200" : ""}>
+                <Badge
+                  variant={child.photo_consent ? "outline" : "secondary"}
+                  className={child.photo_consent ? "bg-emerald-50 text-emerald-700 border-emerald-200" : ""}
+                >
                   {child.photo_consent ? "GRANTED" : "DENIED"}
                 </Badge>
               </div>
@@ -316,8 +360,12 @@ export default async function ChildProfilePage({ params }: PageProps) {
                   return (
                     <div key={idx} className="p-3 border rounded-2xl bg-neutral-50/50 space-y-1.5 text-xs">
                       <div className="flex justify-between items-center font-bold">
-                        <span className="text-foreground">{p.first_name} {p.last_name}</span>
-                        <Badge variant="outline" className="text-[9px]">{link.relationship}</Badge>
+                        <span className="text-foreground">
+                          {p.first_name} {p.last_name}
+                        </span>
+                        <Badge variant="outline" className="text-[9px]">
+                          {link.relationship}
+                        </Badge>
                       </div>
                       <div className="text-muted-foreground space-y-0.5 text-[11px]">
                         <div>Email: {p.email}</div>

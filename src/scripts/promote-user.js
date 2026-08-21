@@ -105,12 +105,10 @@ async function promote() {
   }
 
   // Insert role mapping
-  const { error: insertErr } = await supabase
-    .from("user_roles")
-    .insert({
-      user_id: profile.id,
-      role_id: role.id,
-    });
+  const { error: insertErr } = await supabase.from("user_roles").insert({
+    user_id: profile.id,
+    role_id: role.id,
+  });
 
   if (insertErr) {
     console.error("Failed to assign role:", insertErr.message);

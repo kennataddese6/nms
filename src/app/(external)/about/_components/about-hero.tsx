@@ -1,5 +1,6 @@
-import { Sparkles } from "lucide-react";
 import Image from "next/image";
+
+import { Sparkles } from "lucide-react";
 
 export function AboutHero() {
   return (

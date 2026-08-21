@@ -1,4 +1,5 @@
-import { Smile, Heart, Users, Brain, Shield, RefreshCw } from "lucide-react";
+import { Brain, Heart, RefreshCw, Shield, Smile, Users } from "lucide-react";
+
 import { Card, CardContent } from "@/components/ui/card";
 
 export function Vision() {
@@ -89,7 +90,6 @@ export function Vision() {
   return (
     <section className="py-16 sm:py-24 bg-gradient-to-b from-primary/5 via-background to-card">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        
         {/* Ethos Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 text-primary px-4 py-1.5 text-xs font-semibold mb-4">
@@ -99,14 +99,19 @@ export function Vision() {
             Our Vision & Ethos
           </h2>
           <p className="mt-4 text-base sm:text-lg text-muted-foreground leading-relaxed">
-            At Bubbly Day Nursery, <strong className="text-foreground">“We want the best for all our children, families, and our team”</strong>. We aim to create a setting in which each unique child can flourish.
+            At Bubbly Day Nursery,{" "}
+            <strong className="text-foreground">“We want the best for all our children, families, and our team”</strong>
+            . We aim to create a setting in which each unique child can flourish.
           </p>
         </div>
 
         {/* Ethos Columns Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24">
           {ethosPillars.map((pillar) => (
-            <Card key={pillar.title} className="rounded-3xl border bg-background shadow-sm hover:shadow-md transition-shadow">
+            <Card
+              key={pillar.title}
+              className="rounded-3xl border bg-background shadow-sm hover:shadow-md transition-shadow"
+            >
               <CardContent className="p-8 space-y-4">
                 <div className={`h-12 w-12 flex items-center justify-center rounded-2xl ${pillar.color}`}>
                   <pillar.icon className="h-6 w-6 stroke-[2]" />
@@ -134,26 +139,19 @@ export function Vision() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {coreValues.map((value, idx) => (
-              <div 
-                key={idx} 
+              <div
+                key={idx}
                 className={`p-6 rounded-3xl border flex gap-4 bg-background shadow-sm hover:shadow-md transition-all ${value.bgColor}`}
               >
-                <div className={`text-4xl font-black shrink-0 ${value.textColor} select-none`}>
-                  {value.letter}
-                </div>
+                <div className={`text-4xl font-black shrink-0 ${value.textColor} select-none`}>{value.letter}</div>
                 <div>
-                  <h4 className="font-bold text-foreground text-sm uppercase tracking-wide mb-1">
-                    {value.title}
-                  </h4>
-                  <p className="text-muted-foreground text-xs leading-relaxed">
-                    {value.desc}
-                  </p>
+                  <h4 className="font-bold text-foreground text-sm uppercase tracking-wide mb-1">{value.title}</h4>
+                  <p className="text-muted-foreground text-xs leading-relaxed">{value.desc}</p>
                 </div>
               </div>
             ))}
           </div>
         </div>
-
       </div>
     </section>
   );

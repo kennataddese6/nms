@@ -1,15 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { 
-  Coffee, 
-  Apple, 
-  Utensils, 
-  IceCream, 
-  Cookie, 
-  Soup,
-  Clock
-} from "lucide-react";
+
+import { Apple, Clock, Coffee, Cookie, IceCream, Soup, Utensils } from "lucide-react";
+
 import { Card, CardContent } from "@/components/ui/card";
 
 interface MenuWorkspaceProps {
@@ -26,7 +20,7 @@ interface MenuWorkspaceProps {
 
 export function MenuWorkspace({ menu }: MenuWorkspaceProps) {
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"] as const;
-  const [activeDay, setActiveDay] = React.useState<typeof days[number]>("Monday");
+  const [activeDay, setActiveDay] = React.useState<(typeof days)[number]>("Monday");
 
   // Helper icons and styles mapping
   const mealsConfig = [
@@ -92,9 +86,7 @@ export function MenuWorkspace({ menu }: MenuWorkspaceProps) {
               type="button"
               onClick={() => setActiveDay(day)}
               className={`flex-1 min-w-[75px] py-2.5 rounded-xl text-xs font-bold transition-all duration-200 ${
-                isSelected
-                  ? "bg-background text-primary shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
+                isSelected ? "bg-background text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {day}
@@ -106,8 +98,8 @@ export function MenuWorkspace({ menu }: MenuWorkspaceProps) {
       {/* Meals Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {mealsConfig.map((meal) => (
-          <Card 
-            key={meal.title} 
+          <Card
+            key={meal.title}
             className={`rounded-3xl border shadow-sm transition-all duration-200 hover:shadow-md ${meal.bgColor}`}
           >
             <CardContent className="p-6 space-y-4">
@@ -123,9 +115,7 @@ export function MenuWorkspace({ menu }: MenuWorkspaceProps) {
 
               <div>
                 <h3 className="text-lg font-bold text-foreground mb-1">{meal.title}</h3>
-                <p className="text-muted-foreground text-xs leading-relaxed min-h-[40px]">
-                  {meal.desc}
-                </p>
+                <p className="text-muted-foreground text-xs leading-relaxed min-h-[40px]">{meal.desc}</p>
               </div>
             </CardContent>
           </Card>

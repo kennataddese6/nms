@@ -1,7 +1,9 @@
-import { NurseryHeader } from "../_components/nursery-header";
-import { NurseryFooter } from "../_components/nursery-footer";
-import { BookOpen, HelpCircle, FileText, Gift, Info } from "lucide-react";
+import { BookOpen, FileText, Gift, HelpCircle, Info } from "lucide-react";
+
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
+import { NurseryFooter } from "../_components/nursery-footer";
+import { NurseryHeader } from "../_components/nursery-header";
 
 export default function ParentInfoPage() {
   const fees = [
@@ -54,7 +56,6 @@ export default function ParentInfoPage() {
         <section className="py-16 sm:py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 max-w-6xl mx-auto">
-              
               {/* Left Column: Fees Table */}
               <div className="lg:col-span-7 space-y-6">
                 <h2 className="text-3xl font-extrabold text-foreground flex items-center gap-2">
@@ -62,7 +63,8 @@ export default function ParentInfoPage() {
                   Fees & Session Rates
                 </h2>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  Our transparent rates cover all nappies, formula milks, cooked meals, and curriculum resources. Fees are billed monthly in advance.
+                  Our transparent rates cover all nappies, formula milks, cooked meals, and curriculum resources. Fees
+                  are billed monthly in advance.
                 </p>
 
                 <div className="overflow-hidden rounded-3xl border shadow-sm bg-card">
@@ -100,7 +102,8 @@ export default function ParentInfoPage() {
                     <span className="text-[10px] font-bold text-primary uppercase">15 Hours Scheme</span>
                     <h4 className="font-bold text-sm text-foreground">Universal Early Years Funding</h4>
                     <p className="text-xs text-muted-foreground leading-relaxed">
-                      Available to all families for children aged 3 and 4 years old, starting the term following their 3rd birthday.
+                      Available to all families for children aged 3 and 4 years old, starting the term following their
+                      3rd birthday.
                     </p>
                   </div>
                   <div className="p-4 rounded-2xl border bg-background space-y-1">
@@ -112,7 +115,6 @@ export default function ParentInfoPage() {
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         </section>
@@ -121,7 +123,6 @@ export default function ParentInfoPage() {
         <section className="py-16 sm:py-20 bg-card border-t">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 max-w-6xl mx-auto">
-              
               {/* Left Column: Handbooks & Downloads */}
               <div className="lg:col-span-4 space-y-6">
                 <h3 className="text-2xl font-bold text-foreground flex items-center gap-2">
@@ -132,15 +133,24 @@ export default function ParentInfoPage() {
                   Download digital PDFs of our parent guidebooks, health policies, and terms of service.
                 </p>
                 <div className="space-y-2">
-                  <a href="#" className="flex items-center justify-between p-4 rounded-2xl border bg-background hover:bg-neutral-50/50 transition-colors text-xs font-semibold text-foreground">
+                  <a
+                    href="#"
+                    className="flex items-center justify-between p-4 rounded-2xl border bg-background hover:bg-neutral-50/50 transition-colors text-xs font-semibold text-foreground"
+                  >
                     <span>Nursery Parent Handbook (PDF)</span>
                     <span className="text-primary">Download</span>
                   </a>
-                  <a href="#" className="flex items-center justify-between p-4 rounded-2xl border bg-background hover:bg-neutral-50/50 transition-colors text-xs font-semibold text-foreground">
+                  <a
+                    href="#"
+                    className="flex items-center justify-between p-4 rounded-2xl border bg-background hover:bg-neutral-50/50 transition-colors text-xs font-semibold text-foreground"
+                  >
                     <span>Healthy Eating & Food Policy</span>
                     <span className="text-primary">Download</span>
                   </a>
-                  <a href="#" className="flex items-center justify-between p-4 rounded-2xl border bg-background hover:bg-neutral-50/50 transition-colors text-xs font-semibold text-foreground">
+                  <a
+                    href="#"
+                    className="flex items-center justify-between p-4 rounded-2xl border bg-background hover:bg-neutral-50/50 transition-colors text-xs font-semibold text-foreground"
+                  >
                     <span>Safeguarding & Security Standards</span>
                     <span className="text-primary">Download</span>
                   </a>
@@ -154,7 +164,8 @@ export default function ParentInfoPage() {
                   Frequently Asked Questions
                 </h3>
                 <p className="text-muted-foreground text-xs">
-                  Review answers to general nursery topics. Feel free to contact our coordinator if you need extra details.
+                  Review answers to general nursery topics. Feel free to contact our coordinator if you need extra
+                  details.
                 </p>
 
                 <Accordion type="single" collapsible className="w-full">
@@ -170,7 +181,6 @@ export default function ParentInfoPage() {
                   ))}
                 </Accordion>
               </div>
-
             </div>
           </div>
         </section>

@@ -1,24 +1,17 @@
 "use client";
 
 import * as React from "react";
-import { 
-  MessageSquare, 
-  Send, 
-  Plus, 
-  User, 
-  Clock, 
-  AlertCircle,
-  HelpCircle,
-  Inbox
-} from "lucide-react";
+
+import { AlertCircle, Clock, HelpCircle, Inbox, MessageSquare, Plus, Send, User } from "lucide-react";
+import { toast } from "sonner";
+
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Textarea } from "@/components/ui/textarea";
 import { createClient } from "@/lib/supabase/client";
-import { toast } from "sonner";
 
 interface Message {
   id: string;
@@ -56,16 +49,11 @@ interface ChatWorkspaceProps {
   parentRecordId: string | null;
 }
 
-export function ChatWorkspace({ 
-  initialThreads, 
-  currentUserProfile, 
-  isStaff, 
-  parentRecordId 
-}: ChatWorkspaceProps) {
+export function ChatWorkspace({ initialThreads, currentUserProfile, isStaff, parentRecordId }: ChatWorkspaceProps) {
   const supabase = createClient();
   const [threads, setThreads] = React.useState<Thread[]>(initialThreads);
   const [activeThreadId, setActiveThreadId] = React.useState<string | null>(
-    initialThreads.length > 0 ? initialThreads[0].id : null
+    initialThreads.length > 0 ? initialThreads[0].id : null,
   );
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [newMessageText, setNewMessageText] = React.useState("");
@@ -122,7 +110,7 @@ export function ChatWorkspace({
         () => {
           // Re-fetch to get messages + joined profile metadata
           fetchMessages();
-        }
+        },
       )
       .subscribe();
 
@@ -145,13 +133,11 @@ export function ChatWorkspace({
     setNewMessageText(""); // optimistic clear
 
     try {
-      const { error } = await supabase
-        .from("chat_messages")
-        .insert({
-          thread_id: activeThreadId,
-          sender_id: currentUserProfile.id,
-          message: messageToSend,
-        });
+      const { error } = await supabase.from("chat_messages").insert({
+        thread_id: activeThreadId,
+        sender_id: currentUserProfile.id,
+        message: messageToSend,
+      });
 
       if (error) throw error;
     } catch (err: any) {
@@ -196,13 +182,11 @@ export function ChatWorkspace({
       if (threadErr) throw threadErr;
 
       // 2. Insert First Message
-      const { error: msgErr } = await supabase
-        .from("chat_messages")
-        .insert({
-          thread_id: threadData.id,
-          sender_id: currentUserProfile.id,
-          message: newThreadFirstMessage.trim(),
-        });
+      const { error: msgErr } = await supabase.from("chat_messages").insert({
+        thread_id: threadData.id,
+        sender_id: currentUserProfile.id,
+        message: newThreadFirstMessage.trim(),
+      });
 
       if (msgErr) throw msgErr;
 
@@ -251,16 +235,14 @@ export function ChatWorkspace({
             <SheetContent className="sm:max-w-md rounded-l-3xl">
               <SheetHeader className="pb-4 border-b">
                 <SheetTitle>Start a New Enquiry</SheetTitle>
-                <SheetDescription>
-                  Send a query to the Bubbly Day Nursery office team.
-                </SheetDescription>
+                <SheetDescription>Send a query to the Bubbly Day Nursery office team.</SheetDescription>
               </SheetHeader>
               <form onSubmit={handleCreateThread} className="space-y-4 pt-4">
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-muted-foreground" htmlFor="subject">
                     Subject / Topic *
                   </label>
-                  <Input 
+                  <Input
                     id="subject"
                     value={newThreadSubject}
                     onChange={(e) => setNewThreadSubject(e.target.value)}
@@ -272,7 +254,7 @@ export function ChatWorkspace({
                   <label className="text-xs font-semibold text-muted-foreground" htmlFor="message">
                     Your Message *
                   </label>
-                  <Textarea 
+                  <Textarea
                     id="message"
                     value={newThreadFirstMessage}
                     onChange={(e) => setNewThreadFirstMessage(e.target.value)}
@@ -298,7 +280,6 @@ export function ChatWorkspace({
 
       {/* Main chat layout */}
       <div className="flex-1 min-h-0 border rounded-3xl overflow-hidden grid grid-cols-1 md:grid-cols-12 bg-card">
-        
         {/* Left Side: Threads Sidebar */}
         <div className="md:col-span-4 border-r flex flex-col h-full bg-neutral-50/50 dark:bg-neutral-950/20">
           <div className="p-4 border-b shrink-0">
@@ -308,14 +289,12 @@ export function ChatWorkspace({
           </div>
           <div className="flex-1 overflow-y-auto divide-y">
             {threads.length === 0 ? (
-              <div className="p-8 text-center text-xs text-muted-foreground">
-                No active conversations found.
-              </div>
+              <div className="p-8 text-center text-xs text-muted-foreground">No active conversations found.</div>
             ) : (
               threads.map((t) => {
                 const isSelected = t.id === activeThreadId;
-                const contactName = isStaff 
-                  ? `${t.parents?.profiles?.first_name || ""} ${t.parents?.profiles?.last_name || ""}` 
+                const contactName = isStaff
+                  ? `${t.parents?.profiles?.first_name || ""} ${t.parents?.profiles?.last_name || ""}`
                   : "Nursery Office / Staff";
 
                 return (
@@ -327,16 +306,12 @@ export function ChatWorkspace({
                     }`}
                   >
                     <div className="flex justify-between items-start gap-2">
-                      <span className="font-bold text-xs text-foreground line-clamp-1">
-                        {t.subject}
-                      </span>
+                      <span className="font-bold text-xs text-foreground line-clamp-1">{t.subject}</span>
                       <span className="text-[9px] text-muted-foreground font-semibold shrink-0">
                         {new Date(t.created_at).toLocaleDateString()}
                       </span>
                     </div>
-                    <span className="text-[10px] text-muted-foreground mt-1 block">
-                      {contactName}
-                    </span>
+                    <span className="text-[10px] text-muted-foreground mt-1 block">{contactName}</span>
                   </div>
                 );
               })
@@ -372,8 +347,8 @@ export function ChatWorkspace({
                 ) : (
                   messages.map((msg) => {
                     const isOwnMessage = msg.sender_id === currentUserProfile.id;
-                    const senderName = isOwnMessage 
-                      ? "Me" 
+                    const senderName = isOwnMessage
+                      ? "Me"
                       : `${msg.sender?.first_name || ""} ${msg.sender?.last_name || ""}`;
                     const msgTime = new Date(msg.created_at).toLocaleTimeString([], {
                       hour: "2-digit",
@@ -381,10 +356,7 @@ export function ChatWorkspace({
                     });
 
                     return (
-                      <div
-                        key={msg.id}
-                        className={`flex flex-col ${isOwnMessage ? "items-end" : "items-start"}`}
-                      >
+                      <div key={msg.id} className={`flex flex-col ${isOwnMessage ? "items-end" : "items-start"}`}>
                         <div
                           className={`max-w-md rounded-2xl p-3 text-xs leading-relaxed ${
                             isOwnMessage
@@ -405,7 +377,10 @@ export function ChatWorkspace({
               </div>
 
               {/* Message Input Form */}
-              <form onSubmit={handleSendMessage} className="p-4 border-t shrink-0 flex gap-2 bg-neutral-50/20 dark:bg-neutral-900/25">
+              <form
+                onSubmit={handleSendMessage}
+                className="p-4 border-t shrink-0 flex gap-2 bg-neutral-50/20 dark:bg-neutral-900/25"
+              >
                 <Input
                   value={newMessageText}
                   onChange={(e) => setNewMessageText(e.target.value)}
@@ -428,7 +403,6 @@ export function ChatWorkspace({
             </div>
           )}
         </div>
-
       </div>
     </div>
   );

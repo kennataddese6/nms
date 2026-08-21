@@ -5,20 +5,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Baby,
-  Calendar,
-  Eye,
-  Layers,
-  Mail,
-  MapPin,
-  Phone,
-  Plus,
-  Search,
-  ShieldAlert,
-  Sparkles,
-  Users,
-} from "lucide-react";
+import { Baby, Plus, Search, Users } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -43,7 +30,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { createClient } from "@/lib/supabase/client";
 
-import { registerParentAction } from "../actions";
+import { registerParentAction, registerStudentAction } from "../actions";
 
 // ==========================================
 // SCHEMAS
@@ -91,7 +78,7 @@ interface NurseryCrmProps {
 }
 
 export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCrmProps) {
-  const supabase = createClient();
+  const _supabase = createClient();
   const router = useRouter();
 
   const [parents, setParents] = React.useState(initialParents);
@@ -168,38 +155,7 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
   const onStudentSubmit = async (data: StudentFormValues) => {
     setSubmitting(true);
     try {
-      // 1. Insert child record
-      const { data: newChild, error: childError } = await supabase
-        .from("children")
-        .insert({
-          first_name: data.firstName,
-          last_name: data.lastName,
-          date_of_birth: data.dob,
-          gender: data.gender,
-          branch: data.branch,
-          medical_notes: data.medicalNotes || null,
-          allergies: data.allergies || null,
-          photo_consent: data.photoConsent,
-          emergency_medical_consent: data.medicalConsent,
-          status: "WAITING_LIST",
-          room_id: data.roomId || null,
-        })
-        .select("id")
-        .single();
-
-      if (childError || !newChild) {
-        throw new Error(childError?.message || "Failed to create child record.");
-      }
-
-      // 2. Insert child-parent link relationship mapping
-      const { error: linkError } = await supabase.from("child_parents").insert({
-        child_id: newChild.id,
-        parent_id: data.parentId,
-        relationship: data.relationship,
-      });
-
-      if (linkError) throw linkError;
-
+      await registerStudentAction(data);
       toast.success("Student Registered Successfully!");
       studentForm.reset();
       setStudentModalOpen(false);
@@ -228,20 +184,20 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
   return (
     <div className="space-y-6">
       {/* Branch View Selector Banner */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-3xl border bg-card/60 backdrop-blur-sm shadow-sm">
+      <div className="flex flex-col items-start justify-between gap-4 rounded-3xl border bg-card/60 p-5 shadow-sm backdrop-blur-sm sm:flex-row sm:items-center">
         <div>
-          <h2 className="text-sm font-bold text-foreground">Select Active Branch View</h2>
+          <h2 className="font-bold text-foreground text-sm">Select Active Branch View</h2>
           <p className="text-[11px] text-muted-foreground">Filter enrolled children by school setting.</p>
         </div>
-        <div className="flex bg-neutral-100 dark:bg-neutral-800 p-1 rounded-xl gap-1">
+        <div className="flex gap-1 rounded-xl bg-neutral-100 p-1 dark:bg-neutral-800">
           {(["All", "Branch 1", "Branch 2"] as const).map((b) => (
             <button
               key={b}
               type="button"
               onClick={() => setBranchFilter(b)}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+              className={`rounded-lg px-3 py-1.5 font-semibold text-xs transition-all ${
                 branchFilter === b
-                  ? "bg-white dark:bg-neutral-900 text-foreground shadow-sm"
+                  ? "bg-white text-foreground shadow-sm dark:bg-neutral-900"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -252,12 +208,12 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
       </div>
 
       <Tabs defaultValue="students" className="space-y-4">
-        <TabsList className="bg-neutral-100 dark:bg-neutral-800 p-1 rounded-xl">
-          <TabsTrigger value="students" className="rounded-lg flex gap-2">
+        <TabsList className="rounded-xl bg-neutral-100 p-1 dark:bg-neutral-800">
+          <TabsTrigger value="students" className="flex gap-2 rounded-lg">
             <Baby className="h-4 w-4" />
             Students ({filteredChildren.length})
           </TabsTrigger>
-          <TabsTrigger value="parents" className="rounded-lg flex gap-2">
+          <TabsTrigger value="parents" className="flex gap-2 rounded-lg">
             <Users className="h-4 w-4" />
             Parents ({parents.length})
           </TabsTrigger>
@@ -268,7 +224,7 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
          ========================================== */}
         <TabsContent value="students" className="space-y-4 focus:outline-none">
           <Card>
-            <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <CardHeader className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
               <div>
                 <CardTitle>Enrolled Children</CardTitle>
                 <CardDescription>Manage waitlisted and attending nursery students.</CardDescription>
@@ -289,11 +245,11 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
                 <Dialog open={studentModalOpen} onOpenChange={setStudentModalOpen}>
                   <DialogTrigger asChild>
                     <Button size="sm" className="rounded-lg">
-                      <Plus className="h-4 w-4 mr-1" />
+                      <Plus className="mr-1 h-4 w-4" />
                       Register Student
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
+                  <DialogContent className="max-h-[85vh] max-w-md overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle>Register New Student</DialogTitle>
                       <DialogDescription>
@@ -451,13 +407,13 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
                         )}
                       />
 
-                      <div className="space-y-2 border p-3 rounded-xl bg-neutral-50/50">
+                      <div className="space-y-2 rounded-xl border bg-neutral-50/50 p-3">
                         <Controller
                           control={studentForm.control}
                           name="medicalConsent"
                           render={({ field, fieldState }) => (
                             <div className="space-y-1">
-                              <label className="flex items-center gap-2 text-xs font-semibold cursor-pointer">
+                              <label className="flex cursor-pointer items-center gap-2 font-semibold text-xs">
                                 <input type="checkbox" checked={field.value} onChange={field.onChange} />
                                 Confirm Emergency Medical Consent
                               </label>
@@ -471,7 +427,7 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
                           control={studentForm.control}
                           name="photoConsent"
                           render={({ field }) => (
-                            <label className="flex items-center gap-2 text-xs font-semibold cursor-pointer">
+                            <label className="flex cursor-pointer items-center gap-2 font-semibold text-xs">
                               <input type="checkbox" checked={field.value} onChange={field.onChange} />
                               Confirm Photo/Media Consent (Optional)
                             </label>
@@ -496,7 +452,7 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse text-left text-sm">
                     <thead>
-                      <tr className="border-b bg-neutral-50/50 text-xs font-semibold text-muted-foreground">
+                      <tr className="border-b bg-neutral-50/50 font-semibold text-muted-foreground text-xs">
                         <th className="p-4">Name</th>
                         <th className="p-4">Date of Birth</th>
                         <th className="p-4">Gender</th>
@@ -510,7 +466,7 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
                       {filteredChildren.map((child) => {
                         const activeRoom = rooms.find((r) => r.id === child.room_id);
                         return (
-                          <tr key={child.id} className="hover:bg-neutral-50/50 transition-colors">
+                          <tr key={child.id} className="transition-colors hover:bg-neutral-50/50">
                             <td className="p-4 font-bold text-foreground">
                               {child.first_name} {child.last_name}
                             </td>
@@ -519,7 +475,7 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
                             <td className="p-4">
                               <Badge variant="secondary">{child.branch || "—"}</Badge>
                             </td>
-                            <td className="p-4 text-muted-foreground font-semibold">
+                            <td className="p-4 font-semibold text-muted-foreground">
                               {activeRoom ? `${activeRoom.name} (${activeRoom.age_group})` : "Waitlist"}
                             </td>
                             <td className="p-4 text-muted-foreground">
@@ -535,8 +491,8 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
                                 variant="outline"
                                 className={
                                   child.status === "ACTIVE"
-                                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                                    : "bg-amber-50 text-amber-700 border-amber-200"
+                                    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                                    : "border-amber-200 bg-amber-50 text-amber-700"
                                 }
                               >
                                 {child.status}
@@ -558,7 +514,7 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
          ========================================== */}
         <TabsContent value="parents" className="space-y-4 focus:outline-none">
           <Card>
-            <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <CardHeader className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
               <div>
                 <CardTitle>Registered Parents</CardTitle>
                 <CardDescription>View parent profile cards, emails, and address logs.</CardDescription>
@@ -579,11 +535,11 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
                 <Dialog open={parentModalOpen} onOpenChange={setParentModalOpen}>
                   <DialogTrigger asChild>
                     <Button size="sm" className="rounded-lg">
-                      <Plus className="h-4 w-4 mr-1" />
+                      <Plus className="mr-1 h-4 w-4" />
                       Register Parent
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
+                  <DialogContent className="max-h-[85vh] max-w-md overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle>Register New Parent</DialogTitle>
                       <DialogDescription>
@@ -698,7 +654,7 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse text-left text-sm">
                     <thead>
-                      <tr className="border-b bg-neutral-50/50 text-xs font-semibold text-muted-foreground">
+                      <tr className="border-b bg-neutral-50/50 font-semibold text-muted-foreground text-xs">
                         <th className="p-4">Name</th>
                         <th className="p-4">Email</th>
                         <th className="p-4">Phone</th>
@@ -709,7 +665,7 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
                     </thead>
                     <tbody className="divide-y">
                       {filteredParents.map((parent) => (
-                        <tr key={parent.id} className="hover:bg-neutral-50/50 transition-colors">
+                        <tr key={parent.id} className="transition-colors hover:bg-neutral-50/50">
                           <td className="p-4 font-bold text-foreground">
                             {parent.profiles?.first_name} {parent.profiles?.last_name}
                           </td>

@@ -104,9 +104,7 @@ export function NavMain({ items }: NavMainProps) {
   return (
     <>
       <SidebarGroup>
-        <SidebarGroupContent className="flex flex-col gap-2">
-
-        </SidebarGroupContent>
+        <SidebarGroupContent className="flex flex-col gap-2"></SidebarGroupContent>
       </SidebarGroup>
       {items.map((group) => (
         <SidebarGroup key={group.id}>

@@ -8,6 +8,7 @@ import {
   Gauge,
   GraduationCap,
   Kanban,
+  Layers,
   LayoutDashboard,
   ListTodo,
   Lock,
@@ -19,7 +20,6 @@ import {
   ShoppingBag,
   SquareArrowUpRight,
   Users,
-  Layers,
 } from "lucide-react";
 
 export type NavBadge = "new" | "soon";

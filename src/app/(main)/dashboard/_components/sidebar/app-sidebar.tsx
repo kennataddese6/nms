@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
+
 import Image from "next/image";
+import Link from "next/link";
 
 import { CircleHelp, ClipboardList, Command, Database, File, Search, Settings } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
@@ -17,9 +18,9 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { APP_CONFIG } from "@/config/app-config";
+import { createClient } from "@/lib/supabase/client";
 import { sidebarItems } from "@/navigation/sidebar/sidebar-items";
 import { usePreferencesStore } from "@/stores/preferences/preferences-provider";
-import { createClient } from "@/lib/supabase/client";
 
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
@@ -73,7 +74,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   React.useEffect(() => {
     async function getRole() {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (session?.user) {
         // Query user profile info
         const { data: profile } = await supabase
@@ -82,7 +85,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           .eq("id", session.user.id)
           .maybeSingle();
 
-        const name = profile 
+        const name = profile
           ? `${profile.first_name || ""} ${profile.last_name || ""}`.trim() || "Nursery User"
           : session.user.email?.split("@")[0] || "Nursery User";
         const email = profile?.email || session.user.email || "user@bubblydnursery.co.uk";
@@ -100,11 +103,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           .eq("user_id", session.user.id);
 
         const roleNames = roleMappings?.map((rm: any) => rm.roles?.name) || [];
-        if (
-          roleNames.includes("NURSERY_MANAGER") ||
-          roleNames.includes("STAFF") ||
-          roleNames.includes("SUPER_ADMIN")
-        ) {
+        if (roleNames.includes("NURSERY_MANAGER") || roleNames.includes("STAFF") || roleNames.includes("SUPER_ADMIN")) {
           setUserRole("NURSERY_MANAGER");
         } else {
           setUserRole("PARENT");
@@ -125,7 +124,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const variant = isSynced ? sidebarVariant : props.variant;
   const collapsible = isSynced ? sidebarCollapsible : props.collapsible;
 
-  const filteredItems = sidebarItems.filter(group => {
+  const filteredItems = sidebarItems.filter((group) => {
     if (!group.roles) return true;
     return group.roles.includes(userRole);
   });
@@ -136,7 +135,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="h-12 py-2">
-              <Link prefetch={false} href={userRole === "PARENT" ? "/dashboard/parent" : "/dashboard/nursery-crm"} className="flex items-center gap-2">
+              <Link
+                prefetch={false}
+                href={userRole === "PARENT" ? "/dashboard/parent" : "/dashboard/nursery-crm"}
+                className="flex items-center gap-2"
+              >
                 <div className="relative h-7 w-7 overflow-hidden rounded-full shrink-0 border bg-background">
                   <Image
                     src="/images/logo.png"
