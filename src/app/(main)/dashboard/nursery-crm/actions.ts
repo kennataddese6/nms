@@ -161,6 +161,9 @@ export async function registerStudentAction(data: RegisterStudentInput) {
   // 2. Perform admin database operations with admin client
   const adminClient = createAdminClient();
 
+  const validRoomId = data.roomId && data.roomId.trim() !== "" ? data.roomId : null;
+  const validParentId = data.parentId && data.parentId.trim() !== "" ? data.parentId : null;
+
   // Insert child record
   const { data: newChild, error: childError } = await adminClient
     .from("children")
@@ -170,12 +173,12 @@ export async function registerStudentAction(data: RegisterStudentInput) {
       date_of_birth: data.dob,
       gender: data.gender,
       branch: data.branch,
-      medical_notes: data.medicalNotes ?? null,
-      allergies: data.allergies ?? null,
+      medical_notes: data.medicalNotes && data.medicalNotes.trim() !== "" ? data.medicalNotes : null,
+      allergies: data.allergies && data.allergies.trim() !== "" ? data.allergies : null,
       photo_consent: data.photoConsent,
       emergency_medical_consent: data.medicalConsent,
       status: "WAITING_LIST",
-      room_id: data.roomId ?? null,
+      room_id: validRoomId,
     })
     .select("id")
     .single();
@@ -184,15 +187,17 @@ export async function registerStudentAction(data: RegisterStudentInput) {
     throw new Error(childError?.message || "Failed to create child record.");
   }
 
-  // Insert child-parent link relationship mapping
-  const { error: linkError } = await adminClient.from("child_parents").insert({
-    child_id: newChild.id,
-    parent_id: data.parentId,
-    relationship: data.relationship,
-  });
+  // Insert child-parent link relationship mapping if parent ID provided
+  if (validParentId) {
+    const { error: linkError } = await adminClient.from("child_parents").insert({
+      child_id: newChild.id,
+      parent_id: validParentId,
+      relationship: data.relationship,
+    });
 
-  if (linkError) {
-    throw new Error(linkError.message || "Failed to link parent to child record.");
+    if (linkError) {
+      throw new Error(linkError.message || "Failed to link parent to child record.");
+    }
   }
 
   return { success: true };
