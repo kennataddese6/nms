@@ -96,6 +96,7 @@ export function NurseryFooter() {
                 { href: "/about", label: "About Us & EYFS", emoji: "📖" },
                 { href: "/rooms", label: "Classroom Rooms", emoji: "🚪" },
                 { href: "/menu", label: "Nursery Food Menu", emoji: "🍎" },
+                { href: "/gallery", label: "Photo Gallery", emoji: "🖼️" },
                 { href: "/news", label: "News & Events", emoji: "📰" },
                 { href: "/careers", label: "Careers & Jobs", emoji: "💼" },
                 { href: "/contact", label: "Contact Us", emoji: "✉️" },
