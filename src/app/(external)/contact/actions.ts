@@ -26,10 +26,7 @@ export async function submitContactFormAction(data: PublicEnquiryInput) {
 
   // 1. Find or create profile record for email
   let profileId: string | null = null;
-  const { data: existingProfiles } = await adminClient
-    .from("profiles")
-    .select("id")
-    .eq("email", cleanEmail);
+  const { data: existingProfiles } = await adminClient.from("profiles").select("id").eq("email", cleanEmail);
 
   if (existingProfiles && existingProfiles.length > 0) {
     profileId = existingProfiles[0].id;
@@ -54,10 +51,7 @@ export async function submitContactFormAction(data: PublicEnquiryInput) {
 
   // 2. Find or create parent record for profile
   let parentId: string | null = null;
-  const { data: existingParents } = await adminClient
-    .from("parents")
-    .select("id")
-    .eq("profile_id", profileId);
+  const { data: existingParents } = await adminClient.from("parents").select("id").eq("profile_id", profileId);
 
   if (existingParents && existingParents.length > 0) {
     parentId = existingParents[0].id;
@@ -98,7 +92,8 @@ export async function submitContactFormAction(data: PublicEnquiryInput) {
   // 4. Build message content body
   let messageContent = "";
   if (isTour) {
-    messageContent = `🎒 NURSERY TOUR BOOKING REQUEST\n\n` +
+    messageContent =
+      `🎒 NURSERY TOUR BOOKING REQUEST\n\n` +
       `• Parent Name: ${data.name}\n` +
       `• Email: ${cleanEmail}\n` +
       `• Phone: ${cleanPhone}\n` +
@@ -109,7 +104,8 @@ export async function submitContactFormAction(data: PublicEnquiryInput) {
       `• Branch Location: ${data.branch || "Branch 1"}\n\n` +
       `Submitted via Bubbly Day Nursery public website.`;
   } else {
-    messageContent = `✉️ WEBSITE GENERAL ENQUIRY\n\n` +
+    messageContent =
+      `✉️ WEBSITE GENERAL ENQUIRY\n\n` +
       `• Sender: ${data.name}\n` +
       `• Email: ${cleanEmail}\n` +
       `• Phone: ${cleanPhone}\n\n` +

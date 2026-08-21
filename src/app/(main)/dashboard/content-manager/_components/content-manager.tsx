@@ -43,6 +43,7 @@ import { NativeSelect } from "@/components/ui/native-select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { createClient } from "@/lib/supabase/client";
+
 import {
   deleteContentItemAction,
   saveGalleryMediaAction,
@@ -226,9 +227,7 @@ export function ContentManager({
       });
 
       if (editingLeadershipMember) {
-        setLeadership((prev) =>
-          prev.map((m) => (m.id === editingLeadershipMember.id ? { ...m, ...res.member } : m)),
-        );
+        setLeadership((prev) => prev.map((m) => (m.id === editingLeadershipMember.id ? { ...m, ...res.member } : m)));
         toast.success("Leadership Member Updated!");
       } else {
         setLeadership((prev) => [...prev, res.member]);
@@ -386,9 +385,7 @@ export function ContentManager({
       });
 
       if (editingMenu) {
-        setMenus((prev) =>
-          prev.map((m) => (m.id === editingMenu.id ? { ...m, ...res.menu } : m)),
-        );
+        setMenus((prev) => prev.map((m) => (m.id === editingMenu.id ? { ...m, ...res.menu } : m)));
         toast.success("Weekly Menu Updated successfully!");
       } else {
         setMenus((prev) => [res.menu, ...prev]);
@@ -643,8 +640,8 @@ export function ContentManager({
   };
 
   // Delete Action helpers
-  const deleteItem = async (table: string, id: string) => {
-    if (!confirm("Are you sure you want to delete this listing?")) return;
+  const deleteItem = async (table: string, id: string, customConfirmMsg?: string) => {
+    if (!confirm(customConfirmMsg || "Are you sure you want to delete this listing?")) return;
     try {
       await deleteContentItemAction(table, id);
       toast.success("Item Deleted Successfully!");
@@ -733,10 +730,13 @@ export function ContentManager({
                 </CardDescription>
               </div>
 
-              <Dialog open={leadershipModalOpen} onOpenChange={(open) => {
-                setLeadershipModalOpen(open);
-                if (!open) setEditingLeadershipMember(null);
-              }}>
+              <Dialog
+                open={leadershipModalOpen}
+                onOpenChange={(open) => {
+                  setLeadershipModalOpen(open);
+                  if (!open) setEditingLeadershipMember(null);
+                }}
+              >
                 <Button size="sm" className="rounded-lg" onClick={handleCreateLeadershipMember}>
                   <Plus className="h-4 w-4 mr-1" />
                   Add Leadership Member
@@ -753,7 +753,11 @@ export function ContentManager({
                     </DialogDescription>
                   </DialogHeader>
 
-                  <form noValidate onSubmit={leadershipForm.handleSubmit(onLeadershipSubmit)} className="space-y-4 pt-2">
+                  <form
+                    noValidate
+                    onSubmit={leadershipForm.handleSubmit(onLeadershipSubmit)}
+                    className="space-y-4 pt-2"
+                  >
                     <Controller
                       control={leadershipForm.control}
                       name="name"
@@ -784,7 +788,12 @@ export function ContentManager({
                       render={({ field, fieldState }) => (
                         <Field className="gap-1.5" data-invalid={fieldState.invalid}>
                           <FieldLabel htmlFor="leader-email">Contact Email</FieldLabel>
-                          <Input {...field} id="leader-email" type="email" placeholder="e.g. clara@bubblynursery.co.uk" />
+                          <Input
+                            {...field}
+                            id="leader-email"
+                            type="email"
+                            placeholder="e.g. clara@bubblynursery.co.uk"
+                          />
                           {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                         </Field>
                       )}
@@ -828,11 +837,7 @@ export function ContentManager({
                         Cancel
                       </Button>
                       <Button type="submit" disabled={submitting}>
-                        {submitting
-                          ? "Saving..."
-                          : editingLeadershipMember
-                            ? "Update Member"
-                            : "Save Member"}
+                        {submitting ? "Saving..." : editingLeadershipMember ? "Update Member" : "Save Member"}
                       </Button>
                     </DialogFooter>
                   </form>
@@ -1450,17 +1455,22 @@ export function ContentManager({
                 </CardDescription>
               </div>
 
-              <Dialog open={menuModalOpen} onOpenChange={(open) => {
-                setMenuModalOpen(open);
-                if (!open) setEditingMenu(null);
-              }}>
+              <Dialog
+                open={menuModalOpen}
+                onOpenChange={(open) => {
+                  setMenuModalOpen(open);
+                  if (!open) setEditingMenu(null);
+                }}
+              >
                 <Button size="sm" className="rounded-lg" onClick={handleCreateMenu}>
                   <Plus className="h-4 w-4 mr-1" />
                   Add Weekly Menu
                 </Button>
                 <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
                   <DialogHeader>
-                    <DialogTitle>{editingMenu ? "Edit Weekly Nursery Menu" : "Add New Weekly Nursery Menu"}</DialogTitle>
+                    <DialogTitle>
+                      {editingMenu ? "Edit Weekly Nursery Menu" : "Add New Weekly Nursery Menu"}
+                    </DialogTitle>
                     <DialogDescription>
                       {editingMenu
                         ? "Update the daily meals, snacks, and desserts for this menu rotation."
@@ -1775,9 +1785,16 @@ export function ContentManager({
                                 variant="ghost"
                                 size="sm"
                                 className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-                                onClick={() => deleteItem("nursery_menus", m.id)}
-                                disabled={m.is_active}
-                                title={m.is_active ? "Cannot delete active menu" : "Delete Menu"}
+                                onClick={() =>
+                                  deleteItem(
+                                    "nursery_menus",
+                                    m.id,
+                                    m.is_active
+                                      ? "This menu is currently ACTIVE on the website. Are you sure you want to delete it?"
+                                      : undefined,
+                                  )
+                                }
+                                title="Delete Menu"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
@@ -1798,9 +1815,7 @@ export function ContentManager({
       <Dialog open={!!viewingMenu} onOpenChange={(open) => !open && setViewingMenu(null)}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              🍎 {viewingMenu?.name}
-            </DialogTitle>
+            <DialogTitle className="flex items-center gap-2">🍎 {viewingMenu?.name}</DialogTitle>
             <DialogDescription>
               Complete daily meal breakdown for {viewingMenu?.branch || "Branch 1"}.
             </DialogDescription>
@@ -1832,21 +1847,15 @@ export function ContentManager({
                 <div className="divide-y rounded-2xl border bg-card overflow-hidden">
                   {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => (
                     <div key={day} className="p-4 space-y-2 hover:bg-neutral-50/50">
-                      <span className="block text-xs font-black text-primary uppercase tracking-wider">
-                        {day}
-                      </span>
+                      <span className="block text-xs font-black text-primary uppercase tracking-wider">{day}</span>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                         <div>
                           <span className="text-muted-foreground font-bold">Lunch: </span>
-                          <span className="font-semibold text-foreground">
-                            {viewingMenu.lunch?.[day] || "—"}
-                          </span>
+                          <span className="font-semibold text-foreground">{viewingMenu.lunch?.[day] || "—"}</span>
                         </div>
                         <div>
                           <span className="text-muted-foreground font-bold">Dessert: </span>
-                          <span className="font-semibold text-foreground">
-                            {viewingMenu.desserts?.[day] || "—"}
-                          </span>
+                          <span className="font-semibold text-foreground">{viewingMenu.desserts?.[day] || "—"}</span>
                         </div>
                         <div>
                           <span className="text-muted-foreground font-bold">Afternoon Snack: </span>
@@ -1868,21 +1877,43 @@ export function ContentManager({
             </div>
           )}
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setViewingMenu(null)}>
-              Close
-            </Button>
+          <DialogFooter className="flex justify-between sm:justify-between w-full">
             {viewingMenu && (
               <Button
+                variant="destructive"
+                className="gap-1.5"
                 onClick={() => {
                   const target = viewingMenu;
                   setViewingMenu(null);
-                  handleEditMenu(target);
+                  deleteItem(
+                    "nursery_menus",
+                    target.id,
+                    target.is_active
+                      ? "This menu is currently ACTIVE on the website. Are you sure you want to delete it?"
+                      : undefined,
+                  );
                 }}
               >
-                Edit This Menu
+                <Trash2 className="h-4 w-4" />
+                Delete Menu
               </Button>
             )}
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setViewingMenu(null)}>
+                Close
+              </Button>
+              {viewingMenu && (
+                <Button
+                  onClick={() => {
+                    const target = viewingMenu;
+                    setViewingMenu(null);
+                    handleEditMenu(target);
+                  }}
+                >
+                  Edit This Menu
+                </Button>
+              )}
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1890,25 +1921,19 @@ export function ContentManager({
       <Dialog open={!!viewingLeadershipMember} onOpenChange={(open) => !open && setViewingLeadershipMember(null)}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              🌟 {viewingLeadershipMember?.title}
-            </DialogTitle>
+            <DialogTitle className="flex items-center gap-2">🌟 {viewingLeadershipMember?.title}</DialogTitle>
             <DialogDescription>{viewingLeadershipMember?.room}</DialogDescription>
           </DialogHeader>
 
           {viewingLeadershipMember && (
             <div className="space-y-4 py-2 text-sm">
               <div>
-                <span className="block text-xs font-bold text-muted-foreground uppercase mb-1">
-                  Branch Assignment
-                </span>
+                <span className="block text-xs font-bold text-muted-foreground uppercase mb-1">Branch Assignment</span>
                 <Badge variant="outline">{viewingLeadershipMember.branch || "Both Locations"}</Badge>
               </div>
 
               <div>
-                <span className="block text-xs font-bold text-muted-foreground uppercase mb-1">
-                  Contact Email
-                </span>
+                <span className="block text-xs font-bold text-muted-foreground uppercase mb-1">Contact Email</span>
                 <p className="text-xs font-medium text-foreground">
                   {viewingLeadershipMember.salary || "Not specified"}
                 </p>

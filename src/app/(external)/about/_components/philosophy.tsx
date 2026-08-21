@@ -47,7 +47,8 @@ export function Philosophy() {
             Our Early Years Philosophy 🎨
           </h2>
           <p className="mt-4 text-base sm:text-lg text-muted-foreground leading-relaxed">
-            We structure our daily sessions around four key pillars to deliver a well-rounded, joyful foundation for child development.
+            We structure our daily sessions around four key pillars to deliver a well-rounded, joyful foundation for
+            child development.
           </p>
         </div>
 

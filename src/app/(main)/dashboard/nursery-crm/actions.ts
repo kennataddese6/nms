@@ -278,3 +278,37 @@ export async function updateStudentAction(data: UpdateStudentInput) {
 
   return { success: true };
 }
+
+export async function deleteStudentAction(studentId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized: Log in required.");
+  }
+
+  const { data: roleMappings } = await supabase.from("user_roles").select("roles(name)").eq("user_id", user.id);
+
+  const roleNames =
+    (roleMappings as unknown as Array<{ roles: { name: string } | null }>)
+      ?.map((rm) => rm.roles?.name)
+      .filter(Boolean) || [];
+  const isStaff =
+    roleNames.includes("NURSERY_MANAGER") || roleNames.includes("STAFF") || roleNames.includes("SUPER_ADMIN");
+
+  if (!isStaff) {
+    throw new Error("Forbidden: Only nursery staff can delete students.");
+  }
+
+  const adminClient = createAdminClient();
+
+  const { error } = await adminClient.from("children").delete().eq("id", studentId);
+
+  if (error) {
+    throw new Error(error.message || "Failed to delete student record.");
+  }
+
+  return { success: true };
+}

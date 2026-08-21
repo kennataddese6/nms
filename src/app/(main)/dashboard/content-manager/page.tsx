@@ -38,7 +38,8 @@ export default async function ContentManagerPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Website Content Manager</h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Manage leadership team profiles, publish career vacancies, post nursery news, update photo gallery, and manage nutrition menus.
+          Manage leadership team profiles, publish career vacancies, post nursery news, update photo gallery, and manage
+          nutrition menus.
         </p>
       </div>
 

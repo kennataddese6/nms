@@ -1,5 +1,6 @@
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
+
 import { Calendar, Download, FileText, MapPin, Newspaper, Sparkles } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -16,10 +17,7 @@ export default async function NewsPage() {
   const supabase = await createClient();
 
   // Fetch live news & events from database
-  const { data: posts } = await supabase
-    .from("news_events")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const { data: posts } = await supabase.from("news_events").select("*").order("created_at", { ascending: false });
 
   const newsEvents = posts || [];
 
@@ -33,9 +31,25 @@ export default async function NewsPage() {
           <div className="absolute bottom-0 right-1/4 -z-10 h-64 w-64 rounded-full bg-pink-300/20 blur-3xl" />
 
           {/* Floating decorations */}
-          <span aria-hidden="true" className="absolute top-6 left-10 text-3xl pointer-events-none select-none nursery-twinkle opacity-60 hidden sm:block">⭐</span>
-          <span aria-hidden="true" className="absolute top-10 right-12 text-3xl pointer-events-none select-none nursery-float opacity-60 hidden sm:block" style={{ animationDelay: "0.8s" }}>📰</span>
-          <span aria-hidden="true" className="absolute bottom-6 left-1/4 text-2xl pointer-events-none select-none nursery-wiggle opacity-50 hidden md:block">🎈</span>
+          <span
+            aria-hidden="true"
+            className="absolute top-6 left-10 text-3xl pointer-events-none select-none nursery-twinkle opacity-60 hidden sm:block"
+          >
+            ⭐
+          </span>
+          <span
+            aria-hidden="true"
+            className="absolute top-10 right-12 text-3xl pointer-events-none select-none nursery-float opacity-60 hidden sm:block"
+            style={{ animationDelay: "0.8s" }}
+          >
+            📰
+          </span>
+          <span
+            aria-hidden="true"
+            className="absolute bottom-6 left-1/4 text-2xl pointer-events-none select-none nursery-wiggle opacity-50 hidden md:block"
+          >
+            🎈
+          </span>
 
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
             <span className="inline-flex items-center gap-2 rounded-full bg-white/70 backdrop-blur-sm border border-white/80 text-sky-800 px-4 py-1.5 text-xs font-bold shadow-sm mb-4">
@@ -46,7 +60,8 @@ export default async function NewsPage() {
               News & Upcoming Events 📢
             </h1>
             <p className="mt-4 text-lg text-sky-900/80 max-w-2xl mx-auto leading-relaxed">
-              Stay up to date with Bubbly Day Nursery announcements, open days, holiday schedules, and learning celebrations across our settings.
+              Stay up to date with Bubbly Day Nursery announcements, open days, holiday schedules, and learning
+              celebrations across our settings.
             </p>
           </div>
         </section>
@@ -59,9 +74,7 @@ export default async function NewsPage() {
                 🌟 Latest Updates
               </div>
               <h2 className="font-heading text-3xl font-black text-foreground">What&apos;s Happening at Bubbly</h2>
-              <p className="text-sm text-muted-foreground mt-2">
-                Published updates directly from nursery management.
-              </p>
+              <p className="text-sm text-muted-foreground mt-2">Published updates directly from nursery management.</p>
             </div>
 
             {newsEvents.length === 0 ? (
@@ -103,23 +116,26 @@ export default async function NewsPage() {
                           </span>
 
                           {post.branch && (
-                            <Badge variant="outline" className="text-[10px] font-bold border-teal-300 text-teal-700 bg-teal-50 flex items-center gap-1">
+                            <Badge
+                              variant="outline"
+                              className="text-[10px] font-bold border-teal-300 text-teal-700 bg-teal-50 flex items-center gap-1"
+                            >
                               <MapPin className="h-3 w-3" /> {post.branch}
                             </Badge>
                           )}
                         </div>
 
                         {/* Title */}
-                        <h3 className="text-xl font-extrabold text-foreground mb-3 leading-snug">
-                          {post.title}
-                        </h3>
+                        <h3 className="text-xl font-extrabold text-foreground mb-3 leading-snug">{post.title}</h3>
 
                         {/* Dates */}
                         {(post.event_date || createdDateStr) && (
                           <div className="flex items-center gap-2 text-xs font-bold text-sky-800 mb-4 bg-sky-50 border border-sky-200 p-2.5 rounded-2xl">
                             <Calendar className="h-4 w-4 text-sky-600 shrink-0" />
                             {post.event_date ? (
-                              <span>Event Date: <strong>{post.event_date}</strong></span>
+                              <span>
+                                Event Date: <strong>{post.event_date}</strong>
+                              </span>
                             ) : (
                               <span>Posted on {createdDateStr}</span>
                             )}
@@ -186,7 +202,11 @@ export default async function NewsPage() {
               Follow our news bulletin or schedule a personal visit to meet our team.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Button asChild size="lg" className="rounded-full px-8 font-bold bg-gradient-to-r from-orange-400 to-pink-500 text-white shadow-md hover:scale-105 transition-all">
+              <Button
+                asChild
+                size="lg"
+                className="rounded-full px-8 font-bold bg-gradient-to-r from-orange-400 to-pink-500 text-white shadow-md hover:scale-105 transition-all"
+              >
                 <Link href="/contact?tour=true">🎒 Book a Nursery Tour</Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="rounded-full px-8 font-bold border-2">

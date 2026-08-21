@@ -5,7 +5,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Baby, ExternalLink, Eye, Mail, Pencil, Plus, Search, Users } from "lucide-react";
+import { Baby, ExternalLink, Eye, Mail, MessageSquare, Pencil, Phone, Plus, Search, Trash2, Users } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -30,7 +30,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { createClient } from "@/lib/supabase/client";
 
-import { registerParentAction, registerStudentAction, updateStudentAction } from "../actions";
+import { deleteStudentAction, registerParentAction, registerStudentAction, updateStudentAction } from "../actions";
 
 // ==========================================
 // SCHEMAS
@@ -108,7 +108,25 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
   const [studentModalOpen, setStudentModalOpen] = React.useState(false);
   const [viewingChild, setViewingChild] = React.useState<any | null>(null);
   const [editingChild, setEditingChild] = React.useState<any | null>(null);
+  const [deletingChild, setDeletingChild] = React.useState<any | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
+
+  const handleDeleteStudent = async () => {
+    if (!deletingChild) return;
+    setSubmitting(true);
+    try {
+      await deleteStudentAction(deletingChild.id);
+      toast.success("Student deleted successfully!");
+      if (viewingChild?.id === deletingChild.id) setViewingChild(null);
+      if (editingChild?.id === deletingChild.id) setEditingChild(null);
+      setDeletingChild(null);
+      router.refresh();
+    } catch (err: any) {
+      toast.error("Failed to delete student", { description: err.message });
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const studentEditForm = useForm<StudentEditFormValues>({
     resolver: zodResolver(studentEditSchema),
@@ -387,7 +405,10 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
                                 <option value="">Unassigned / Waitlist</option>
                                 {rooms.map((r) => (
                                   <option key={r.id} value={r.id}>
-                                    {r.name} ({r.age_group})
+                                    {r.name}
+                                    {r.min_age_months !== undefined && r.max_age_months !== undefined
+                                      ? ` (${r.min_age_months}-${r.max_age_months} mos)`
+                                      : ""}
                                   </option>
                                 ))}
                               </NativeSelect>
@@ -534,7 +555,10 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
                         const activeRoom = rooms.find((r) => r.id === child.room_id);
                         return (
                           <tr key={child.id} className="transition-colors hover:bg-neutral-50/50">
-                            <td className="p-4 font-bold text-foreground cursor-pointer hover:underline" onClick={() => setViewingChild(child)}>
+                            <td
+                              className="p-4 font-bold text-foreground cursor-pointer hover:underline"
+                              onClick={() => setViewingChild(child)}
+                            >
                               {child.first_name} {child.last_name}
                             </td>
                             <td className="p-4 text-muted-foreground">{child.date_of_birth}</td>
@@ -543,7 +567,13 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
                               <Badge variant="secondary">{child.branch || "—"}</Badge>
                             </td>
                             <td className="p-4 font-semibold text-muted-foreground">
-                              {activeRoom ? `${activeRoom.name} (${activeRoom.age_group})` : "Waitlist"}
+                              {activeRoom
+                                ? `${activeRoom.name}${
+                                    activeRoom.min_age_months !== undefined && activeRoom.max_age_months !== undefined
+                                      ? ` (${activeRoom.min_age_months}-${activeRoom.max_age_months} mos)`
+                                      : ""
+                                  }`
+                                : "Waitlist"}
                             </td>
                             <td className="p-4 text-muted-foreground">
                               {child.child_parents?.map((cp: any, idx: number) => (
@@ -584,6 +614,15 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
                                   title="Edit Student Record"
                                 >
                                   <Pencil className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="text-muted-foreground hover:text-destructive text-destructive/80"
+                                  onClick={() => setDeletingChild(child)}
+                                  title="Delete Student Record"
+                                >
+                                  <Trash2 className="h-4 w-4" />
                                 </Button>
                               </div>
                             </td>
@@ -787,9 +826,7 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
                 {viewingChild?.status}
               </Badge>
             </DialogTitle>
-            <DialogDescription>
-              Registered student profile details and parent contact management.
-            </DialogDescription>
+            <DialogDescription>Registered student profile details and parent contact management.</DialogDescription>
           </DialogHeader>
 
           {viewingChild && (
@@ -819,29 +856,44 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
               {/* Medical & Allergy Notes */}
               {(viewingChild.allergies || viewingChild.medical_notes) && (
                 <div className="space-y-2">
-                  <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Medical & Health Notes</h4>
+                  <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                    Medical & Health Notes
+                  </h4>
                   <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 p-3.5 rounded-xl text-xs space-y-1">
                     {viewingChild.allergies && (
-                      <p><strong className="text-amber-800 dark:text-amber-300">Allergies:</strong> {viewingChild.allergies}</p>
+                      <p>
+                        <strong className="text-amber-800 dark:text-amber-300">Allergies:</strong>{" "}
+                        {viewingChild.allergies}
+                      </p>
                     )}
                     {viewingChild.medical_notes && (
-                      <p><strong className="text-amber-800 dark:text-amber-300">Medical Notes:</strong> {viewingChild.medical_notes}</p>
+                      <p>
+                        <strong className="text-amber-800 dark:text-amber-300">Medical Notes:</strong>{" "}
+                        {viewingChild.medical_notes}
+                      </p>
                     )}
                   </div>
                 </div>
               )}
 
-              {/* Linked Parent Information & Email Actions */}
+              {/* Linked Parent Information & Direct Contact Options */}
               <div className="space-y-3">
-                <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Linked Parent(s) & Direct Email Contact</h4>
-                {(!viewingChild.child_parents || viewingChild.child_parents.length === 0) ? (
-                  <p className="text-xs text-muted-foreground italic">No linked parent profile registered for this student.</p>
+                <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                  Linked Parent(s) & Direct Contact Options
+                </h4>
+                {!viewingChild.child_parents || viewingChild.child_parents.length === 0 ? (
+                  <p className="text-xs text-muted-foreground italic">
+                    No linked parent profile registered for this student.
+                  </p>
                 ) : (
                   <div className="space-y-3">
                     {viewingChild.child_parents.map((cp: any, idx: number) => {
                       const parentProfile = cp.parents?.profiles;
                       const parentEmail = parentProfile?.email;
-                      const parentName = parentProfile ? `${parentProfile.first_name} ${parentProfile.last_name}` : "Parent / Guardian";
+                      const parentPhone = parentProfile?.phone;
+                      const parentName = parentProfile
+                        ? `${parentProfile.first_name} ${parentProfile.last_name}`
+                        : "Parent / Guardian";
 
                       return (
                         <div key={idx} className="p-4 border rounded-2xl bg-card space-y-3">
@@ -852,34 +904,71 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
                                 <span className="text-xs text-muted-foreground font-normal">({cp.relationship})</span>
                               </p>
                               <p className="text-xs text-muted-foreground mt-0.5">
-                                ✉️ {parentEmail || "No email on record"} {parentProfile?.phone ? `• 📞 ${parentProfile.phone}` : ""}
+                                ✉️ {parentEmail || "No email on record"} {parentPhone ? `• 📞 ${parentPhone}` : ""}
                               </p>
                             </div>
 
-                            {parentEmail && (
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <Button
-                                  size="sm"
-                                  className="rounded-full bg-red-600 hover:bg-red-700 text-white font-bold text-xs gap-1.5 shadow-sm"
-                                  onClick={() => handleSendGmailToParent(parentEmail, `${viewingChild.first_name} ${viewingChild.last_name}`)}
-                                >
-                                  <Mail className="h-3.5 w-3.5" />
-                                  Open Gmail
-                                  <ExternalLink className="h-3 w-3 opacity-80" />
-                                </Button>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {parentPhone && (
+                                <>
+                                  <Button
+                                    asChild
+                                    size="sm"
+                                    className="rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs gap-1.5 shadow-sm"
+                                  >
+                                    <a href={`tel:${parentPhone}`}>
+                                      <Phone className="h-3.5 w-3.5" />
+                                      Call
+                                    </a>
+                                  </Button>
 
-                                <Button
-                                  asChild
-                                  variant="outline"
-                                  size="sm"
-                                  className="rounded-full text-xs font-semibold gap-1"
-                                >
-                                  <a href={`mailto:${parentEmail}?subject=${encodeURIComponent(`Update regarding ${viewingChild.first_name} ${viewingChild.last_name}`)}`}>
-                                    Default Mail
-                                  </a>
-                                </Button>
-                              </div>
-                            )}
+                                  <Button
+                                    asChild
+                                    size="sm"
+                                    className="rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs gap-1.5 shadow-sm"
+                                  >
+                                    <a
+                                      href={`sms:${parentPhone}?body=${encodeURIComponent(`Hello, regarding ${viewingChild.first_name} ${viewingChild.last_name}: `)}`}
+                                    >
+                                      <MessageSquare className="h-3.5 w-3.5" />
+                                      Text SMS
+                                    </a>
+                                  </Button>
+                                </>
+                              )}
+
+                              {parentEmail && (
+                                <>
+                                  <Button
+                                    size="sm"
+                                    className="rounded-full bg-red-600 hover:bg-red-700 text-white font-bold text-xs gap-1.5 shadow-sm"
+                                    onClick={() =>
+                                      handleSendGmailToParent(
+                                        parentEmail,
+                                        `${viewingChild.first_name} ${viewingChild.last_name}`,
+                                      )
+                                    }
+                                  >
+                                    <Mail className="h-3.5 w-3.5" />
+                                    Open Gmail
+                                    <ExternalLink className="h-3 w-3 opacity-80" />
+                                  </Button>
+
+                                  <Button
+                                    asChild
+                                    variant="outline"
+                                    size="sm"
+                                    className="rounded-full text-xs font-semibold gap-1"
+                                  >
+                                    <a
+                                      href={`mailto:${parentEmail}?subject=${encodeURIComponent(`Update regarding ${viewingChild.first_name} ${viewingChild.last_name}`)}`}
+                                    >
+                                      Default Mail
+                                    </a>
+                                  </Button>
+                                </>
+                              )}
+                            </div>
                           </div>
                         </div>
                       );
@@ -891,6 +980,18 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
           )}
 
           <DialogFooter className="gap-2">
+            <Button
+              variant="destructive"
+              className="gap-1.5"
+              onClick={() => {
+                const target = viewingChild;
+                setViewingChild(null);
+                setDeletingChild(target);
+              }}
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete Student
+            </Button>
             <Button variant="outline" onClick={() => setViewingChild(null)}>
               Close
             </Button>
@@ -914,9 +1015,7 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>Edit Student Record</DialogTitle>
-            <DialogDescription>
-              Update child details, room assignment, and status.
-            </DialogDescription>
+            <DialogDescription>Update child details, room assignment, and status.</DialogDescription>
           </DialogHeader>
 
           <form noValidate onSubmit={studentEditForm.handleSubmit(onStudentEditSubmit)} className="space-y-4 pt-2">
@@ -1019,7 +1118,10 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
                     <option value="">No Room (Waitlist)</option>
                     {rooms.map((r) => (
                       <option key={r.id} value={r.id}>
-                        {r.name} ({r.age_group})
+                        {r.name}
+                        {r.min_age_months !== undefined && r.max_age_months !== undefined
+                          ? ` (${r.min_age_months}-${r.max_age_months} mos)`
+                          : ""}
                       </option>
                     ))}
                   </NativeSelect>
@@ -1052,15 +1154,55 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
               )}
             />
 
-            <DialogFooter className="pt-4 border-t gap-2">
-              <Button type="button" variant="ghost" onClick={() => setEditingChild(null)}>
-                Cancel
+            <DialogFooter className="pt-4 border-t gap-2 flex justify-between sm:justify-between">
+              <Button
+                type="button"
+                variant="destructive"
+                className="gap-1.5"
+                onClick={() => {
+                  const target = editingChild;
+                  setEditingChild(null);
+                  setDeletingChild(target);
+                }}
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete
               </Button>
-              <Button type="submit" disabled={submitting}>
-                {submitting ? "Saving..." : "Update Student Record"}
-              </Button>
+              <div className="flex gap-2">
+                <Button type="button" variant="ghost" onClick={() => setEditingChild(null)}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={submitting}>
+                  {submitting ? "Saving..." : "Update Student Record"}
+                </Button>
+              </div>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+      {/* Delete Student Confirmation Dialog */}
+      <Dialog open={!!deletingChild} onOpenChange={(open) => !open && setDeletingChild(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-destructive flex items-center gap-2">
+              <Trash2 className="h-5 w-5" /> Delete Student Record
+            </DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete{" "}
+              <strong className="text-foreground">
+                {deletingChild?.first_name} {deletingChild?.last_name}
+              </strong>
+              ? This action cannot be undone and will permanently delete the student profile.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => setDeletingChild(null)} disabled={submitting}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteStudent} disabled={submitting}>
+              {submitting ? "Deleting..." : "Delete Student"}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

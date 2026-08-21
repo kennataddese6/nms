@@ -49,7 +49,9 @@ export function Safeguarding() {
               Our Safeguarding Commitment 🛡️
             </h2>
             <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
-              Nothing is more important than your child's safety and well-being. We implement strict, Ofsted-compliant processes to ensure our classrooms, garden spaces, and entry gates remain secure, sanitary, and supportive.
+              Nothing is more important than your child's safety and well-being. We implement strict, Ofsted-compliant
+              processes to ensure our classrooms, garden spaces, and entry gates remain secure, sanitary, and
+              supportive.
             </p>
           </div>
 

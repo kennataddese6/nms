@@ -1,5 +1,7 @@
 import Image from "next/image";
-import { Sparkles, HeartHandshake, ShieldCheck } from "lucide-react";
+
+import { HeartHandshake, ShieldCheck, Sparkles } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
 
 export function AboutHero() {
@@ -26,7 +28,9 @@ export function AboutHero() {
           </h1>
 
           <p className="mt-6 text-lg sm:text-xl text-muted-foreground leading-relaxed">
-            At Bubbly Day Nursery, our mission is to create a safe, vibrant, child-centric, and stimulating home-away-from-home. We believe every child deserves a bubbly, happy childhood packed with discovery and curiosity.
+            At Bubbly Day Nursery, our mission is to create a safe, vibrant, child-centric, and stimulating
+            home-away-from-home. We believe every child deserves a bubbly, happy childhood packed with discovery and
+            curiosity.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">

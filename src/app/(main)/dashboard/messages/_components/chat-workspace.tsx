@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { createClient } from "@/lib/supabase/client";
+
 import { getThreadMessagesAction, sendChatMessageAction } from "../actions";
 
 interface Message {
@@ -373,9 +374,7 @@ export function ChatWorkspace({ initialThreads, currentUserProfile, isStaff, par
                 <div className="p-4 border-t shrink-0 bg-muted/30 flex flex-wrap items-center justify-between gap-3 text-xs">
                   <div className="flex items-center gap-2 text-muted-foreground font-medium">
                     <span className="text-sm">📞</span>
-                    <span>
-                      Contact parent directly via phone or email.
-                    </span>
+                    <span>Contact parent directly via phone or email.</span>
                   </div>
                   {activeThread?.parents?.profiles?.email && (
                     <a

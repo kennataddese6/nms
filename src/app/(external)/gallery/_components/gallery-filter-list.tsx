@@ -1,8 +1,11 @@
 "use client";
 
 import * as React from "react";
+
 import Image from "next/image";
+
 import { Calendar, Compass, Eye, Layers, MapPin, Sparkles, X } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
 
 interface GalleryFilterListProps {
@@ -84,7 +87,10 @@ export function GalleryFilterList({ initialMedia }: GalleryFilterListProps) {
                 {/* Branch badge on photo top-left */}
                 {item.branch && (
                   <div className="absolute top-3 left-3 z-10">
-                    <Badge variant="secondary" className="bg-white/90 backdrop-blur-sm text-sky-900 text-[10px] font-bold shadow-sm border border-white flex items-center gap-1">
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/90 backdrop-blur-sm text-sky-900 text-[10px] font-bold shadow-sm border border-white flex items-center gap-1"
+                    >
                       <MapPin className="h-3 w-3 text-orange-500" /> {item.branch}
                     </Badge>
                   </div>
@@ -134,9 +140,7 @@ export function GalleryFilterList({ initialMedia }: GalleryFilterListProps) {
               />
             </div>
             {selectedImage.title && (
-              <p className="text-center font-bold text-foreground text-sm py-3 px-4">
-                🖼️ {selectedImage.title}
-              </p>
+              <p className="text-center font-bold text-foreground text-sm py-3 px-4">🖼️ {selectedImage.title}</p>
             )}
           </div>
         </div>

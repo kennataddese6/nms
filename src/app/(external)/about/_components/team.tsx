@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 import { Mail, MapPin, Users } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -46,14 +47,13 @@ export function Team({ leadershipMembers }: TeamProps) {
             Meet Our Leadership Team 🌟
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Our qualified management team works closely with parents and Ofsted practitioners to maintain exceptional standards across all settings.
+            Our qualified management team works closely with parents and Ofsted practitioners to maintain exceptional
+            standards across all settings.
           </p>
         </div>
 
         {leadershipMembers.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground">
-            No leadership profiles published yet.
-          </div>
+          <div className="text-center py-12 text-muted-foreground">No leadership profiles published yet.</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
             {leadershipMembers.map((member, index) => {
@@ -68,7 +68,10 @@ export function Team({ leadershipMembers }: TeamProps) {
                   <div className="w-full flex flex-col items-center">
                     {/* Branch Badge */}
                     {member.branch && (
-                      <Badge variant="outline" className="text-[10px] font-bold border-teal-300 text-teal-800 bg-teal-50 flex items-center gap-1 mb-4">
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] font-bold border-teal-300 text-teal-800 bg-teal-50 flex items-center gap-1 mb-4"
+                      >
                         <MapPin className="h-3 w-3" /> {member.branch}
                       </Badge>
                     )}
@@ -89,7 +92,12 @@ export function Team({ leadershipMembers }: TeamProps) {
                     </p>
                   </div>
 
-                  <Button asChild variant="outline" size="sm" className="rounded-full w-full justify-center gap-2 border-2 font-bold">
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full w-full justify-center gap-2 border-2 font-bold"
+                  >
                     <Link href={`mailto:${member.salary || "contact@bubblynursery.co.uk"}`}>
                       <Mail className="h-4 w-4 text-orange-500" />
                       Contact Leader

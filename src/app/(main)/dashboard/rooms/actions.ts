@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -32,7 +33,7 @@ export async function createRoomAction(data: CreateRoomInput) {
   const { data: roleMappings } = await supabase.from("user_roles").select("roles(name)").eq("user_id", user.id);
 
   const roleNames =
-    ((roleMappings as unknown) as Array<{ roles: { name: string } | null }>)
+    (roleMappings as unknown as Array<{ roles: { name: string } | null }>)
       ?.map((rm) => rm.roles?.name)
       .filter(Boolean) || [];
   const isStaff =
@@ -89,7 +90,7 @@ export async function updateRoomAction(data: UpdateRoomInput) {
   const { data: roleMappings } = await supabase.from("user_roles").select("roles(name)").eq("user_id", user.id);
 
   const roleNames =
-    ((roleMappings as unknown) as Array<{ roles: { name: string } | null }>)
+    (roleMappings as unknown as Array<{ roles: { name: string } | null }>)
       ?.map((rm) => rm.roles?.name)
       .filter(Boolean) || [];
   const isStaff =
@@ -136,7 +137,7 @@ export async function deleteRoomAction(roomId: string) {
   const { data: roleMappings } = await supabase.from("user_roles").select("roles(name)").eq("user_id", user.id);
 
   const roleNames =
-    ((roleMappings as unknown) as Array<{ roles: { name: string } | null }>)
+    (roleMappings as unknown as Array<{ roles: { name: string } | null }>)
       ?.map((rm) => rm.roles?.name)
       .filter(Boolean) || [];
   const isStaff =

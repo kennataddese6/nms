@@ -130,7 +130,9 @@ export function Vision() {
                 </div>
                 <div>
                   <h3 className="text-xl sm:text-2xl font-black text-foreground mb-3">{pillar.title}</h3>
-                  <p className="text-muted-foreground text-sm sm:text-base leading-relaxed font-medium">{pillar.desc}</p>
+                  <p className="text-muted-foreground text-sm sm:text-base leading-relaxed font-medium">
+                    {pillar.desc}
+                  </p>
                 </div>
               </div>
             </div>
@@ -144,7 +146,11 @@ export function Vision() {
               Core Values Acronym
             </span>
             <h3 className="text-3xl sm:text-5xl font-black text-foreground mt-3">
-              We Are <span className="bg-gradient-to-r from-orange-600 via-rose-500 to-teal-600 bg-clip-text text-transparent">B.U.B.B.L.Y.</span> 🎈
+              We Are{" "}
+              <span className="bg-gradient-to-r from-orange-600 via-rose-500 to-teal-600 bg-clip-text text-transparent">
+                B.U.B.B.L.Y.
+              </span>{" "}
+              🎈
             </h3>
             <p className="text-muted-foreground text-base sm:text-lg mt-2 font-bold">
               Our 6 core values reflect how we guide every child towards a happy, confident start.
@@ -157,7 +163,9 @@ export function Vision() {
                 key={idx}
                 className={`p-7 rounded-3xl ${value.cardBg} shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex gap-4 items-start`}
               >
-                <div className={`h-14 w-14 rounded-2xl flex items-center justify-center text-3xl font-black shrink-0 ${value.badgeColor}`}>
+                <div
+                  className={`h-14 w-14 rounded-2xl flex items-center justify-center text-3xl font-black shrink-0 ${value.badgeColor}`}
+                >
                   {value.letter}
                 </div>
                 <div>

@@ -1,6 +1,18 @@
-import { BookOpen, Compass, Heart, MessageSquare, Palette, PenTool, Shield, Sparkles, Star, Trophy } from "lucide-react";
+import {
+  BookOpen,
+  Compass,
+  Heart,
+  MessageSquare,
+  Palette,
+  PenTool,
+  Shield,
+  Sparkles,
+  Star,
+  Trophy,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+
 import { NurseryFooter } from "../_components/nursery-footer";
 import { NurseryHeader } from "../_components/nursery-header";
 
@@ -123,7 +135,8 @@ export default function CurriculumPage() {
             </h1>
 
             <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-medium">
-              Our educational program follows the UK Early Years Foundation Stage (EYFS), creating joyful, vibrant learning environments across 7 essential developmental milestones.
+              Our educational program follows the UK Early Years Foundation Stage (EYFS), creating joyful, vibrant
+              learning environments across 7 essential developmental milestones.
             </p>
 
             {/* Age Stages Highlights - Enlarged fonts */}
@@ -154,7 +167,9 @@ export default function CurriculumPage() {
                 </div>
                 <div>
                   <h4 className="font-black text-base text-foreground">Preschool (3 - 5 years)</h4>
-                  <p className="text-xs sm:text-sm text-muted-foreground font-medium">Phonics, math & school readiness</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground font-medium">
+                    Phonics, math & school readiness
+                  </p>
                 </div>
               </div>
             </div>
@@ -172,7 +187,8 @@ export default function CurriculumPage() {
                 The 3 Prime Areas of Learning 🌟
               </h2>
               <p className="mt-4 text-base sm:text-lg text-muted-foreground leading-relaxed font-medium">
-                These core pillars spark curiosity, build physical confidence, and cultivate healthy social skills right from infancy.
+                These core pillars spark curiosity, build physical confidence, and cultivate healthy social skills right
+                from infancy.
               </p>
             </div>
 
@@ -184,7 +200,9 @@ export default function CurriculumPage() {
                 >
                   <div>
                     <div className="flex items-center justify-between mb-6">
-                      <div className={`h-14 w-14 flex items-center justify-center rounded-2xl ${area.colorScheme.iconBg}`}>
+                      <div
+                        className={`h-14 w-14 flex items-center justify-center rounded-2xl ${area.colorScheme.iconBg}`}
+                      >
                         <area.icon className="h-7 w-7 stroke-[2.5]" />
                       </div>
                       <Badge variant="outline" className={`text-xs font-black ${area.colorScheme.badgeBg}`}>
@@ -193,7 +211,9 @@ export default function CurriculumPage() {
                     </div>
 
                     <h3 className="font-black text-2xl text-foreground mb-3">{area.title}</h3>
-                    <p className="text-muted-foreground text-sm sm:text-base leading-relaxed font-medium">{area.desc}</p>
+                    <p className="text-muted-foreground text-sm sm:text-base leading-relaxed font-medium">
+                      {area.desc}
+                    </p>
                   </div>
 
                   <div className="mt-8 pt-4 border-t border-black/5 dark:border-white/10 flex items-center justify-between text-sm font-bold">
@@ -213,11 +233,10 @@ export default function CurriculumPage() {
               <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-black uppercase tracking-wider text-teal-700 bg-teal-100 border border-teal-200 px-4 py-1.5 rounded-full mb-3">
                 <Trophy className="h-4 w-4 text-teal-600" /> Academic & Creative Growth
               </span>
-              <h2 className="font-heading text-3xl sm:text-5xl font-black text-foreground">
-                The 4 Specific Areas 🚀
-              </h2>
+              <h2 className="font-heading text-3xl sm:text-5xl font-black text-foreground">The 4 Specific Areas 🚀</h2>
               <p className="mt-4 text-base sm:text-lg text-muted-foreground leading-relaxed font-medium">
-                These enriched learning paths develop early literacy, mathematical reasoning, scientific curiosity, and artistic expression.
+                These enriched learning paths develop early literacy, mathematical reasoning, scientific curiosity, and
+                artistic expression.
               </p>
             </div>
 
@@ -229,7 +248,9 @@ export default function CurriculumPage() {
                 >
                   <div>
                     <div className="flex items-center justify-between mb-4">
-                      <div className={`h-12 w-12 flex items-center justify-center rounded-2xl ${area.colorScheme.iconBg}`}>
+                      <div
+                        className={`h-12 w-12 flex items-center justify-center rounded-2xl ${area.colorScheme.iconBg}`}
+                      >
                         <area.icon className="h-6 w-6 stroke-[2.5]" />
                       </div>
                       <Badge variant="outline" className={`text-xs font-black ${area.colorScheme.badgeBg}`}>
@@ -263,7 +284,8 @@ export default function CurriculumPage() {
                   How We Track & Share Learning Milestones 📲
                 </h2>
                 <p className="text-muted-foreground text-base leading-relaxed font-medium">
-                  Every child at Bubbly Day Nursery has a private digital **Learning Journal**. Practitioners record play achievements and photo observations live, sharing moments directly with parents.
+                  Every child at Bubbly Day Nursery has a private digital **Learning Journal**. Practitioners record
+                  play achievements and photo observations live, sharing moments directly with parents.
                 </p>
 
                 <div className="space-y-4">
@@ -274,7 +296,8 @@ export default function CurriculumPage() {
                     <div>
                       <h4 className="font-black text-base text-foreground">Photo & Video Snapshots</h4>
                       <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 leading-relaxed font-medium">
-                        Real-time snapshots of artwork, sandbox builds, and outdoor discoveries delivered directly to parents.
+                        Real-time snapshots of artwork, sandbox builds, and outdoor discoveries delivered directly to
+                        parents.
                       </p>
                     </div>
                   </div>
@@ -286,7 +309,8 @@ export default function CurriculumPage() {
                     <div>
                       <h4 className="font-black text-base text-foreground">Two-Way Home Feedback</h4>
                       <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 leading-relaxed font-medium">
-                        Parents can upload home milestone photos, comment on nursery observations, and co-author reports.
+                        Parents can upload home milestone photos, comment on nursery observations, and co-author
+                        reports.
                       </p>
                     </div>
                   </div>
@@ -305,9 +329,7 @@ export default function CurriculumPage() {
                       <p className="text-xs text-muted-foreground font-bold">Live Parent Portal Update</p>
                     </div>
                   </div>
-                  <Badge className="bg-emerald-500 text-white text-xs font-bold px-3 py-1">
-                    ✓ Verified EYFS
-                  </Badge>
+                  <Badge className="bg-emerald-500 text-white text-xs font-bold px-3 py-1">✓ Verified EYFS</Badge>
                 </div>
 
                 <div className="space-y-3">
@@ -318,13 +340,20 @@ export default function CurriculumPage() {
                     </div>
                     <h4 className="font-black text-base text-foreground">Architectural Block Tower & Co-op Play 🏰</h4>
                     <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium">
-                      Leo worked cooperatively with Emily to assemble a tall 12-block wooden tower. Showed great fine motor coordination and shared blocks patiently.
+                      Leo worked cooperatively with Emily to assemble a tall 12-block wooden tower. Showed great fine
+                      motor coordination and shared blocks patiently.
                     </p>
                     <div className="flex gap-2 flex-wrap pt-2">
-                      <Badge variant="secondary" className="text-xs font-black bg-orange-100 text-orange-800 border-orange-200 px-3 py-1">
+                      <Badge
+                        variant="secondary"
+                        className="text-xs font-black bg-orange-100 text-orange-800 border-orange-200 px-3 py-1"
+                      >
                         Physical Development
                       </Badge>
-                      <Badge variant="secondary" className="text-xs font-black bg-teal-100 text-teal-800 border-teal-200 px-3 py-1">
+                      <Badge
+                        variant="secondary"
+                        className="text-xs font-black bg-teal-100 text-teal-800 border-teal-200 px-3 py-1"
+                      >
                         Social Interaction
                       </Badge>
                     </div>

@@ -56,7 +56,8 @@ export default async function ParentDashboardPage() {
         room_id,
         rooms (
           name,
-          age_group
+          min_age_months,
+          max_age_months
         )
       )
     `)
@@ -77,7 +78,8 @@ export default async function ParentDashboardPage() {
   // Fallback to Monday on weekends
   const currentWeekday = todayIndex === 0 || todayIndex === 6 ? "Monday" : weekdayNames[todayIndex];
 
-  const profiles = parent.profiles as any;
+  const profileData = Array.isArray(parent.profiles) ? parent.profiles[0] : parent.profiles;
+  const profiles = profileData as Record<string, unknown> | null;
   const parentName = `${profiles?.first_name || ""} ${profiles?.last_name || ""}`;
   const childrenList = childLinks || [];
 
@@ -89,7 +91,7 @@ export default async function ParentDashboardPage() {
         <div>
           <span className="text-xs font-bold text-primary uppercase tracking-wider block">Parent Portal</span>
           <h1 className="text-3xl font-black tracking-tight text-foreground mt-1">
-            Hello, {profiles?.first_name || "Parent"}!
+            Hello, {String(profiles?.first_name || "Parent")}!
           </h1>
           <p className="text-muted-foreground text-sm mt-1 max-w-xl">
             Welcome to your Bubbly Nursery portal. Track your child's daily logs, check classroom routines, and read
@@ -126,8 +128,8 @@ export default async function ParentDashboardPage() {
             </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {childrenList.map((link: any, idx: number) => {
-                const child = link.children;
+              {childrenList.map((link: Record<string, unknown>, idx: number) => {
+                const child = link.children as Record<string, any> | null;
                 if (!child) return null;
                 return (
                   <Card

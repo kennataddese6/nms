@@ -1,7 +1,9 @@
 "use client";
 
 import * as React from "react";
+
 import { useRouter } from "next/navigation";
+
 import { AlertCircle, Baby, DoorOpen, Layers, Pencil, Plus, ShieldAlert, Trash2, Users, X } from "lucide-react";
 import { toast } from "sonner";
 
@@ -157,9 +159,7 @@ export function RoomsWorkspace({ initialRooms, initialStaff }: RoomsWorkspacePro
           branch: newBranch,
         });
 
-        setRooms((prev) =>
-          prev.map((r) => (r.id === editingRoom.id ? { ...r, ...res.room } : r)),
-        );
+        setRooms((prev) => prev.map((r) => (r.id === editingRoom.id ? { ...r, ...res.room } : r)));
         toast.success("Room Updated", {
           description: `Successfully updated ${res.room.name}.`,
         });
@@ -212,10 +212,13 @@ export function RoomsWorkspace({ initialRooms, initialStaff }: RoomsWorkspacePro
           </p>
         </div>
 
-        <Sheet open={isDrawerOpen} onOpenChange={(open) => {
-          setIsDrawerOpen(open);
-          if (!open) setEditingRoom(null);
-        }}>
+        <Sheet
+          open={isDrawerOpen}
+          onOpenChange={(open) => {
+            setIsDrawerOpen(open);
+            if (!open) setEditingRoom(null);
+          }}
+        >
           <Button className="rounded-full shrink-0" onClick={handleOpenAddModal}>
             <Plus className="h-4 w-4 mr-1.5" /> Add Classroom
           </Button>
@@ -331,7 +334,13 @@ export function RoomsWorkspace({ initialRooms, initialStaff }: RoomsWorkspacePro
                   Cancel
                 </Button>
                 <Button type="submit" disabled={loading} className="rounded-xl font-bold">
-                  {loading ? (editingRoom ? "Saving..." : "Creating...") : editingRoom ? "Update Classroom" : "Save Classroom"}
+                  {loading
+                    ? editingRoom
+                      ? "Saving..."
+                      : "Creating..."
+                    : editingRoom
+                      ? "Update Classroom"
+                      : "Save Classroom"}
                 </Button>
               </div>
             </form>
@@ -456,9 +465,7 @@ export function RoomsWorkspace({ initialRooms, initialStaff }: RoomsWorkspacePro
                     </div>
                     <CardTitle className="text-2xl font-bold mt-2">{activeRoom.name}</CardTitle>
                     {activeRoom.description && (
-                      <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-                        {activeRoom.description}
-                      </p>
+                      <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{activeRoom.description}</p>
                     )}
 
                     <div className="flex items-center gap-2 mt-4">
@@ -519,8 +526,7 @@ export function RoomsWorkspace({ initialRooms, initialStaff }: RoomsWorkspacePro
                 {/* Enrolled children list */}
                 <div>
                   <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                    <Baby className="h-4 w-4 text-primary" /> Enrolled Children (
-                    {activeRoom.children?.length || 0})
+                    <Baby className="h-4 w-4 text-primary" /> Enrolled Children ({activeRoom.children?.length || 0})
                   </h3>
 
                   {!activeRoom.children || activeRoom.children.length === 0 ? (

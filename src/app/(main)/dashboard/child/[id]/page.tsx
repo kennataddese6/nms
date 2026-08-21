@@ -45,7 +45,8 @@ export default async function ChildProfilePage({ params }: PageProps) {
       *,
       rooms (
         name,
-        age_group
+        min_age_months,
+        max_age_months
       )
     `)
     .eq("id", id)

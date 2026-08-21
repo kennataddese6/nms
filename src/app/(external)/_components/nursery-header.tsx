@@ -19,9 +19,19 @@ export function NurseryHeader() {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const nurseryLifeLinks = [
-    { name: "Classrooms & Rooms", href: "/rooms", desc: "Explore age-appropriate learning spaces & routines", emoji: "🚪" },
+    {
+      name: "Classrooms & Rooms",
+      href: "/rooms",
+      desc: "Explore age-appropriate learning spaces & routines",
+      emoji: "🚪",
+    },
     { name: "EYFS Curriculum", href: "/curriculum", desc: "Our 7 learning milestones & play framework", emoji: "📖" },
-    { name: "Nutrition Food Menu", href: "/menu", desc: "Weekly freshly prepared hot meals & healthy snacks", emoji: "🍎" },
+    {
+      name: "Nutrition Food Menu",
+      href: "/menu",
+      desc: "Weekly freshly prepared hot meals & healthy snacks",
+      emoji: "🍎",
+    },
   ];
 
   const communityLinks = [
@@ -66,14 +76,23 @@ export function NurseryHeader() {
               <span>Nursery Life</span>
               <ChevronDown className="h-4 w-4 text-orange-500 stroke-[2.5]" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-80 p-2 rounded-2xl border-2 border-orange-200 shadow-xl bg-white/95 backdrop-blur-md space-y-1">
+            <DropdownMenuContent
+              align="start"
+              className="w-80 p-2 rounded-2xl border-2 border-orange-200 shadow-xl bg-white/95 backdrop-blur-md space-y-1"
+            >
               {nurseryLifeLinks.map((item) => (
-                <DropdownMenuItem key={item.href} asChild className="rounded-xl p-2.5 cursor-pointer focus:bg-orange-50 focus:text-orange-900 transition-colors">
+                <DropdownMenuItem
+                  key={item.href}
+                  asChild
+                  className="rounded-xl p-2.5 cursor-pointer focus:bg-orange-50 focus:text-orange-900 transition-colors"
+                >
                   <Link href={item.href} className="flex items-start gap-3">
                     <span className="text-xl shrink-0 mt-0.5">{item.emoji}</span>
                     <div>
                       <span className="block font-black text-sm text-foreground">{item.name}</span>
-                      <span className="block text-xs text-muted-foreground leading-snug font-medium mt-0.5">{item.desc}</span>
+                      <span className="block text-xs text-muted-foreground leading-snug font-medium mt-0.5">
+                        {item.desc}
+                      </span>
                     </div>
                   </Link>
                 </DropdownMenuItem>
@@ -87,14 +106,23 @@ export function NurseryHeader() {
               <span>Community & News</span>
               <ChevronDown className="h-4 w-4 text-orange-500 stroke-[2.5]" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-80 p-2 rounded-2xl border-2 border-orange-200 shadow-xl bg-white/95 backdrop-blur-md space-y-1">
+            <DropdownMenuContent
+              align="start"
+              className="w-80 p-2 rounded-2xl border-2 border-orange-200 shadow-xl bg-white/95 backdrop-blur-md space-y-1"
+            >
               {communityLinks.map((item) => (
-                <DropdownMenuItem key={item.href} asChild className="rounded-xl p-2.5 cursor-pointer focus:bg-orange-50 focus:text-orange-900 transition-colors">
+                <DropdownMenuItem
+                  key={item.href}
+                  asChild
+                  className="rounded-xl p-2.5 cursor-pointer focus:bg-orange-50 focus:text-orange-900 transition-colors"
+                >
                   <Link href={item.href} className="flex items-start gap-3">
                     <span className="text-xl shrink-0 mt-0.5">{item.emoji}</span>
                     <div>
                       <span className="block font-black text-sm text-foreground">{item.name}</span>
-                      <span className="block text-xs text-muted-foreground leading-snug font-medium mt-0.5">{item.desc}</span>
+                      <span className="block text-xs text-muted-foreground leading-snug font-medium mt-0.5">
+                        {item.desc}
+                      </span>
                     </div>
                   </Link>
                 </DropdownMenuItem>
@@ -113,10 +141,17 @@ export function NurseryHeader() {
 
         {/* Portal Login & Tour Action Buttons */}
         <div className="hidden md:flex items-center gap-3 shrink-0">
-          <Button asChild variant="outline" className="rounded-full border-2 border-orange-200 text-sm font-bold h-11 px-5 hover:bg-orange-50">
+          <Button
+            asChild
+            variant="outline"
+            className="rounded-full border-2 border-orange-200 text-sm font-bold h-11 px-5 hover:bg-orange-50"
+          >
             <Link href="/auth/v1/login">Parent Portal</Link>
           </Button>
-          <Button asChild className="rounded-full bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm h-11 px-5 shadow-md shadow-orange-500/20">
+          <Button
+            asChild
+            className="rounded-full bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm h-11 px-5 shadow-md shadow-orange-500/20"
+          >
             <Link href="/contact?tour=true">Book a Visit 🎈</Link>
           </Button>
         </div>
@@ -129,7 +164,11 @@ export function NurseryHeader() {
           aria-expanded={isOpen}
         >
           <span className="sr-only">Open main menu</span>
-          {isOpen ? <X className="block h-7 w-7 text-orange-600" /> : <Menu className="block h-7 w-7 text-orange-600" />}
+          {isOpen ? (
+            <X className="block h-7 w-7 text-orange-600" />
+          ) : (
+            <Menu className="block h-7 w-7 text-orange-600" />
+          )}
         </button>
       </div>
 
@@ -163,7 +202,9 @@ export function NurseryHeader() {
             </div>
 
             <div className="space-y-2 pt-2 border-t border-orange-100">
-              <span className="text-xs font-black text-orange-600 uppercase tracking-wider block">Community & News</span>
+              <span className="text-xs font-black text-orange-600 uppercase tracking-wider block">
+                Community & News
+              </span>
               {communityLinks.map((link) => (
                 <Link
                   key={link.name}
@@ -188,12 +229,19 @@ export function NurseryHeader() {
             </div>
 
             <div className="mt-4 flex flex-col gap-3 pt-3 border-t border-orange-100">
-              <Button asChild variant="outline" className="w-full justify-center rounded-full text-base font-bold h-12 border-2 border-orange-200">
+              <Button
+                asChild
+                variant="outline"
+                className="w-full justify-center rounded-full text-base font-bold h-12 border-2 border-orange-200"
+              >
                 <Link href="/auth/v1/login" onClick={() => setIsOpen(false)}>
                   Parent Portal
                 </Link>
               </Button>
-              <Button asChild className="w-full justify-center rounded-full text-base font-bold h-12 bg-orange-500 hover:bg-orange-600 text-white shadow-md">
+              <Button
+                asChild
+                className="w-full justify-center rounded-full text-base font-bold h-12 bg-orange-500 hover:bg-orange-600 text-white shadow-md"
+              >
                 <Link href="/contact?tour=true" onClick={() => setIsOpen(false)}>
                   Book a Visit 🎈
                 </Link>

@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -28,7 +29,7 @@ export async function setActiveMenuAction(menuId: string) {
   const { data: roleMappings } = await supabase.from("user_roles").select("roles(name)").eq("user_id", user.id);
 
   const roleNames =
-    ((roleMappings as unknown) as Array<{ roles: { name: string } | null }>)
+    (roleMappings as unknown as Array<{ roles: { name: string } | null }>)
       ?.map((rm) => rm.roles?.name)
       .filter(Boolean) || [];
   const isStaff =
@@ -50,10 +51,7 @@ export async function setActiveMenuAction(menuId: string) {
   if (err1) throw new Error(err1.message);
 
   // Set selected menu active to true
-  const { error: err2 } = await adminClient
-    .from("nursery_menus")
-    .update({ is_active: true })
-    .eq("id", menuId);
+  const { error: err2 } = await adminClient.from("nursery_menus").update({ is_active: true }).eq("id", menuId);
 
   if (err2) throw new Error(err2.message);
 
@@ -80,7 +78,7 @@ export async function deleteContentItemAction(tableName: string, id: string) {
   const { data: roleMappings } = await supabase.from("user_roles").select("roles(name)").eq("user_id", user.id);
 
   const roleNames =
-    ((roleMappings as unknown) as Array<{ roles: { name: string } | null }>)
+    (roleMappings as unknown as Array<{ roles: { name: string } | null }>)
       ?.map((rm) => rm.roles?.name)
       .filter(Boolean) || [];
   const isStaff =
@@ -124,7 +122,7 @@ export async function saveMenuAction(data: SaveMenuInput) {
   const { data: roleMappings } = await supabase.from("user_roles").select("roles(name)").eq("user_id", user.id);
 
   const roleNames =
-    ((roleMappings as unknown) as Array<{ roles: { name: string } | null }>)
+    (roleMappings as unknown as Array<{ roles: { name: string } | null }>)
       ?.map((rm) => rm.roles?.name)
       .filter(Boolean) || [];
   const isStaff =
@@ -196,7 +194,7 @@ export async function saveLeadershipMemberAction(data: SaveLeadershipInput) {
   const { data: roleMappings } = await supabase.from("user_roles").select("roles(name)").eq("user_id", user.id);
 
   const roleNames =
-    ((roleMappings as unknown) as Array<{ roles: { name: string } | null }>)
+    (roleMappings as unknown as Array<{ roles: { name: string } | null }>)
       ?.map((rm) => rm.roles?.name)
       .filter(Boolean) || [];
   const isStaff =
@@ -219,23 +217,14 @@ export async function saveLeadershipMemberAction(data: SaveLeadershipInput) {
   };
 
   if (data.id) {
-    const { data: updated, error } = await adminClient
-      .from("jobs")
-      .update(payload)
-      .eq("id", data.id)
-      .select()
-      .single();
+    const { data: updated, error } = await adminClient.from("jobs").update(payload).eq("id", data.id).select().single();
 
     if (error) throw new Error(error.message);
     revalidatePublicPages();
     return { success: true, member: updated };
   }
 
-  const { data: inserted, error } = await adminClient
-    .from("jobs")
-    .insert(payload)
-    .select()
-    .single();
+  const { data: inserted, error } = await adminClient.from("jobs").insert(payload).select().single();
 
   if (error) throw new Error(error.message);
   revalidatePublicPages();
@@ -272,23 +261,14 @@ export async function saveJobAction(data: SaveJobInput) {
   };
 
   if (data.id) {
-    const { data: updated, error } = await adminClient
-      .from("jobs")
-      .update(payload)
-      .eq("id", data.id)
-      .select()
-      .single();
+    const { data: updated, error } = await adminClient.from("jobs").update(payload).eq("id", data.id).select().single();
 
     if (error) throw new Error(error.message);
     revalidatePublicPages();
     return { success: true, job: updated };
   }
 
-  const { data: inserted, error } = await adminClient
-    .from("jobs")
-    .insert(payload)
-    .select()
-    .single();
+  const { data: inserted, error } = await adminClient.from("jobs").insert(payload).select().single();
 
   if (error) throw new Error(error.message);
   revalidatePublicPages();

@@ -92,11 +92,6 @@ export default async function MessagesPage() {
   }
 
   return (
-    <ChatWorkspace
-      initialThreads={threads}
-      currentUserProfile={profile}
-      isStaff={isStaff}
-      parentRecordId={parentId}
-    />
+    <ChatWorkspace initialThreads={threads} currentUserProfile={profile} isStaff={isStaff} parentRecordId={parentId} />
   );
 }

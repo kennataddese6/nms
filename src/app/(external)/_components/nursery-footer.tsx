@@ -67,7 +67,8 @@ export function NurseryFooter() {
               </span>
             </Link>
             <p className="text-muted-foreground text-sm sm:text-base leading-relaxed max-w-xs font-medium">
-              A warm, stimulating, and child-centric environment providing babies, toddlers, and preschool children a significant bubbly headstart in learning and development. 🌱
+              A warm, stimulating, and child-centric environment providing babies, toddlers, and preschool children a
+              significant bubbly headstart in learning and development. 🌱
             </p>
             <div className="text-xs text-muted-foreground uppercase tracking-wider font-bold space-y-1 mt-1">
               <span className="block text-foreground font-black text-xs">BUBBLY DAY NURSERY LIMITED</span>
@@ -192,10 +193,16 @@ export function NurseryFooter() {
             🌟 &copy; {currentYear} Bubbly Day Nursery. All rights reserved. Made with 💛 for little ones.
           </p>
           <div className="flex items-center gap-6">
-            <Link href="/privacy" className="text-xs sm:text-sm font-bold text-muted-foreground hover:text-orange-600 transition-colors">
+            <Link
+              href="/privacy"
+              className="text-xs sm:text-sm font-bold text-muted-foreground hover:text-orange-600 transition-colors"
+            >
               Privacy Policy
             </Link>
-            <Link href="/terms" className="text-xs sm:text-sm font-bold text-muted-foreground hover:text-orange-600 transition-colors">
+            <Link
+              href="/terms"
+              className="text-xs sm:text-sm font-bold text-muted-foreground hover:text-orange-600 transition-colors"
+            >
               Terms of Service
             </Link>
             <div className="border-l-2 border-orange-200 pl-4 flex items-center">

@@ -12,10 +12,7 @@ export const revalidate = 0;
 export default async function RoomsPage() {
   const supabase = await createClient();
 
-  const { data: dbRooms } = await supabase
-    .from("rooms")
-    .select("*")
-    .order("min_age_months", { ascending: true });
+  const { data: dbRooms } = await supabase.from("rooms").select("*").order("min_age_months", { ascending: true });
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-b from-sky-50 via-emerald-50 to-amber-50 text-foreground">
@@ -27,9 +24,25 @@ export default async function RoomsPage() {
           <div className="absolute bottom-0 right-1/4 -z-10 h-64 w-64 rounded-full bg-pink-300/20 blur-3xl" />
 
           {/* Floating decorations */}
-          <span aria-hidden="true" className="absolute top-6 left-10 text-3xl pointer-events-none select-none nursery-twinkle opacity-60 hidden sm:block">⭐</span>
-          <span aria-hidden="true" className="absolute top-10 right-12 text-3xl pointer-events-none select-none nursery-float opacity-60 hidden sm:block" style={{ animationDelay: "0.8s" }}>🎒</span>
-          <span aria-hidden="true" className="absolute bottom-6 left-1/4 text-2xl pointer-events-none select-none nursery-wiggle opacity-50 hidden md:block">🧸</span>
+          <span
+            aria-hidden="true"
+            className="absolute top-6 left-10 text-3xl pointer-events-none select-none nursery-twinkle opacity-60 hidden sm:block"
+          >
+            ⭐
+          </span>
+          <span
+            aria-hidden="true"
+            className="absolute top-10 right-12 text-3xl pointer-events-none select-none nursery-float opacity-60 hidden sm:block"
+            style={{ animationDelay: "0.8s" }}
+          >
+            🎒
+          </span>
+          <span
+            aria-hidden="true"
+            className="absolute bottom-6 left-1/4 text-2xl pointer-events-none select-none nursery-wiggle opacity-50 hidden md:block"
+          >
+            🧸
+          </span>
 
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
             <span className="inline-flex items-center gap-2 rounded-full bg-white/70 backdrop-blur-sm border border-white/80 text-sky-800 px-4 py-1.5 text-xs font-bold shadow-sm mb-4">
@@ -40,7 +53,8 @@ export default async function RoomsPage() {
               Explore Our Nursery Classrooms 🚪
             </h1>
             <p className="mt-4 text-lg text-sky-900/80 max-w-2xl mx-auto leading-relaxed">
-              Discover our age-appropriate learning goals, staff ratios, custom classroom environments, and detailed daily routines across our branches.
+              Discover our age-appropriate learning goals, staff ratios, custom classroom environments, and detailed
+              daily routines across our branches.
             </p>
           </div>
         </section>
