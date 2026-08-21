@@ -9,6 +9,7 @@ import {
   Briefcase,
   Calendar,
   Check,
+  Eye,
   Image as ImageIcon,
   Layers,
   Newspaper,
@@ -41,7 +42,7 @@ import { NativeSelect } from "@/components/ui/native-select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { createClient } from "@/lib/supabase/client";
-import { deleteContentItemAction, setActiveMenuAction } from "../actions";
+import { deleteContentItemAction, saveMenuAction, setActiveMenuAction } from "../actions";
 
 // ==========================================
 // SCHEMAS
@@ -138,6 +139,8 @@ export function ContentManager({
   const [newsModalOpen, setNewsModalOpen] = React.useState(false);
   const [galleryModalOpen, setGalleryModalOpen] = React.useState(false);
   const [menuModalOpen, setMenuModalOpen] = React.useState(false);
+  const [editingMenu, setEditingMenu] = React.useState<any | null>(null);
+  const [viewingMenu, setViewingMenu] = React.useState<any | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
 
   // Branch and direct upload states
@@ -180,6 +183,69 @@ export function ContentManager({
     },
   });
 
+  // Menu Helpers & Submissions
+  const handleCreateMenu = () => {
+    setEditingMenu(null);
+    menuForm.reset({
+      name: "",
+      breakfast: "Cereals, Fresh fruit, Porridge, Toast. Served on a rolling basis between 7.30-8.45",
+      morning_snack: "Served on a rolling basis from 10am",
+      lunchMon: "",
+      lunchTue: "",
+      lunchWed: "",
+      lunchThu: "",
+      lunchFri: "",
+      dessertMon: "",
+      dessertTue: "",
+      dessertWed: "",
+      dessertThu: "",
+      dessertFri: "",
+      snackMon: "",
+      snackTue: "",
+      snackWed: "",
+      snackThu: "",
+      snackFri: "",
+      teaMon: "",
+      teaTue: "",
+      teaWed: "",
+      teaThu: "",
+      teaFri: "",
+      branch: "Branch 1",
+    });
+    setMenuModalOpen(true);
+  };
+
+  const handleEditMenu = (m: any) => {
+    setEditingMenu(m);
+    menuForm.reset({
+      name: m.name || "",
+      breakfast: m.breakfast || "",
+      morning_snack: m.morning_snack || "",
+      lunchMon: m.lunch?.Monday || "",
+      lunchTue: m.lunch?.Tuesday || "",
+      lunchWed: m.lunch?.Wednesday || "",
+      lunchThu: m.lunch?.Thursday || "",
+      lunchFri: m.lunch?.Friday || "",
+      dessertMon: m.desserts?.Monday || "",
+      dessertTue: m.desserts?.Tuesday || "",
+      dessertWed: m.desserts?.Wednesday || "",
+      dessertThu: m.desserts?.Thursday || "",
+      dessertFri: m.desserts?.Friday || "",
+      snackMon: m.afternoon_snack?.Monday || "",
+      snackTue: m.afternoon_snack?.Tuesday || "",
+      snackWed: m.afternoon_snack?.Wednesday || "",
+      snackThu: m.afternoon_snack?.Thursday || "",
+      snackFri: m.afternoon_snack?.Friday || "",
+      teaMon: m.afternoon_tea?.Monday || "",
+      teaTue: m.afternoon_tea?.Tuesday || "",
+      teaWed: m.afternoon_tea?.Wednesday || "",
+      teaThu: m.afternoon_tea?.Thursday || "",
+      teaFri: m.afternoon_tea?.Friday || "",
+      branch: m.branch || "Branch 1",
+    });
+    setMenuModalOpen(true);
+  };
+
   const onMenuSubmit = async (values: MenuFormValues) => {
     setSubmitting(true);
     try {
@@ -212,28 +278,34 @@ export function ContentManager({
         Friday: values.teaFri,
       };
 
-      const { data, error } = await supabase
-        .from("nursery_menus")
-        .insert({
-          name: values.name,
-          breakfast: values.breakfast,
-          morning_snack: values.morning_snack,
-          lunch: lunchObj,
-          desserts: dessertObj,
-          afternoon_snack: snackObj,
-          afternoon_tea: teaObj,
-          is_active: false,
-        })
-        .select()
-        .single();
+      const res = await saveMenuAction({
+        id: editingMenu?.id,
+        name: values.name,
+        breakfast: values.breakfast,
+        morning_snack: values.morning_snack,
+        lunch: lunchObj,
+        desserts: dessertObj,
+        afternoon_snack: snackObj,
+        afternoon_tea: teaObj,
+        branch: values.branch,
+      });
 
-      if (error) throw error;
-      setMenus((prev) => [data, ...prev]);
+      if (editingMenu) {
+        setMenus((prev) =>
+          prev.map((m) => (m.id === editingMenu.id ? { ...m, ...res.menu } : m)),
+        );
+        toast.success("Weekly Menu Updated successfully!");
+      } else {
+        setMenus((prev) => [res.menu, ...prev]);
+        toast.success("Weekly Menu Added successfully!");
+      }
+
+      setEditingMenu(null);
       setMenuModalOpen(false);
       menuForm.reset();
-      toast.success("Weekly Menu Added successfully!");
+      router.refresh();
     } catch (err: any) {
-      toast.error("Failed to add menu", { description: err.message });
+      toast.error(editingMenu ? "Failed to update menu" : "Failed to add menu", { description: err.message });
     } finally {
       setSubmitting(false);
     }
@@ -1088,17 +1160,21 @@ export function ContentManager({
                 </CardDescription>
               </div>
 
-              <Dialog open={menuModalOpen} onOpenChange={setMenuModalOpen}>
-                <DialogTrigger asChild>
-                  <Button className="rounded-full shadow-sm">
-                    <Plus className="h-4 w-4 mr-1.5" /> Add Weekly Menu
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-y-auto rounded-3xl">
-                  <DialogHeader className="pb-4 border-b">
-                    <DialogTitle>Add Weekly Menu</DialogTitle>
+              <Dialog open={menuModalOpen} onOpenChange={(open) => {
+                setMenuModalOpen(open);
+                if (!open) setEditingMenu(null);
+              }}>
+                <Button size="sm" className="rounded-lg" onClick={handleCreateMenu}>
+                  <Plus className="h-4 w-4 mr-1" />
+                  Add Weekly Menu
+                </Button>
+                <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>{editingMenu ? "Edit Weekly Nursery Menu" : "Add New Weekly Nursery Menu"}</DialogTitle>
                     <DialogDescription>
-                      Create a new weekly rota menu. Day meal descriptions are required.
+                      {editingMenu
+                        ? "Update the daily meals, snacks, and desserts for this menu rotation."
+                        : "Create a complete weekly breakfast, lunch, snack, and tea schedule."}
                     </DialogDescription>
                   </DialogHeader>
 
@@ -1386,15 +1462,36 @@ export function ContentManager({
                             {new Date(m.created_at).toLocaleDateString()}
                           </td>
                           <td className="p-4 text-right">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-                              onClick={() => deleteItem("nursery_menus", m.id)}
-                              disabled={m.is_active}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                            <div className="flex items-center justify-end gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-muted-foreground hover:text-foreground"
+                                onClick={() => setViewingMenu(m)}
+                                title="View Menu Details"
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-muted-foreground hover:text-foreground"
+                                onClick={() => handleEditMenu(m)}
+                                title="Edit Menu"
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                                onClick={() => deleteItem("nursery_menus", m.id)}
+                                disabled={m.is_active}
+                                title={m.is_active ? "Cannot delete active menu" : "Delete Menu"}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -1406,6 +1503,99 @@ export function ContentManager({
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* View Menu Detail Dialog */}
+      <Dialog open={!!viewingMenu} onOpenChange={(open) => !open && setViewingMenu(null)}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              🍎 {viewingMenu?.name}
+            </DialogTitle>
+            <DialogDescription>
+              Complete daily meal breakdown for {viewingMenu?.branch || "Branch 1"}.
+            </DialogDescription>
+          </DialogHeader>
+
+          {viewingMenu && (
+            <div className="space-y-6 py-2 text-sm">
+              {/* Breakfast & Morning Snack */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="p-4 rounded-2xl bg-orange-50 dark:bg-orange-950/20 border border-orange-200">
+                  <span className="block text-xs font-black uppercase text-orange-600 mb-1">
+                    🥣 Breakfast (7:30 - 8:45 AM)
+                  </span>
+                  <p className="text-xs text-foreground font-medium">{viewingMenu.breakfast}</p>
+                </div>
+                <div className="p-4 rounded-2xl bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200">
+                  <span className="block text-xs font-black uppercase text-yellow-700 mb-1">
+                    🍌 Morning Snack (10:00 AM)
+                  </span>
+                  <p className="text-xs text-foreground font-medium">{viewingMenu.morning_snack}</p>
+                </div>
+              </div>
+
+              {/* Daily Meal Schedule */}
+              <div className="space-y-3">
+                <h4 className="text-xs font-black uppercase tracking-wider text-muted-foreground">
+                  Daily Meals (Monday – Friday)
+                </h4>
+                <div className="divide-y rounded-2xl border bg-card overflow-hidden">
+                  {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => (
+                    <div key={day} className="p-4 space-y-2 hover:bg-neutral-50/50">
+                      <span className="block text-xs font-black text-primary uppercase tracking-wider">
+                        {day}
+                      </span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                        <div>
+                          <span className="text-muted-foreground font-bold">Lunch: </span>
+                          <span className="font-semibold text-foreground">
+                            {viewingMenu.lunch?.[day] || "—"}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground font-bold">Dessert: </span>
+                          <span className="font-semibold text-foreground">
+                            {viewingMenu.desserts?.[day] || "—"}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground font-bold">Afternoon Snack: </span>
+                          <span className="font-semibold text-foreground">
+                            {viewingMenu.afternoon_snack?.[day] || "—"}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground font-bold">Afternoon Tea: </span>
+                          <span className="font-semibold text-foreground">
+                            {viewingMenu.afternoon_tea?.[day] || "—"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setViewingMenu(null)}>
+              Close
+            </Button>
+            {viewingMenu && (
+              <Button
+                onClick={() => {
+                  const target = viewingMenu;
+                  setViewingMenu(null);
+                  handleEditMenu(target);
+                }}
+              >
+                Edit This Menu
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
