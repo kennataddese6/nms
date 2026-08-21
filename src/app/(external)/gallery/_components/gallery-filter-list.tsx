@@ -16,14 +16,42 @@ export function GalleryFilterList({ initialMedia }: GalleryFilterListProps) {
   const [activeTab, setActiveTab] = React.useState("all");
   const [selectedImage, setSelectedImage] = React.useState<{ url: string; title: string } | null>(null);
 
-  const categories = [
+  const builtInCategories = [
     { id: "all", label: "All Photos", icon: Layers, emoji: "🌟" },
     { id: "classrooms", label: "Classrooms", icon: Compass, emoji: "🏫" },
     { id: "activities", label: "Activities", icon: Eye, emoji: "🎨" },
     { id: "events", label: "Events", icon: Calendar, emoji: "🎉" },
   ];
 
-  const filteredMedia = activeTab === "all" ? initialMedia : initialMedia.filter((m) => m.category === activeTab);
+  // Collect custom user-added categories from media items dynamically
+  const customCategories = React.useMemo(() => {
+    const knownIds = new Set(["all", "classrooms", "activities", "events"]);
+    const extraMap = new Map<string, string>(); // lowercase key -> display label
+    initialMedia.forEach((m) => {
+      const raw = (m.category || "").trim();
+      if (raw && !knownIds.has(raw.toLowerCase())) {
+        const lower = raw.toLowerCase();
+        if (!extraMap.has(lower)) {
+          extraMap.set(lower, raw);
+        }
+      }
+    });
+    return Array.from(extraMap.entries()).map(([id, label]) => ({
+      id,
+      label,
+      icon: Sparkles,
+      emoji: "✨",
+    }));
+  }, [initialMedia]);
+
+  const categories = [...builtInCategories, ...customCategories];
+
+  const filteredMedia =
+    activeTab === "all"
+      ? initialMedia
+      : initialMedia.filter(
+          (m) => (m.category || "").trim().toLowerCase() === activeTab.toLowerCase(),
+        );
 
   return (
     <div className="space-y-10">

@@ -84,6 +84,7 @@ type NewsEventFormValues = z.infer<typeof newsEventSchema>;
 const gallerySchema = z.object({
   title: z.string().min(2, "Title is required"),
   category: z.string().min(1, "Category is required"),
+  customCategory: z.string().optional(),
   mediaUrl: z.string().optional(),
   branch: z.string().min(1, "Branch selection is required"),
 });
@@ -648,9 +649,14 @@ export function ContentManager({
         throw new Error("Please select an image file to upload.");
       }
 
+      const targetCategory =
+        data.category === "other"
+          ? data.customCategory?.trim() || "General"
+          : data.category;
+
       const { error } = await supabase.from("gallery_media").insert({
         title: data.title,
-        category: data.category,
+        category: targetCategory,
         media_url: uploadedUrl,
         branch: data.branch,
       });
@@ -1396,11 +1402,31 @@ export function ContentManager({
                             <option value="classrooms">Classrooms Environments</option>
                             <option value="activities">Daily Play Activities</option>
                             <option value="events">Holiday Events</option>
+                            <option value="other">Other (Custom Category...)</option>
                           </NativeSelect>
                           {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                         </Field>
                       )}
                     />
+
+                    {galleryForm.watch("category") === "other" && (
+                      <Controller
+                        control={galleryForm.control}
+                        name="customCategory"
+                        render={({ field, fieldState }) => (
+                          <Field className="gap-1.5 animate-in fade-in duration-200" data-invalid={fieldState.invalid}>
+                            <FieldLabel htmlFor="gal-custom-cat">Custom Category Name *</FieldLabel>
+                            <Input
+                              {...field}
+                              id="gal-custom-cat"
+                              placeholder="e.g. Outdoor Garden, Science & STEM, Art Corner..."
+                              required
+                            />
+                            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                          </Field>
+                        )}
+                      />
+                    )}
 
                     <Field className="gap-1.5">
                       <FieldLabel htmlFor="gal-img-file">Upload Image *</FieldLabel>
