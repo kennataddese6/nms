@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, Baby, DoorOpen, Layers, Plus, ShieldAlert, Users, X } from "lucide-react";
+import { AlertCircle, Baby, DoorOpen, Layers, Pencil, Plus, ShieldAlert, Trash2, Users, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +13,7 @@ import { NativeSelect } from "@/components/ui/native-select";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 
-import { createRoomAction } from "../actions";
+import { createRoomAction, deleteRoomAction, updateRoomAction } from "../actions";
 
 interface Child {
   id: string;
@@ -65,6 +65,7 @@ export function RoomsWorkspace({ initialRooms, initialStaff }: RoomsWorkspacePro
     initialRooms.length > 0 ? initialRooms[0].id : null,
   );
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
+  const [editingRoom, setEditingRoom] = React.useState<Room | null>(null);
   const [loading, setLoading] = React.useState(false);
 
   // New room form state
@@ -93,7 +94,48 @@ export function RoomsWorkspace({ initialRooms, initialStaff }: RoomsWorkspacePro
     return `${months}m`;
   };
 
-  const handleCreateRoom = async (e: React.FormEvent) => {
+  const handleOpenAddModal = () => {
+    setEditingRoom(null);
+    setNewRoomName("");
+    setNewMinAgeMonths(3);
+    setNewMaxAgeMonths(24);
+    setNewCapacity(15);
+    setNewDescription("");
+    setNewBranch("Branch 1");
+    setIsDrawerOpen(true);
+  };
+
+  const handleOpenEditModal = (room: Room) => {
+    setEditingRoom(room);
+    setNewRoomName(room.name);
+    setNewMinAgeMonths(room.min_age_months ?? 3);
+    setNewMaxAgeMonths(room.max_age_months ?? 24);
+    setNewCapacity(room.capacity);
+    setNewDescription(room.description || "");
+    setNewBranch(room.branch || "Branch 1");
+    setIsDrawerOpen(true);
+  };
+
+  const handleDeleteRoom = async (room: Room) => {
+    if (room.children?.length && room.children.length > 0) {
+      toast.error("Cannot delete room", {
+        description: "Please reassign or remove enrolled children first.",
+      });
+      return;
+    }
+    if (!confirm(`Are you sure you want to delete ${room.name}?`)) return;
+    try {
+      await deleteRoomAction(room.id);
+      setRooms((prev) => prev.filter((r) => r.id !== room.id));
+      setSelectedRoomId((prev) => (prev === room.id ? null : prev));
+      toast.success("Room Deleted", { description: `${room.name} has been removed.` });
+      router.refresh();
+    } catch (err: any) {
+      toast.error("Failed to delete room", { description: err.message });
+    }
+  };
+
+  const handleSaveRoom = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newRoomName.trim() || newCapacity <= 0) {
       toast.error("Validation Error", {
@@ -104,39 +146,50 @@ export function RoomsWorkspace({ initialRooms, initialStaff }: RoomsWorkspacePro
 
     setLoading(true);
     try {
-      const res = await createRoomAction({
-        name: newRoomName.trim(),
-        minAgeMonths: newMinAgeMonths,
-        maxAgeMonths: newMaxAgeMonths,
-        capacity: newCapacity,
-        description: newDescription.trim() || undefined,
-        branch: newBranch,
-      });
+      if (editingRoom) {
+        const res = await updateRoomAction({
+          id: editingRoom.id,
+          name: newRoomName.trim(),
+          minAgeMonths: newMinAgeMonths,
+          maxAgeMonths: newMaxAgeMonths,
+          capacity: newCapacity,
+          description: newDescription.trim() || undefined,
+          branch: newBranch,
+        });
 
-      const createdRoom: Room = {
-        ...res.room,
-        children: [],
-      };
+        setRooms((prev) =>
+          prev.map((r) => (r.id === editingRoom.id ? { ...r, ...res.room } : r)),
+        );
+        toast.success("Room Updated", {
+          description: `Successfully updated ${res.room.name}.`,
+        });
+      } else {
+        const res = await createRoomAction({
+          name: newRoomName.trim(),
+          minAgeMonths: newMinAgeMonths,
+          maxAgeMonths: newMaxAgeMonths,
+          capacity: newCapacity,
+          description: newDescription.trim() || undefined,
+          branch: newBranch,
+        });
 
-      setRooms((prev) => [...prev, createdRoom]);
-      setSelectedRoomId(createdRoom.id);
+        const createdRoom: Room = {
+          ...res.room,
+          children: [],
+        };
+
+        setRooms((prev) => [...prev, createdRoom]);
+        setSelectedRoomId(createdRoom.id);
+        toast.success("Room Created", {
+          description: `Successfully added ${createdRoom.name} to classroom directory.`,
+        });
+      }
+
       setIsDrawerOpen(false);
-
-      // Reset form
-      setNewRoomName("");
-      setNewMinAgeMonths(3);
-      setNewMaxAgeMonths(24);
-      setNewCapacity(15);
-      setNewDescription("");
-      setNewBranch("Branch 1");
-
+      setEditingRoom(null);
       router.refresh();
-
-      toast.success("Room Created", {
-        description: `Successfully added ${createdRoom.name} to classroom directory.`,
-      });
     } catch (err: any) {
-      toast.error("Failed to create room", {
+      toast.error(editingRoom ? "Failed to update room" : "Failed to create room", {
         description: err.message || "An unexpected error occurred.",
       });
     } finally {
@@ -159,21 +212,25 @@ export function RoomsWorkspace({ initialRooms, initialStaff }: RoomsWorkspacePro
           </p>
         </div>
 
-        {/* Create Room Sheet Drawer */}
-        <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-          <SheetTrigger asChild>
-            <Button className="rounded-full shrink-0">
-              <Plus className="h-4 w-4 mr-1.5" /> Add Classroom
-            </Button>
-          </SheetTrigger>
+        <Sheet open={isDrawerOpen} onOpenChange={(open) => {
+          setIsDrawerOpen(open);
+          if (!open) setEditingRoom(null);
+        }}>
+          <Button className="rounded-full shrink-0" onClick={handleOpenAddModal}>
+            <Plus className="h-4 w-4 mr-1.5" /> Add Classroom
+          </Button>
           <SheetContent className="sm:max-w-lg p-6 sm:p-8 overflow-y-auto space-y-6 rounded-l-3xl">
             <SheetHeader className="pb-4 border-b">
-              <SheetTitle className="text-xl font-bold">New Classroom Room</SheetTitle>
+              <SheetTitle className="text-xl font-bold">
+                {editingRoom ? "Edit Classroom Room" : "New Classroom Room"}
+              </SheetTitle>
               <SheetDescription className="text-xs">
-                Create a new classroom listing in Bubbly Day Nursery.
+                {editingRoom
+                  ? `Update configuration for ${editingRoom.name}.`
+                  : "Create a new classroom listing in Bubbly Day Nursery."}
               </SheetDescription>
             </SheetHeader>
-            <form onSubmit={handleCreateRoom} className="space-y-5 px-1 py-2">
+            <form onSubmit={handleSaveRoom} className="space-y-5 px-1 py-2">
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-foreground block" htmlFor="room-name">
                   Classroom Name *
@@ -274,7 +331,7 @@ export function RoomsWorkspace({ initialRooms, initialStaff }: RoomsWorkspacePro
                   Cancel
                 </Button>
                 <Button type="submit" disabled={loading} className="rounded-xl font-bold">
-                  {loading ? "Creating..." : "Save Classroom"}
+                  {loading ? (editingRoom ? "Saving..." : "Creating...") : editingRoom ? "Update Classroom" : "Save Classroom"}
                 </Button>
               </div>
             </form>
@@ -403,6 +460,25 @@ export function RoomsWorkspace({ initialRooms, initialStaff }: RoomsWorkspacePro
                         {activeRoom.description}
                       </p>
                     )}
+
+                    <div className="flex items-center gap-2 mt-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="rounded-xl h-8 text-xs font-bold"
+                        onClick={() => handleOpenEditModal(activeRoom)}
+                      >
+                        <Pencil className="h-3.5 w-3.5 mr-1" /> Edit Room
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="rounded-xl h-8 text-xs font-bold text-destructive hover:bg-destructive/10"
+                        onClick={() => handleDeleteRoom(activeRoom)}
+                      >
+                        <Trash2 className="h-3.5 w-3.5 mr-1" /> Delete
+                      </Button>
+                    </div>
                   </div>
 
                   <div className="text-right shrink-0 bg-background border p-3 rounded-2xl">
