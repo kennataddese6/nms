@@ -368,22 +368,41 @@ export function ChatWorkspace({ initialThreads, currentUserProfile, isStaff, par
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Message Input Form */}
-              <form
-                onSubmit={handleSendMessage}
-                className="p-4 border-t shrink-0 flex gap-2 bg-neutral-50/20 dark:bg-neutral-900/25"
-              >
-                <Input
-                  value={newMessageText}
-                  onChange={(e) => setNewMessageText(e.target.value)}
-                  placeholder="Type your message here..."
-                  className="rounded-full text-xs"
-                  required
-                />
-                <Button type="submit" size="icon" className="rounded-full shrink-0">
-                  <Send className="h-4 w-4" />
-                </Button>
-              </form>
+              {/* Message Input Form (Parent Only) / Staff Quick Contact Banner */}
+              {isStaff ? (
+                <div className="p-4 border-t shrink-0 bg-muted/30 flex flex-wrap items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-2 text-muted-foreground font-medium">
+                    <span className="text-sm">📞</span>
+                    <span>
+                      Contact parent directly via phone or email.
+                    </span>
+                  </div>
+                  {activeThread?.parents?.profiles?.email && (
+                    <a
+                      href={`mailto:${activeThread.parents.profiles.email}`}
+                      className="inline-flex items-center gap-1 font-bold text-primary hover:underline bg-primary/10 px-3.5 py-1.5 rounded-full"
+                    >
+                      ✉️ Email Parent Direct
+                    </a>
+                  )}
+                </div>
+              ) : (
+                <form
+                  onSubmit={handleSendMessage}
+                  className="p-4 border-t shrink-0 flex gap-2 bg-neutral-50/20 dark:bg-neutral-900/25"
+                >
+                  <Input
+                    value={newMessageText}
+                    onChange={(e) => setNewMessageText(e.target.value)}
+                    placeholder="Type your message here..."
+                    className="rounded-full text-xs"
+                    required
+                  />
+                  <Button type="submit" size="icon" className="rounded-full shrink-0">
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </form>
+              )}
             </>
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-muted-foreground">
