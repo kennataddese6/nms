@@ -1,31 +1,31 @@
 export function Testimonials() {
   const reviews = [
     {
-      parent: "Sarah Jenkins",
-      relation: "Mother of Leo (Toddlers Room)",
+      parent: "Dee",
+      relation: "Google Review • 5 months ago",
       avatar: "👩",
       bgColor: "bg-yellow-100 border-yellow-300",
       starColor: "text-yellow-500",
       tilt: "rotate-1",
-      text: "Leaving my son at Bubbly Day Nursery was the best decision I made. The daily updates on the portal about his sleep and meals keep me fully informed, and the staff are incredibly warm and caring.",
+      text: "We couldn’t be happier with this nursery. Since my son started, his speech has improved incredibly and he surprises us almost every day with new words he’s learned. The staff are extremely friendly, attentive, and supportive — it truly feels like a hidden gem...",
     },
     {
-      parent: "David Miller",
-      relation: "Father of Mia (Preschool Room)",
-      avatar: "👨",
+      parent: "Safia Benaissi",
+      relation: "Google Review • 1 year ago",
+      avatar: "👩‍👦",
       bgColor: "bg-emerald-100 border-emerald-300",
       starColor: "text-emerald-500",
       tilt: "-rotate-1",
-      text: "Mia's language and confidence have skyrocketed since she started at Bubbly. She loves writing, singing, and exploring the garden. The EYFS learning journal has been wonderful to look through.",
+      text: "Since my child Ayub joined the nursery, I have seen such a transformation in his confidence and social skills. When he started, he was very shy, but thanks to your nurturing environment and encouragement, he’s blossomed in ways I couldn’t have imagined...",
     },
     {
-      parent: "Emily Watson",
-      relation: "Mother of Noah (Babies Room)",
-      avatar: "👩‍👦",
+      parent: "Hannah Aziha",
+      relation: "Google Review • 7 months ago",
+      avatar: "👩",
       bgColor: "bg-pink-100 border-pink-300",
       starColor: "text-pink-500",
       tilt: "rotate-1",
-      text: "The baby room staff are fantastic. The ratio is perfect, the room is super cozy, and Noah settled in so quickly. The team really takes the time to replicate his home routines. Highly recommend!",
+      text: "Nice little nursery with lovely staff! Special thanks to Vicky, she's always smiling and my son loves her — he's always babbling on about her at home.",
     },
   ];
 
@@ -68,13 +68,13 @@ export function Testimonials() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 bg-pink-100 border border-pink-300 text-pink-800 text-xs font-bold rounded-full px-4 py-1.5 mb-4">
-            💛 Parent Stories
+            ⭐ Verified 5-Star Reviews
           </div>
           <h2 className="font-heading text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
             Hear From Our Parents 🗣️
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            We are proud to provide exceptional nursery care. Read about the experiences of our parent community.
+            We are proud to provide exceptional nursery care. Read real 5-star Google reviews from our parent community.
           </p>
         </div>
 
@@ -93,15 +93,18 @@ export function Testimonials() {
               </span>
 
               {/* Stars */}
-              <div className={`flex gap-1 mb-5 ${review.starColor}`}>
+              <div className={`flex items-center gap-1 mb-5 ${review.starColor}`}>
                 {[...Array(5)].map((_, i) => (
                   <span key={i} className="text-xl">
                     ⭐
                   </span>
                 ))}
+                <span className="ml-2 text-xs font-black text-foreground/80 bg-white/80 px-2 py-0.5 rounded-full border border-black/5">
+                  5.0 Google
+                </span>
               </div>
 
-              <p className="text-foreground/70 text-sm leading-relaxed mb-6 italic flex-grow">
+              <p className="text-foreground/75 text-sm leading-relaxed mb-6 italic flex-grow">
                 &ldquo;{review.text}&rdquo;
               </p>
 
@@ -112,7 +115,7 @@ export function Testimonials() {
                 </div>
                 <div>
                   <span className="block font-extrabold text-foreground text-sm">{review.parent}</span>
-                  <span className="text-xs text-muted-foreground">{review.relation}</span>
+                  <span className="text-xs font-semibold text-muted-foreground">{review.relation}</span>
                 </div>
               </div>
             </div>
