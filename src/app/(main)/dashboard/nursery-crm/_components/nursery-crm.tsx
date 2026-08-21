@@ -5,7 +5,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Baby, Plus, Search, Users } from "lucide-react";
+import { Baby, ExternalLink, Eye, Mail, Pencil, Plus, Search, Users } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -30,7 +30,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { createClient } from "@/lib/supabase/client";
 
-import { registerParentAction, registerStudentAction } from "../actions";
+import { registerParentAction, registerStudentAction, updateStudentAction } from "../actions";
 
 // ==========================================
 // SCHEMAS
@@ -67,6 +67,22 @@ const studentRegisterSchema = z.object({
 
 type StudentFormValues = z.infer<typeof studentRegisterSchema>;
 
+const studentEditSchema = z.object({
+  firstName: z.string().min(2, "First name is required"),
+  lastName: z.string().min(2, "Last name is required"),
+  dob: z.string().min(1, "Date of birth is required"),
+  gender: z.string().min(1, "Gender selection is required"),
+  branch: z.string().min(1, "Branch selection is required"),
+  status: z.string().min(1, "Status selection is required"),
+  roomId: z.string().optional(),
+  medicalNotes: z.string().optional(),
+  allergies: z.string().optional(),
+  parentId: z.string().optional(),
+  relationship: z.string().optional(),
+});
+
+type StudentEditFormValues = z.infer<typeof studentEditSchema>;
+
 // ==========================================
 // PROPS & COMPONENT
 // ==========================================
@@ -90,7 +106,57 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
 
   const [parentModalOpen, setParentModalOpen] = React.useState(false);
   const [studentModalOpen, setStudentModalOpen] = React.useState(false);
+  const [viewingChild, setViewingChild] = React.useState<any | null>(null);
+  const [editingChild, setEditingChild] = React.useState<any | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
+
+  const studentEditForm = useForm<StudentEditFormValues>({
+    resolver: zodResolver(studentEditSchema),
+  });
+
+  const handleOpenEditStudent = (child: any) => {
+    setEditingChild(child);
+    const primaryParentLink = child.child_parents?.[0];
+    studentEditForm.reset({
+      firstName: child.first_name || "",
+      lastName: child.last_name || "",
+      dob: child.date_of_birth || "",
+      gender: child.gender || "Boy",
+      branch: child.branch || "Branch 1",
+      status: child.status || "WAITING_LIST",
+      roomId: child.room_id || "",
+      medicalNotes: child.medical_notes || "",
+      allergies: child.allergies || "",
+      parentId: primaryParentLink?.parent_id || "",
+      relationship: primaryParentLink?.relationship || "Mother",
+    });
+  };
+
+  const onStudentEditSubmit = async (data: StudentEditFormValues) => {
+    if (!editingChild) return;
+    setSubmitting(true);
+    try {
+      await updateStudentAction({
+        id: editingChild.id,
+        ...data,
+      });
+      toast.success("Student details updated successfully!");
+      setEditingChild(null);
+      setViewingChild(null);
+      router.refresh();
+    } catch (err: any) {
+      toast.error("Failed to update student", { description: err.message });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleSendGmailToParent = (parentEmail: string, childName: string) => {
+    const subject = `Update regarding ${childName} - Bubbly Day Nursery`;
+    const body = `Dear Parent,\n\nI am writing to update you regarding ${childName}.\n\nBest regards,\nBubbly Day Nursery Admissions & Care Team`;
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(parentEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(gmailUrl, "_blank");
+  };
 
   // Sync state if props change
   React.useEffect(() => {
@@ -460,6 +526,7 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
                         <th className="p-4">Room Preference</th>
                         <th className="p-4">Parents Linked</th>
                         <th className="p-4">Status</th>
+                        <th className="p-4 text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y">
@@ -467,7 +534,7 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
                         const activeRoom = rooms.find((r) => r.id === child.room_id);
                         return (
                           <tr key={child.id} className="transition-colors hover:bg-neutral-50/50">
-                            <td className="p-4 font-bold text-foreground">
+                            <td className="p-4 font-bold text-foreground cursor-pointer hover:underline" onClick={() => setViewingChild(child)}>
                               {child.first_name} {child.last_name}
                             </td>
                             <td className="p-4 text-muted-foreground">{child.date_of_birth}</td>
@@ -497,6 +564,28 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
                               >
                                 {child.status}
                               </Badge>
+                            </td>
+                            <td className="p-4 text-right">
+                              <div className="flex items-center justify-end gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="text-muted-foreground hover:text-foreground"
+                                  onClick={() => setViewingChild(child)}
+                                  title="View Student Detail"
+                                >
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="text-muted-foreground hover:text-foreground"
+                                  onClick={() => handleOpenEditStudent(child)}
+                                  title="Edit Student Record"
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
+                              </div>
                             </td>
                           </tr>
                         );
@@ -686,6 +775,294 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
           </Card>
         </TabsContent>
       </Tabs>
+      {/* Student Detail Modal */}
+      <Dialog open={!!viewingChild} onOpenChange={(open) => !open && setViewingChild(null)}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-between gap-2 text-xl font-bold">
+              <span className="flex items-center gap-2">
+                👶 {viewingChild?.first_name} {viewingChild?.last_name}
+              </span>
+              <Badge variant="outline" className="text-xs">
+                {viewingChild?.status}
+              </Badge>
+            </DialogTitle>
+            <DialogDescription>
+              Registered student profile details and parent contact management.
+            </DialogDescription>
+          </DialogHeader>
+
+          {viewingChild && (
+            <div className="space-y-6 py-2 text-sm">
+              {/* Student Metadata Overview */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-muted/30 p-4 rounded-2xl border">
+                <div>
+                  <span className="block text-[10px] font-bold text-muted-foreground uppercase">Date of Birth</span>
+                  <span className="font-semibold text-foreground text-xs">{viewingChild.date_of_birth}</span>
+                </div>
+                <div>
+                  <span className="block text-[10px] font-bold text-muted-foreground uppercase">Gender</span>
+                  <span className="font-semibold text-foreground text-xs">{viewingChild.gender}</span>
+                </div>
+                <div>
+                  <span className="block text-[10px] font-bold text-muted-foreground uppercase">Branch</span>
+                  <span className="font-semibold text-foreground text-xs">{viewingChild.branch || "Branch 1"}</span>
+                </div>
+                <div>
+                  <span className="block text-[10px] font-bold text-muted-foreground uppercase">Room Assignment</span>
+                  <span className="font-semibold text-primary text-xs">
+                    {rooms.find((r) => r.id === viewingChild.room_id)?.name || "Waitlist"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Medical & Allergy Notes */}
+              {(viewingChild.allergies || viewingChild.medical_notes) && (
+                <div className="space-y-2">
+                  <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Medical & Health Notes</h4>
+                  <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 p-3.5 rounded-xl text-xs space-y-1">
+                    {viewingChild.allergies && (
+                      <p><strong className="text-amber-800 dark:text-amber-300">Allergies:</strong> {viewingChild.allergies}</p>
+                    )}
+                    {viewingChild.medical_notes && (
+                      <p><strong className="text-amber-800 dark:text-amber-300">Medical Notes:</strong> {viewingChild.medical_notes}</p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Linked Parent Information & Email Actions */}
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Linked Parent(s) & Direct Email Contact</h4>
+                {(!viewingChild.child_parents || viewingChild.child_parents.length === 0) ? (
+                  <p className="text-xs text-muted-foreground italic">No linked parent profile registered for this student.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {viewingChild.child_parents.map((cp: any, idx: number) => {
+                      const parentProfile = cp.parents?.profiles;
+                      const parentEmail = parentProfile?.email;
+                      const parentName = parentProfile ? `${parentProfile.first_name} ${parentProfile.last_name}` : "Parent / Guardian";
+
+                      return (
+                        <div key={idx} className="p-4 border rounded-2xl bg-card space-y-3">
+                          <div className="flex items-center justify-between flex-wrap gap-2">
+                            <div>
+                              <p className="font-bold text-foreground text-sm flex items-center gap-1.5">
+                                👤 {parentName}
+                                <span className="text-xs text-muted-foreground font-normal">({cp.relationship})</span>
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                ✉️ {parentEmail || "No email on record"} {parentProfile?.phone ? `• 📞 ${parentProfile.phone}` : ""}
+                              </p>
+                            </div>
+
+                            {parentEmail && (
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <Button
+                                  size="sm"
+                                  className="rounded-full bg-red-600 hover:bg-red-700 text-white font-bold text-xs gap-1.5 shadow-sm"
+                                  onClick={() => handleSendGmailToParent(parentEmail, `${viewingChild.first_name} ${viewingChild.last_name}`)}
+                                >
+                                  <Mail className="h-3.5 w-3.5" />
+                                  Open Gmail
+                                  <ExternalLink className="h-3 w-3 opacity-80" />
+                                </Button>
+
+                                <Button
+                                  asChild
+                                  variant="outline"
+                                  size="sm"
+                                  className="rounded-full text-xs font-semibold gap-1"
+                                >
+                                  <a href={`mailto:${parentEmail}?subject=${encodeURIComponent(`Update regarding ${viewingChild.first_name} ${viewingChild.last_name}`)}`}>
+                                    Default Mail
+                                  </a>
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setViewingChild(null)}>
+              Close
+            </Button>
+            <Button
+              className="gap-1.5"
+              onClick={() => {
+                const target = viewingChild;
+                setViewingChild(null);
+                handleOpenEditStudent(target);
+              }}
+            >
+              <Pencil className="h-4 w-4" />
+              Edit Student Record
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Student Modal */}
+      <Dialog open={!!editingChild} onOpenChange={(open) => !open && setEditingChild(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Edit Student Record</DialogTitle>
+            <DialogDescription>
+              Update child details, room assignment, and status.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form noValidate onSubmit={studentEditForm.handleSubmit(onStudentEditSubmit)} className="space-y-4 pt-2">
+            <div className="grid grid-cols-2 gap-4">
+              <Controller
+                control={studentEditForm.control}
+                name="firstName"
+                render={({ field, fieldState }) => (
+                  <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="edit-child-fn">First Name *</FieldLabel>
+                    <Input {...field} id="edit-child-fn" />
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  </Field>
+                )}
+              />
+
+              <Controller
+                control={studentEditForm.control}
+                name="lastName"
+                render={({ field, fieldState }) => (
+                  <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="edit-child-ln">Last Name *</FieldLabel>
+                    <Input {...field} id="edit-child-ln" />
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  </Field>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <Controller
+                control={studentEditForm.control}
+                name="dob"
+                render={({ field, fieldState }) => (
+                  <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="edit-child-dob">Date of Birth *</FieldLabel>
+                    <Input {...field} id="edit-child-dob" type="date" />
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  </Field>
+                )}
+              />
+
+              <Controller
+                control={studentEditForm.control}
+                name="gender"
+                render={({ field, fieldState }) => (
+                  <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="edit-child-gender">Gender *</FieldLabel>
+                    <NativeSelect {...field} id="edit-child-gender">
+                      <option value="Boy">Boy</option>
+                      <option value="Girl">Girl</option>
+                      <option value="Other">Other</option>
+                    </NativeSelect>
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  </Field>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <Controller
+                control={studentEditForm.control}
+                name="branch"
+                render={({ field, fieldState }) => (
+                  <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="edit-child-branch">Branch Location *</FieldLabel>
+                    <NativeSelect {...field} id="edit-child-branch">
+                      <option value="Branch 1">Branch 1 (Galleywall Road)</option>
+                      <option value="Branch 2">Branch 2 (Corbetts Lane)</option>
+                    </NativeSelect>
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  </Field>
+                )}
+              />
+
+              <Controller
+                control={studentEditForm.control}
+                name="status"
+                render={({ field, fieldState }) => (
+                  <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="edit-child-status">Enrollment Status *</FieldLabel>
+                    <NativeSelect {...field} id="edit-child-status">
+                      <option value="ACTIVE">ACTIVE (Enrolled)</option>
+                      <option value="WAITING_LIST">WAITING_LIST</option>
+                      <option value="INACTIVE">INACTIVE</option>
+                    </NativeSelect>
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  </Field>
+                )}
+              />
+            </div>
+
+            <Controller
+              control={studentEditForm.control}
+              name="roomId"
+              render={({ field, fieldState }) => (
+                <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="edit-child-room">Classroom Assignment</FieldLabel>
+                  <NativeSelect {...field} id="edit-child-room">
+                    <option value="">No Room (Waitlist)</option>
+                    {rooms.map((r) => (
+                      <option key={r.id} value={r.id}>
+                        {r.name} ({r.age_group})
+                      </option>
+                    ))}
+                  </NativeSelect>
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </Field>
+              )}
+            />
+
+            <Controller
+              control={studentEditForm.control}
+              name="allergies"
+              render={({ field, fieldState }) => (
+                <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="edit-child-allergies">Allergies & Dietary Restrictions</FieldLabel>
+                  <Input {...field} id="edit-child-allergies" placeholder="e.g. Nuts, Dairy" />
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </Field>
+              )}
+            />
+
+            <Controller
+              control={studentEditForm.control}
+              name="medicalNotes"
+              render={({ field, fieldState }) => (
+                <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="edit-child-medical">Medical Notes</FieldLabel>
+                  <Textarea {...field} id="edit-child-medical" rows={2} />
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </Field>
+              )}
+            />
+
+            <DialogFooter className="pt-4 border-t gap-2">
+              <Button type="button" variant="ghost" onClick={() => setEditingChild(null)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={submitting}>
+                {submitting ? "Saving..." : "Update Student Record"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

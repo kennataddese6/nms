@@ -202,3 +202,79 @@ export async function registerStudentAction(data: RegisterStudentInput) {
 
   return { success: true };
 }
+
+export interface UpdateStudentInput {
+  id: string;
+  firstName: string;
+  lastName: string;
+  dob: string;
+  gender: string;
+  branch: string;
+  status: string;
+  roomId?: string;
+  medicalNotes?: string;
+  allergies?: string;
+  parentId?: string;
+  relationship?: string;
+}
+
+export async function updateStudentAction(data: UpdateStudentInput) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized: Log in required.");
+  }
+
+  const { data: roleMappings } = await supabase.from("user_roles").select("roles(name)").eq("user_id", user.id);
+
+  const roleNames =
+    (roleMappings as unknown as Array<{ roles: { name: string } | null }>)
+      ?.map((rm) => rm.roles?.name)
+      .filter(Boolean) || [];
+  const isStaff =
+    roleNames.includes("NURSERY_MANAGER") || roleNames.includes("STAFF") || roleNames.includes("SUPER_ADMIN");
+
+  if (!isStaff) {
+    throw new Error("Forbidden: Only nursery staff can update students.");
+  }
+
+  const adminClient = createAdminClient();
+
+  const validRoomId = data.roomId && data.roomId.trim() !== "" ? data.roomId : null;
+  const validParentId = data.parentId && data.parentId.trim() !== "" ? data.parentId : null;
+
+  // 1. Update children table
+  const { error: childError } = await adminClient
+    .from("children")
+    .update({
+      first_name: data.firstName,
+      last_name: data.lastName,
+      date_of_birth: data.dob,
+      gender: data.gender,
+      branch: data.branch,
+      status: data.status,
+      room_id: validRoomId,
+      medical_notes: data.medicalNotes || null,
+      allergies: data.allergies || null,
+    })
+    .eq("id", data.id);
+
+  if (childError) {
+    throw new Error(childError.message || "Failed to update child record.");
+  }
+
+  // 2. Update parent link if specified
+  if (validParentId) {
+    await adminClient.from("child_parents").delete().eq("child_id", data.id);
+    await adminClient.from("child_parents").insert({
+      child_id: data.id,
+      parent_id: validParentId,
+      relationship: data.relationship || "Parent / Guardian",
+    });
+  }
+
+  return { success: true };
+}
