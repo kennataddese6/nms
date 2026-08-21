@@ -150,26 +150,66 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
   const onParentSubmit = async (data: ParentFormValues) => {
     setSubmitting(true);
     try {
-      // 1. Create User profile mapping
-      const { data: newProfile, error: profileError } = await supabase
+      // 1. Check if profile already exists for this email
+      let profileId: string | null = null;
+      const { data: existingProfile } = await supabase
         .from("profiles")
-        .insert({
-          first_name: data.firstName,
-          last_name: data.lastName,
-          email: data.email,
-          phone_number: data.phone,
-          role: "PARENT",
-        })
         .select("id")
-        .single();
+        .eq("email", data.email)
+        .maybeSingle();
 
-      if (profileError || !newProfile) {
-        throw new Error(profileError?.message || "Failed to create profile record.");
+      if (existingProfile) {
+        profileId = existingProfile.id;
+        await supabase
+          .from("profiles")
+          .update({
+            first_name: data.firstName,
+            last_name: data.lastName,
+            phone: data.phone,
+          })
+          .eq("id", profileId);
+      } else {
+        const newId = crypto.randomUUID();
+        const { data: newProfile, error: profileError } = await supabase
+          .from("profiles")
+          .insert({
+            id: newId,
+            first_name: data.firstName,
+            last_name: data.lastName,
+            email: data.email,
+            phone: data.phone,
+          })
+          .select("id")
+          .single();
+
+        if (profileError || !newProfile) {
+          throw new Error(profileError?.message || "Failed to create profile record.");
+        }
+        profileId = newProfile.id;
       }
 
-      // 2. Create Parent detail record
+      // 2. Assign PARENT role mapping in user_roles if not present
+      const { data: parentRole } = await supabase.from("roles").select("id").eq("name", "PARENT").maybeSingle();
+
+      if (parentRole && profileId) {
+        const { data: existingRole } = await supabase
+          .from("user_roles")
+          .select("id")
+          .eq("user_id", profileId)
+          .eq("role_id", parentRole.id)
+          .maybeSingle();
+
+        if (!existingRole) {
+          await supabase.from("user_roles").insert({
+            user_id: profileId,
+            role_id: parentRole.id,
+          });
+        }
+      }
+
+      // 3. Create Parent detail record
       const { error: parentError } = await supabase.from("parents").insert({
-        profile_id: newProfile.id,
+        profile_id: profileId,
         address: data.address,
         emergency_contact: data.emergencyContact,
         relationship_status: data.relationshipStatus,
@@ -738,7 +778,7 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
                             {parent.profiles?.first_name} {parent.profiles?.last_name}
                           </td>
                           <td className="p-4 text-muted-foreground">{parent.profiles?.email}</td>
-                          <td className="p-4 text-muted-foreground">{parent.profiles?.phone_number || "—"}</td>
+                          <td className="p-4 text-muted-foreground">{parent.profiles?.phone || "—"}</td>
                           <td className="p-4 text-muted-foreground">{parent.address}</td>
                           <td className="p-4 text-muted-foreground">{parent.emergency_contact}</td>
                           <td className="p-4 text-muted-foreground">

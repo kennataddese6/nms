@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+
 import { NurseryCrm } from "./_components/nursery-crm";
 
 export const revalidate = 0;
@@ -19,7 +20,7 @@ export default async function NurseryCrmPage() {
         email,
         first_name,
         last_name,
-        phone_number
+        phone
       )
     `)
     .order("created_at", { ascending: false });
@@ -53,9 +54,7 @@ export default async function NurseryCrmPage() {
     .order("created_at", { ascending: false });
 
   // 3. Fetch rooms for room assignments
-  const { data: rooms } = await supabase
-    .from("rooms")
-    .select("id, name, age_group");
+  const { data: rooms } = await supabase.from("rooms").select("id, name, age_group");
 
   return (
     <div className="py-6 px-4 md:px-8 space-y-6">
@@ -66,11 +65,7 @@ export default async function NurseryCrmPage() {
         </p>
       </div>
 
-      <NurseryCrm 
-        initialParents={parents || []} 
-        initialChildren={children || []} 
-        rooms={rooms || []}
-      />
+      <NurseryCrm initialParents={parents || []} initialChildren={children || []} rooms={rooms || []} />
     </div>
   );
 }
