@@ -62,7 +62,7 @@ export function Philosophy() {
               </div>
               <div>
                 <h3 className="text-xl font-black text-foreground mb-2">{pillar.title}</h3>
-                <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">{pillar.desc}</p>
+                <p className="text-muted-foreground text-sm sm:text-base leading-relaxed font-medium">{pillar.desc}</p>
               </div>
             </div>
           ))}

@@ -1,7 +1,5 @@
 import { Brain, Heart, RefreshCw, Shield, Smile, Sparkles, Users } from "lucide-react";
 
-import { Card, CardContent } from "@/components/ui/card";
-
 export function Vision() {
   const ethosPillars = [
     {
@@ -104,13 +102,13 @@ export function Vision() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Ethos Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-orange-800 bg-orange-100 border border-orange-300 px-3.5 py-1.5 rounded-full mb-4">
+          <span className="inline-flex items-center gap-1.5 text-sm font-black uppercase tracking-wider text-orange-800 bg-orange-100 border border-orange-300 px-4 py-1.5 rounded-full mb-4">
             <Sparkles className="h-4 w-4 text-orange-600" /> Core Nursery Ethos
           </span>
           <h2 className="font-heading text-3xl sm:text-5xl font-black text-foreground tracking-tight">
             Our Vision & Values 💖
           </h2>
-          <p className="mt-4 text-base sm:text-lg text-muted-foreground leading-relaxed">
+          <p className="mt-4 text-base sm:text-xl text-muted-foreground leading-relaxed font-medium">
             At Bubbly Day Nursery,{" "}
             <strong className="text-foreground font-black">
               “We want the best for all our children, families, and our team”
@@ -131,8 +129,8 @@ export function Vision() {
                   <pillar.icon className="h-7 w-7 stroke-[2.5]" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-black text-foreground mb-2">{pillar.title}</h3>
-                  <p className="text-muted-foreground text-xs leading-relaxed">{pillar.desc}</p>
+                  <h3 className="text-xl sm:text-2xl font-black text-foreground mb-3">{pillar.title}</h3>
+                  <p className="text-muted-foreground text-sm sm:text-base leading-relaxed font-medium">{pillar.desc}</p>
                 </div>
               </div>
             </div>
@@ -142,29 +140,29 @@ export function Vision() {
         {/* BUBBLY Core Values */}
         <div className="border-t-2 border-dashed border-orange-200 dark:border-orange-900/50 pt-16">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-xs font-black text-orange-600 uppercase tracking-widest bg-orange-100 px-3 py-1 rounded-full border border-orange-200">
+            <span className="text-xs sm:text-sm font-black text-orange-600 uppercase tracking-widest bg-orange-100 px-3.5 py-1.5 rounded-full border border-orange-200">
               Core Values Acronym
             </span>
-            <h3 className="text-3xl sm:text-4xl font-black text-foreground mt-3">
+            <h3 className="text-3xl sm:text-5xl font-black text-foreground mt-3">
               We Are <span className="bg-gradient-to-r from-orange-600 via-rose-500 to-teal-600 bg-clip-text text-transparent">B.U.B.B.L.Y.</span> 🎈
             </h3>
-            <p className="text-muted-foreground text-sm mt-2 font-medium">
+            <p className="text-muted-foreground text-base sm:text-lg mt-2 font-bold">
               Our 6 core values reflect how we guide every child towards a happy, confident start.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 max-w-6xl mx-auto">
             {coreValues.map((value, idx) => (
               <div
                 key={idx}
-                className={`p-6 rounded-3xl ${value.cardBg} shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex gap-4 items-start`}
+                className={`p-7 rounded-3xl ${value.cardBg} shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex gap-4 items-start`}
               >
                 <div className={`h-14 w-14 rounded-2xl flex items-center justify-center text-3xl font-black shrink-0 ${value.badgeColor}`}>
                   {value.letter}
                 </div>
                 <div>
-                  <h4 className="font-black text-foreground text-base uppercase tracking-wide mb-1">{value.title}</h4>
-                  <p className="text-muted-foreground text-xs leading-relaxed">{value.desc}</p>
+                  <h4 className="font-black text-foreground text-lg uppercase tracking-wide mb-1">{value.title}</h4>
+                  <p className="text-muted-foreground text-sm sm:text-base leading-relaxed font-medium">{value.desc}</p>
                 </div>
               </div>
             ))}

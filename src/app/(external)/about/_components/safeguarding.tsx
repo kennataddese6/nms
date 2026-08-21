@@ -63,8 +63,8 @@ export function Safeguarding() {
                 <div className="h-12 w-12 rounded-2xl bg-white dark:bg-neutral-900 border shadow-sm flex items-center justify-center mb-4">
                   <point.icon className={`h-6 w-6 stroke-[2.5] ${point.iconColor}`} />
                 </div>
-                <h3 className="font-black text-foreground text-base mb-2">{point.title}</h3>
-                <p className="text-muted-foreground text-xs leading-relaxed">{point.desc}</p>
+                <h3 className="font-black text-foreground text-lg mb-2">{point.title}</h3>
+                <p className="text-muted-foreground text-sm sm:text-base leading-relaxed font-medium">{point.desc}</p>
               </div>
             ))}
           </div>

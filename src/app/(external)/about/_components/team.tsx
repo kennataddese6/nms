@@ -81,10 +81,10 @@ export function Team({ leadershipMembers }: TeamProps) {
                     </div>
 
                     <h3 className="text-xl font-black text-foreground mb-1">{member.title}</h3>
-                    <span className="text-xs font-extrabold text-orange-600 uppercase tracking-wider mb-4 block">
+                    <span className="text-xs sm:text-sm font-black text-orange-600 uppercase tracking-wider mb-4 block">
                       {member.room}
                     </span>
-                    <p className="text-muted-foreground text-xs leading-relaxed mb-6 flex-grow">
+                    <p className="text-muted-foreground text-sm sm:text-base leading-relaxed font-medium mb-6 flex-grow">
                       {member.description}
                     </p>
                   </div>
