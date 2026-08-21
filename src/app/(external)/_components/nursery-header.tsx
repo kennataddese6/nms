@@ -46,7 +46,7 @@ export function NurseryHeader() {
             />
           </div>
           <span className="font-heading font-black text-2xl sm:text-3xl tracking-tight text-foreground">
-            Bubbly <span className="text-orange-500">Nursery</span> 🌟
+            Bubbly <span className="text-orange-500">Nursery</span>
           </span>
         </Link>
 
