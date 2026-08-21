@@ -70,5 +70,17 @@ export default async function RoomsPage() {
     console.error("Failed to load staff:", staffError.message);
   }
 
-  return <RoomsWorkspace initialRooms={rooms || []} initialStaff={staff || []} />;
+  // 5. Fetch Daily Routines for classrooms
+  const { data: routines } = await supabase
+    .from("room_routines")
+    .select("*")
+    .order("display_order", { ascending: true });
+
+  return (
+    <RoomsWorkspace
+      initialRooms={rooms || []}
+      initialStaff={staff || []}
+      initialRoutines={routines || []}
+    />
+  );
 }

@@ -20,8 +20,19 @@ interface DbRoom {
   branch: string;
 }
 
+interface DbRoutineItem {
+  id?: string;
+  room_id?: string | null;
+  age_group?: string;
+  time: string;
+  activity: string;
+  details: string;
+  display_order?: number;
+}
+
 interface RoomsClientWorkspaceProps {
   dbRooms: DbRoom[];
+  dbRoutines?: DbRoutineItem[];
 }
 
 export function formatAgeRange(minMonths?: number, maxMonths?: number): string {
@@ -190,12 +201,13 @@ const routinesByAge: Record<string, Array<{ time: string; activity: string; deta
   ],
 };
 
-export function RoomsClientWorkspace({ dbRooms }: RoomsClientWorkspaceProps) {
-  const [selectedRoomId, setSelectedRoomId] = React.useState<string | null>(dbRooms.length > 0 ? dbRooms[0].id : null);
+export function RoomsClientWorkspace({ dbRooms, dbRoutines }: RoomsClientWorkspaceProps) {
+  const [selectedRoomId, setSelectedRoomId] = React.useState<string | null>(
+    dbRooms.length > 0 ? dbRooms[0].id : null,
+  );
 
   const selectedRoom = dbRooms.find((r) => r.id === selectedRoomId) || dbRooms[0];
 
-  // Determine age key for routine defaults
   const getAgeKey = (r?: DbRoom) => {
     if (!r) return "toddlers";
     const name = r.name.toLowerCase();
@@ -206,7 +218,20 @@ export function RoomsClientWorkspace({ dbRooms }: RoomsClientWorkspaceProps) {
   };
 
   const ageKey = getAgeKey(selectedRoom);
-  const routine = routinesByAge[ageKey];
+
+  const roomSpecificRoutines = (dbRoutines || []).filter(
+    (r) => selectedRoom?.id && r.room_id === selectedRoom.id,
+  );
+  const ageGroupRoutines = (dbRoutines || []).filter(
+    (r) => r.age_group === ageKey,
+  );
+
+  const routine =
+    roomSpecificRoutines.length > 0
+      ? roomSpecificRoutines
+      : ageGroupRoutines.length > 0
+      ? ageGroupRoutines
+      : routinesByAge[ageKey] || [];
 
   return (
     <div className="space-y-12">

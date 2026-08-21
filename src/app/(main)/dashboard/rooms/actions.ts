@@ -156,3 +156,102 @@ export async function deleteRoomAction(roomId: string) {
   revalidateRoomsPages();
   return { success: true };
 }
+
+export interface SaveRoutineItemInput {
+  id?: string;
+  roomId?: string;
+  ageGroup: string;
+  time: string;
+  activity: string;
+  details?: string;
+  displayOrder?: number;
+}
+
+export async function saveRoutineItemAction(data: SaveRoutineItemInput) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized: Log in required.");
+  }
+
+  const { data: roleMappings } = await supabase.from("user_roles").select("roles(name)").eq("user_id", user.id);
+
+  const roleNames =
+    (roleMappings as unknown as Array<{ roles: { name: string } | null }>)
+      ?.map((rm) => rm.roles?.name)
+      .filter(Boolean) || [];
+  const isStaff =
+    roleNames.includes("NURSERY_MANAGER") || roleNames.includes("STAFF") || roleNames.includes("SUPER_ADMIN");
+
+  if (!isStaff) {
+    throw new Error("Forbidden: Only nursery staff can manage routines.");
+  }
+
+  const adminClient = createAdminClient();
+
+  const payload = {
+    room_id: data.roomId || null,
+    age_group: data.ageGroup,
+    time: data.time,
+    activity: data.activity,
+    details: data.details || "",
+    display_order: data.displayOrder ?? 0,
+  };
+
+  if (data.id) {
+    const { data: updated, error } = await adminClient
+      .from("room_routines")
+      .update(payload)
+      .eq("id", data.id)
+      .select()
+      .single();
+
+    if (error) throw new Error(error.message || "Failed to update routine item.");
+    revalidateRoomsPages();
+    return { success: true, routine: updated };
+  }
+
+  const { data: inserted, error } = await adminClient
+    .from("room_routines")
+    .insert(payload)
+    .select()
+    .single();
+
+  if (error) throw new Error(error.message || "Failed to create routine item.");
+  revalidateRoomsPages();
+  return { success: true, routine: inserted };
+}
+
+export async function deleteRoutineItemAction(id: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized: Log in required.");
+  }
+
+  const { data: roleMappings } = await supabase.from("user_roles").select("roles(name)").eq("user_id", user.id);
+
+  const roleNames =
+    (roleMappings as unknown as Array<{ roles: { name: string } | null }>)
+      ?.map((rm) => rm.roles?.name)
+      .filter(Boolean) || [];
+  const isStaff =
+    roleNames.includes("NURSERY_MANAGER") || roleNames.includes("STAFF") || roleNames.includes("SUPER_ADMIN");
+
+  if (!isStaff) {
+    throw new Error("Forbidden: Only nursery staff can delete routines.");
+  }
+
+  const adminClient = createAdminClient();
+  const { error } = await adminClient.from("room_routines").delete().eq("id", id);
+
+  if (error) throw new Error(error.message || "Failed to delete routine item.");
+  revalidateRoomsPages();
+  return { success: true };
+}

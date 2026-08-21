@@ -13,6 +13,10 @@ export default async function RoomsPage() {
   const supabase = await createClient();
 
   const { data: dbRooms } = await supabase.from("rooms").select("*").order("min_age_months", { ascending: true });
+  const { data: dbRoutines } = await supabase
+    .from("room_routines")
+    .select("*")
+    .order("display_order", { ascending: true });
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-b from-sky-50 via-emerald-50 to-amber-50 text-foreground">
@@ -62,7 +66,7 @@ export default async function RoomsPage() {
         {/* Live Client Rooms Component */}
         <section className="py-12 sm:py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <RoomsClientWorkspace dbRooms={dbRooms || []} />
+            <RoomsClientWorkspace dbRooms={dbRooms || []} dbRoutines={dbRoutines || []} />
           </div>
         </section>
       </main>
