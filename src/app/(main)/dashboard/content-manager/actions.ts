@@ -276,9 +276,11 @@ export async function saveJobAction(data: SaveJobInput) {
 }
 
 export interface SaveNewsInput {
+  id?: string;
   title: string;
-  description: string;
+  content: string;
   category: string;
+  branch?: string;
   imageUrl?: string;
   eventDate?: string;
 }
@@ -291,16 +293,45 @@ export async function saveNewsEventAction(data: SaveNewsInput) {
 
   if (!user) throw new Error("Unauthorized: Log in required.");
 
+  const { data: roleMappings } = await supabase.from("user_roles").select("roles(name)").eq("user_id", user.id);
+
+  const roleNames =
+    ((roleMappings as unknown) as Array<{ roles: { name: string } | null }>)
+      ?.map((rm) => rm.roles?.name)
+      .filter(Boolean) || [];
+  const isStaff =
+    roleNames.includes("NURSERY_MANAGER") || roleNames.includes("STAFF") || roleNames.includes("SUPER_ADMIN");
+
+  if (!isStaff) {
+    throw new Error("Forbidden: Only nursery staff can manage content.");
+  }
+
   const adminClient = createAdminClient();
+  const payload = {
+    title: data.title,
+    content: data.content,
+    category: data.category,
+    branch: data.branch || "Both",
+    image_url: data.imageUrl || null,
+    event_date: data.eventDate || null,
+  };
+
+  if (data.id) {
+    const { data: updated, error } = await adminClient
+      .from("news_events")
+      .update(payload)
+      .eq("id", data.id)
+      .select()
+      .single();
+
+    if (error) throw new Error(error.message);
+    revalidatePublicPages();
+    return { success: true, news: updated };
+  }
+
   const { data: inserted, error } = await adminClient
     .from("news_events")
-    .insert({
-      title: data.title,
-      description: data.description,
-      category: data.category,
-      image_url: data.imageUrl || null,
-      event_date: data.eventDate || null,
-    })
+    .insert(payload)
     .select()
     .single();
 

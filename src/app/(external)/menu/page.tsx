@@ -46,9 +46,11 @@ const fallbackMenu = {
 export default async function PublicMenuPage() {
   const supabase = await createClient();
 
-  const { data: activeMenu } = await supabase.from("nursery_menus").select("*").eq("is_active", true).maybeSingle();
-
-  const menu = activeMenu || fallbackMenu;
+  const { data: activeMenu } = await supabase
+    .from("nursery_menus")
+    .select("*")
+    .eq("is_active", true)
+    .maybeSingle();
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
@@ -72,17 +74,29 @@ export default async function PublicMenuPage() {
           </div>
         </section>
 
-        {/* Menu Grid and Switcher */}
+        {/* Menu Grid or Empty State */}
         <section className="py-16 sm:py-24">
           <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-10">
-              <span className="text-xs uppercase font-bold text-muted-foreground tracking-widest">
-                Current Rotation
-              </span>
-              <h2 className="text-2xl font-bold text-foreground mt-1">{menu.name}</h2>
-            </div>
+            {activeMenu ? (
+              <>
+                <div className="text-center mb-10">
+                  <span className="text-xs uppercase font-bold text-muted-foreground tracking-widest">
+                    Current Rotation
+                  </span>
+                  <h2 className="text-2xl font-bold text-foreground mt-1">{activeMenu.name}</h2>
+                </div>
 
-            <MenuWorkspace menu={menu} />
+                <MenuWorkspace menu={activeMenu} />
+              </>
+            ) : (
+              <div className="text-center py-16 px-6 rounded-3xl border border-dashed bg-card max-w-2xl mx-auto space-y-3 shadow-sm">
+                <Apple className="h-12 w-12 text-muted-foreground/40 mx-auto" />
+                <h3 className="text-lg font-bold text-foreground">No Active Menu Published</h3>
+                <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                  Our chef updates the weekly nursery menu rotation regularly. Please check back soon or contact admissions for current dietary schedules.
+                </p>
+              </div>
+            )}
 
             {/* Note on Allergies */}
             <div className="mt-12 p-6 rounded-3xl border bg-amber-50/50 dark:bg-amber-950/10 border-amber-200 flex gap-4 items-start max-w-3xl mx-auto text-sm leading-relaxed">

@@ -163,6 +163,8 @@ export function ContentManager({
   const [editingLeadershipMember, setEditingLeadershipMember] = React.useState<any | null>(null);
   const [viewingLeadershipMember, setViewingLeadershipMember] = React.useState<any | null>(null);
   const [newsModalOpen, setNewsModalOpen] = React.useState(false);
+  const [editingNewsEvent, setEditingNewsEvent] = React.useState<any | null>(null);
+  const [viewingNewsEvent, setViewingNewsEvent] = React.useState<any | null>(null);
   const [galleryModalOpen, setGalleryModalOpen] = React.useState(false);
   const [menuModalOpen, setMenuModalOpen] = React.useState(false);
   const [editingMenu, setEditingMenu] = React.useState<any | null>(null);
@@ -551,6 +553,34 @@ export function ContentManager({
     }
   };
 
+  const handleOpenAddNewsEvent = () => {
+    setEditingNewsEvent(null);
+    newsForm.reset({
+      title: "",
+      category: "news",
+      eventDate: "",
+      content: "",
+      imageUrl: "",
+      branch: "Both",
+    });
+    setNewsFile(null);
+    setNewsModalOpen(true);
+  };
+
+  const handleOpenEditNewsEvent = (post: any) => {
+    setEditingNewsEvent(post);
+    newsForm.reset({
+      title: post.title || "",
+      category: post.category || "news",
+      eventDate: post.event_date || "",
+      content: post.content || "",
+      imageUrl: post.image_url || "",
+      branch: post.branch || "Both",
+    });
+    setNewsFile(null);
+    setNewsModalOpen(true);
+  };
+
   const onNewsSubmit = async (data: NewsEventFormValues) => {
     setSubmitting(true);
     try {
@@ -572,24 +602,24 @@ export function ContentManager({
         uploadedUrl = publicUrl;
       }
 
-      const { error } = await supabase.from("news_events").insert({
+      await saveNewsEventAction({
+        id: editingNewsEvent?.id,
         title: data.title,
         category: data.category,
-        event_date: data.category === "event" ? data.eventDate || null : null,
+        eventDate: data.category === "event" ? data.eventDate || undefined : undefined,
         content: data.content,
-        image_url: uploadedUrl,
+        imageUrl: uploadedUrl || undefined,
         branch: data.branch,
       });
 
-      if (error) throw error;
-
-      toast.success("News/Event Published Successfully!");
+      toast.success(editingNewsEvent ? "News/Event Updated Successfully!" : "News/Event Published Successfully!");
       newsForm.reset();
+      setEditingNewsEvent(null);
       setNewsFile(null);
       setNewsModalOpen(false);
       router.refresh();
     } catch (err: any) {
-      toast.error("Failed to publish post", { description: err.message });
+      toast.error(editingNewsEvent ? "Failed to update post" : "Failed to publish post", { description: err.message });
     } finally {
       setSubmitting(false);
     }
@@ -1131,15 +1161,15 @@ export function ContentManager({
               </div>
 
               <Dialog open={newsModalOpen} onOpenChange={setNewsModalOpen}>
-                <DialogTrigger asChild>
-                  <Button size="sm" className="rounded-lg">
-                    <Plus className="h-4 w-4 mr-1" />
-                    Publish News/Event
-                  </Button>
-                </DialogTrigger>
+                <Button size="sm" className="rounded-lg" onClick={handleOpenAddNewsEvent}>
+                  <Plus className="h-4 w-4 mr-1" />
+                  Publish News/Event
+                </Button>
                 <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
                   <DialogHeader>
-                    <DialogTitle>Publish News or Event Notice</DialogTitle>
+                    <DialogTitle>
+                      {editingNewsEvent ? "Edit News or Event Notice" : "Publish News or Event Notice"}
+                    </DialogTitle>
                     <DialogDescription>Fill in details to post to the parent information wall.</DialogDescription>
                   </DialogHeader>
                   <form noValidate onSubmit={newsForm.handleSubmit(onNewsSubmit)} className="space-y-4 py-2">
@@ -1229,7 +1259,11 @@ export function ContentManager({
 
                     <DialogFooter>
                       <Button type="submit" className="w-full" disabled={submitting}>
-                        {submitting ? "Publishing..." : "Publish Post"}
+                        {submitting
+                          ? "Saving..."
+                          : editingNewsEvent
+                          ? "Update Post"
+                          : "Publish Post"}
                       </Button>
                     </DialogFooter>
                   </form>
@@ -1276,14 +1310,35 @@ export function ContentManager({
                             <Badge variant="secondary">{post.branch}</Badge>
                           </td>
                           <td className="p-4 text-right">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-                              onClick={() => deleteItem("news_events", post.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                            <div className="flex items-center justify-end gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-muted-foreground hover:text-foreground"
+                                onClick={() => setViewingNewsEvent(post)}
+                                title="View News / Event Detail"
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-muted-foreground hover:text-foreground"
+                                onClick={() => handleOpenEditNewsEvent(post)}
+                                title="Edit News / Event"
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                                onClick={() => deleteItem("news_events", post.id)}
+                                title="Delete Item"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -1917,7 +1972,84 @@ export function ContentManager({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      {/* View Leadership Member Detail Dialog */}
+      {/* View News / Event Detail Dialog */}
+      <Dialog open={!!viewingNewsEvent} onOpenChange={(open) => !open && setViewingNewsEvent(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-between gap-2 text-xl font-bold">
+              <span>{viewingNewsEvent?.title}</span>
+              <Badge
+                variant="outline"
+                className={
+                  viewingNewsEvent?.category === "event"
+                    ? "bg-purple-50 text-purple-700 border-purple-200"
+                    : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                }
+              >
+                {viewingNewsEvent?.category}
+              </Badge>
+            </DialogTitle>
+            <DialogDescription>
+              Posted for {viewingNewsEvent?.branch || "Both"} locations.
+              {viewingNewsEvent?.event_date ? ` • Event Date: ${viewingNewsEvent.event_date}` : ""}
+            </DialogDescription>
+          </DialogHeader>
+
+          {viewingNewsEvent && (
+            <div className="space-y-4 py-2 text-sm">
+              {viewingNewsEvent.image_url && (
+                <div className="relative h-48 w-full overflow-hidden rounded-2xl border">
+                  <img
+                    src={viewingNewsEvent.image_url}
+                    alt={viewingNewsEvent.title}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              )}
+              <div className="space-y-2">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Article / Announcement Content</h4>
+                <p className="whitespace-pre-wrap leading-relaxed text-foreground text-xs bg-neutral-50 dark:bg-neutral-900 p-4 rounded-2xl border">
+                  {viewingNewsEvent.content}
+                </p>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="flex justify-between sm:justify-between w-full">
+            {viewingNewsEvent && (
+              <Button
+                variant="destructive"
+                className="gap-1.5"
+                onClick={() => {
+                  const target = viewingNewsEvent;
+                  setViewingNewsEvent(null);
+                  deleteItem("news_events", target.id);
+                }}
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete
+              </Button>
+            )}
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setViewingNewsEvent(null)}>
+                Close
+              </Button>
+              {viewingNewsEvent && (
+                <Button
+                  onClick={() => {
+                    const target = viewingNewsEvent;
+                    setViewingNewsEvent(null);
+                    handleOpenEditNewsEvent(target);
+                  }}
+                >
+                  <Pencil className="h-4 w-4 mr-1.5" />
+                  Edit Item
+                </Button>
+              )}
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <Dialog open={!!viewingLeadershipMember} onOpenChange={(open) => !open && setViewingLeadershipMember(null)}>
         <DialogContent className="max-w-md">
           <DialogHeader>
