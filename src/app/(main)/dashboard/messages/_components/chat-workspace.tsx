@@ -4,12 +4,24 @@ import * as React from "react";
 
 import { useRouter } from "next/navigation";
 
-import { AlertCircle, Clock, Inbox, Mail, MessageSquare, Phone, Plus, Search, Send, Trash2, User } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  Inbox,
+  Mail,
+  MessageSquare,
+  Phone,
+  Plus,
+  Search,
+  Send,
+  Trash2,
+  User,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
@@ -42,6 +54,7 @@ interface Thread {
       first_name: string;
       last_name: string;
       email: string;
+      phone?: string;
     };
   };
 }
@@ -58,24 +71,20 @@ export function ChatWorkspace({ initialThreads, currentUserProfile, isStaff, par
   const router = useRouter();
 
   const [threads, setThreads] = React.useState<Thread[]>(initialThreads);
-  const [activeThreadId, setActiveThreadId] = React.useState<string | null>(
+  const [expandedId, setExpandedId] = React.useState<string | null>(
     initialThreads.length > 0 ? initialThreads[0].id : null,
   );
-  const [messages, setMessages] = React.useState<Message[]>([]);
-  const [newMessageText, setNewMessageText] = React.useState("");
-  const [loadingMessages, setLoadingMessages] = React.useState(false);
-  const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
+  const [messagesMap, setMessagesMap] = React.useState<Record<string, Message[]>>({});
+  const [loadingMap, setLoadingMap] = React.useState<Record<string, boolean>>({});
 
-  // Search state
+  const [replyTextMap, setReplyTextMap] = React.useState<Record<string, string>>({});
+  const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
 
   // New thread form states
   const [newThreadSubject, setNewThreadSubject] = React.useState("");
   const [newThreadFirstMessage, setNewThreadFirstMessage] = React.useState("");
   const [creatingThread, setCreatingThread] = React.useState(false);
-
-  const activeThread = threads.find((t) => t.id === activeThreadId);
-  const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   // Filtered threads
   const filteredThreads = React.useMemo(() => {
@@ -89,99 +98,87 @@ export function ChatWorkspace({ initialThreads, currentUserProfile, isStaff, par
     });
   }, [threads, searchQuery]);
 
-  // Scroll to bottom helper
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  // Fetch messages helper
-  const fetchMessages = React.useCallback(async () => {
-    if (!activeThreadId) return;
+  // Fetch thread messages helper
+  const loadThreadMessages = React.useCallback(async (threadId: string) => {
+    setLoadingMap((prev) => ({ ...prev, [threadId]: true }));
     try {
-      const res = await getThreadMessagesAction(activeThreadId);
-      setMessages(res.messages || []);
+      const res = await getThreadMessagesAction(threadId);
+      setMessagesMap((prev) => ({ ...prev, [threadId]: res.messages || [] }));
     } catch (err: any) {
       console.error("Failed to load messages:", err.message);
+    } finally {
+      setLoadingMap((prev) => ({ ...prev, [threadId]: false }));
     }
-  }, [activeThreadId]);
+  }, []);
 
-  // Handle active thread message loading and Realtime subscription
+  // Expand / Toggle thread accordion card
+  const toggleAccordion = (threadId: string) => {
+    if (expandedId === threadId) {
+      setExpandedId(null);
+    } else {
+      setExpandedId(threadId);
+      if (!messagesMap[threadId]) {
+        loadThreadMessages(threadId);
+      }
+    }
+  };
+
+  // Auto load expanded thread messages on initial render or active thread change
   React.useEffect(() => {
-    if (!activeThreadId) return;
+    if (expandedId && !messagesMap[expandedId]) {
+      loadThreadMessages(expandedId);
+    }
+  }, [expandedId, loadThreadMessages, messagesMap]);
 
-    setLoadingMessages(true);
-    fetchMessages().finally(() => setLoadingMessages(false));
-
-    const channel = supabase
-      .channel(`thread:${activeThreadId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "chat_messages",
-          filter: `thread_id=eq.${activeThreadId}`,
-        },
-        () => {
-          fetchMessages();
-        },
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [activeThreadId, fetchMessages, supabase]);
-
-  // Scroll to bottom whenever messages list updates
-  React.useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  // Send message submit handler (Staff & Parent)
-  const handleSendMessage = async (e: React.FormEvent) => {
+  // Send message reply handler
+  const handleSendReply = async (threadId: string, e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessageText.trim() || !activeThreadId) return;
+    const text = replyTextMap[threadId]?.trim();
+    if (!text) return;
 
-    const messageToSend = newMessageText.trim();
-    setNewMessageText("");
+    setReplyTextMap((prev) => ({ ...prev, [threadId]: "" }));
 
     try {
-      const res = await sendChatMessageAction(activeThreadId, messageToSend);
+      const res = await sendChatMessageAction(threadId, text);
       if (res.message) {
-        setMessages((prev) => [...prev, res.message]);
+        setMessagesMap((prev) => ({
+          ...prev,
+          [threadId]: [...(prev[threadId] || []), res.message],
+        }));
       }
     } catch (err: any) {
       toast.error("Failed to send message", { description: err.message });
-      setNewMessageText(messageToSend);
+      setReplyTextMap((prev) => ({ ...prev, [threadId]: text }));
     }
   };
 
-  // Delete Thread Handler (Staff)
+  // Delete Thread Handler
   const handleDeleteThread = async (threadId: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    if (!confirm("Are you sure you want to delete this entire message thread?")) return;
+    if (!confirm("Are you sure you want to delete this enquiry message?")) return;
 
     try {
       await deleteThreadAction(threadId);
       setThreads((prev) => prev.filter((t) => t.id !== threadId));
-      if (activeThreadId === threadId) {
-        const remaining = threads.filter((t) => t.id !== threadId);
-        setActiveThreadId(remaining.length > 0 ? remaining[0].id : null);
+      if (expandedId === threadId) {
+        setExpandedId(null);
       }
-      toast.success("Message Thread Deleted");
+      toast.success("Enquiry deleted successfully");
       router.refresh();
     } catch (err: any) {
-      toast.error("Failed to delete thread", { description: err.message });
+      toast.error("Failed to delete enquiry", { description: err.message });
     }
   };
 
-  // Delete Single Message Handler (Staff)
-  const handleDeleteMessage = async (messageId: string) => {
+  // Delete Single Message Handler
+  const handleDeleteMessage = async (threadId: string, messageId: string) => {
     if (!confirm("Delete this message?")) return;
     try {
       await deleteMessageAction(messageId);
-      setMessages((prev) => prev.filter((m) => m.id !== messageId));
+      setMessagesMap((prev) => ({
+        ...prev,
+        [threadId]: (prev[threadId] || []).filter((m) => m.id !== messageId),
+      }));
       toast.success("Message deleted");
     } catch (err: any) {
       toast.error("Failed to delete message", { description: err.message });
@@ -193,7 +190,7 @@ export function ChatWorkspace({ initialThreads, currentUserProfile, isStaff, par
     e.preventDefault();
     if (!newThreadSubject.trim() || !newThreadFirstMessage.trim() || !parentRecordId) {
       toast.error("Validation Error", {
-        description: "Please enter a subject and your first message.",
+        description: "Please enter a subject and your message.",
       });
       return;
     }
@@ -213,7 +210,8 @@ export function ChatWorkspace({ initialThreads, currentUserProfile, isStaff, par
             profiles (
               first_name,
               last_name,
-              email
+              email,
+              phone
             )
           )
         `)
@@ -230,7 +228,8 @@ export function ChatWorkspace({ initialThreads, currentUserProfile, isStaff, par
       if (msgErr) throw msgErr;
 
       setThreads((prev) => [threadData, ...prev]);
-      setActiveThreadId(threadData.id);
+      setExpandedId(threadData.id);
+      loadThreadMessages(threadData.id);
       setIsDrawerOpen(false);
 
       setNewThreadSubject("");
@@ -249,32 +248,32 @@ export function ChatWorkspace({ initialThreads, currentUserProfile, isStaff, par
   };
 
   return (
-    <div className="py-6 px-4 md:px-8 space-y-6 h-[calc(100vh-4rem)] flex flex-col">
-      {/* Title section */}
-      <div className="flex justify-between items-center shrink-0">
+    <div className="py-6 px-4 md:px-8 space-y-6 max-w-6xl mx-auto">
+      {/* Title & Controls Header */}
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b pb-5">
         <div>
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-            <MessageSquare className="h-8 w-8 text-primary" /> Messages & Enquiries
+            <MessageSquare className="h-8 w-8 text-primary" /> Parent Messages & Enquiries
           </h1>
           <p className="text-muted-foreground text-sm mt-1">
             {isStaff
-              ? "Review incoming parent enquiries, respond directly, or manage message records."
-              : "Communicate directly with Bubbly Day Nursery admissions & office team."}
+              ? "Simple message cards list. Click any row to expand details, respond, or delete."
+              : "Send and review messages with the Bubbly Day Nursery office team."}
           </p>
         </div>
 
-        {/* Start Chat Button (Only visible to parents to initiate enquiries) */}
+        {/* Start New Enquiry Button (Parent) */}
         {!isStaff && parentRecordId && (
           <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
             <SheetTrigger asChild>
               <Button className="rounded-full shrink-0">
-                <Plus className="h-4 w-4 mr-1.5" /> New Enquiry
+                <Plus className="h-4 w-4 mr-1.5" /> Send New Enquiry
               </Button>
             </SheetTrigger>
             <SheetContent className="sm:max-w-md rounded-l-3xl">
               <SheetHeader className="pb-4 border-b">
-                <SheetTitle>Start a New Enquiry</SheetTitle>
-                <SheetDescription>Send a query to the Bubbly Day Nursery office team.</SheetDescription>
+                <SheetTitle>Send New Enquiry</SheetTitle>
+                <SheetDescription>Submit a message to Bubbly Day Nursery office.</SheetDescription>
               </SheetHeader>
               <form onSubmit={handleCreateThread} className="space-y-4 pt-4">
                 <div className="space-y-1.5">
@@ -317,197 +316,230 @@ export function ChatWorkspace({ initialThreads, currentUserProfile, isStaff, par
         )}
       </div>
 
-      {/* Main chat layout */}
-      <div className="flex-1 min-h-0 border rounded-3xl overflow-hidden grid grid-cols-1 md:grid-cols-12 bg-card shadow-sm">
-        {/* Left Side: Threads Sidebar */}
-        <div className="md:col-span-4 border-r flex flex-col h-full bg-neutral-50/50 dark:bg-neutral-950/20">
-          <div className="p-4 border-b shrink-0 space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                <Inbox className="h-4 w-4 text-primary" /> Conversations ({filteredThreads.length})
-              </h3>
-            </div>
-            {/* Search Input */}
-            <div className="relative">
-              <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
-              <Input
-                placeholder="Search subject or parent..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 h-9 text-xs rounded-xl"
-              />
-            </div>
-          </div>
+      {/* Search Bar */}
+      <div className="relative">
+        <Search className="absolute left-4 top-3.5 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search enquiries by subject, parent name, or email..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-11 h-11 text-xs sm:text-sm rounded-2xl border-2"
+        />
+      </div>
 
-          <div className="flex-1 overflow-y-auto divide-y">
-            {filteredThreads.length === 0 ? (
-              <div className="p-8 text-center text-xs text-muted-foreground">No conversations found.</div>
-            ) : (
-              filteredThreads.map((t) => {
-                const isSelected = t.id === activeThreadId;
-                const contactName = isStaff
-                  ? `${t.parents?.profiles?.first_name || ""} ${t.parents?.profiles?.last_name || ""}`
-                  : "Nursery Office / Staff";
+      {/* Accordion List of Messages (1 Horizontal Line per Card) */}
+      <div className="space-y-3">
+        {filteredThreads.length === 0 ? (
+          <Card className="p-12 text-center text-muted-foreground border-dashed rounded-3xl">
+            <Inbox className="h-10 w-10 mx-auto mb-2 text-neutral-300" />
+            <h3 className="font-bold text-foreground text-base">No messages found</h3>
+            <p className="text-xs mt-1">There are no parent enquiry messages matching your view.</p>
+          </Card>
+        ) : (
+          filteredThreads.map((t) => {
+            const isExpanded = expandedId === t.id;
+            const parentProfile = t.parents?.profiles;
+            const parentName = isStaff
+              ? `${parentProfile?.first_name || ""} ${parentProfile?.last_name || ""}`.trim() || "Parent"
+              : "Nursery Office";
+            const parentEmail = parentProfile?.email;
+            const parentPhone = parentProfile?.phone;
 
-                return (
-                  <div
-                    key={t.id}
-                    onClick={() => setActiveThreadId(t.id)}
-                    className={`p-4 cursor-pointer hover:bg-neutral-100/50 dark:hover:bg-neutral-800/30 transition-colors group relative ${
-                      isSelected ? "bg-white dark:bg-neutral-900/40 border-l-4 border-primary" : ""
-                    }`}
-                  >
-                    <div className="flex justify-between items-start gap-2">
-                      <span className="font-bold text-xs text-foreground line-clamp-1 pr-6">{t.subject}</span>
-                      <span className="text-[9px] text-muted-foreground font-semibold shrink-0">
-                        {new Date(t.created_at).toLocaleDateString()}
-                      </span>
+            const threadMsgs = messagesMap[t.id] || [];
+            const isLoading = loadingMap[t.id];
+
+            return (
+              <div
+                key={t.id}
+                className={`rounded-2xl border transition-all duration-200 overflow-hidden bg-card ${
+                  isExpanded ? "ring-2 ring-primary/30 shadow-md" : "hover:border-neutral-300 dark:hover:border-neutral-700"
+                }`}
+              >
+                {/* Accordion Header Bar (One Horizontal Line) */}
+                <div
+                  onClick={() => toggleAccordion(t.id)}
+                  className="flex items-center justify-between p-4 cursor-pointer select-none gap-3 hover:bg-muted/40 transition-colors"
+                >
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    {/* User Icon */}
+                    <div className="h-9 w-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0">
+                      👤
                     </div>
 
-                    <div className="flex items-center justify-between mt-1">
-                      <span className="text-[10px] text-muted-foreground truncate">{contactName}</span>
+                    {/* Sender & Subject Line */}
+                    <div className="min-w-0 flex-1 grid grid-cols-1 md:grid-cols-12 items-center gap-2">
+                      <div className="md:col-span-4 min-w-0">
+                        <span className="font-extrabold text-sm text-foreground truncate block">
+                          {parentName}
+                        </span>
+                        {isStaff && parentEmail && (
+                          <span className="text-[11px] text-muted-foreground truncate block">{parentEmail}</span>
+                        )}
+                      </div>
 
-                      {/* Staff Quick Delete Action */}
+                      <div className="md:col-span-8 min-w-0 flex items-center gap-2">
+                        <Badge variant="outline" className="text-[10px] font-bold shrink-0 hidden sm:inline-flex">
+                          Enquiry
+                        </Badge>
+                        <span className="font-medium text-xs text-foreground/90 truncate">{t.subject}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Actions: Date, Delete Button, Expand Arrow */}
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span className="text-[11px] font-semibold text-muted-foreground hidden sm:inline-block">
+                      {new Date(t.created_at).toLocaleDateString()}
+                    </span>
+
+                    {/* Quick Delete Icon (Staff) */}
+                    {isStaff && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full"
+                        onClick={(e) => handleDeleteThread(t.id, e)}
+                        title="Delete Enquiry"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+
+                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
+                      {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Expanded Accordion Body */}
+                {isExpanded && (
+                  <div className="border-t bg-muted/10 p-5 sm:p-6 space-y-5 animate-in fade-in duration-150">
+                    {/* Staff Direct Contact Buttons */}
+                    {isStaff && (
+                      <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-xl bg-card border text-xs">
+                        <div className="flex items-center gap-2 text-muted-foreground font-semibold">
+                          <span>Contact Parent:</span>
+                          <span className="font-bold text-foreground">{parentName}</span>
+                        </div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {parentEmail && (
+                            <a
+                              href={`mailto:${parentEmail}`}
+                              className="inline-flex items-center gap-1.5 bg-primary/10 text-primary hover:bg-primary/20 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors"
+                            >
+                              <Mail className="h-3.5 w-3.5" /> Email
+                            </a>
+                          )}
+                          {parentPhone && (
+                            <>
+                              <a
+                                href={`tel:${parentPhone}`}
+                                className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 hover:bg-emerald-100 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors border border-emerald-200"
+                              >
+                                <Phone className="h-3.5 w-3.5" /> Call
+                              </a>
+                              <a
+                                href={`sms:${parentPhone}`}
+                                className="inline-flex items-center gap-1.5 bg-sky-50 text-sky-700 dark:bg-sky-950/40 dark:text-sky-300 hover:bg-sky-100 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors border border-sky-200"
+                              >
+                                💬 SMS
+                              </a>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Messages List */}
+                    <div className="space-y-3">
+                      <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                        Message Details & History
+                      </h4>
+
+                      {isLoading ? (
+                        <div className="py-6 text-center text-xs text-muted-foreground">Loading message details...</div>
+                      ) : threadMsgs.length === 0 ? (
+                        <div className="py-4 text-center text-xs text-muted-foreground">No message text found.</div>
+                      ) : (
+                        threadMsgs.map((msg) => {
+                          const isOwnMessage = msg.sender_id === currentUserProfile?.id;
+                          const senderLabel = isOwnMessage
+                            ? "Me"
+                            : `${msg.sender?.first_name || ""} ${msg.sender?.last_name || ""}`.trim() || "Sender";
+
+                          return (
+                            <div
+                              key={msg.id}
+                              className={`p-4 rounded-2xl border space-y-2 relative group ${
+                                isOwnMessage
+                                  ? "bg-primary/5 border-primary/20 ml-4 sm:ml-8"
+                                  : "bg-card border-border mr-4 sm:mr-8"
+                              }`}
+                            >
+                              <div className="flex items-center justify-between text-xs">
+                                <span className="font-bold text-foreground flex items-center gap-1.5">
+                                  <span>{isOwnMessage ? "💬" : "👤"}</span>
+                                  {senderLabel}
+                                </span>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[10px] text-muted-foreground">
+                                    {new Date(msg.created_at).toLocaleString()}
+                                  </span>
+                                  {isStaff && (
+                                    <button
+                                      type="button"
+                                      onClick={() => handleDeleteMessage(t.id, msg.id)}
+                                      title="Delete message"
+                                      className="opacity-0 group-hover:opacity-100 p-1 text-muted-foreground hover:text-destructive transition-opacity"
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                              <p className="text-xs sm:text-sm text-foreground/90 leading-relaxed whitespace-pre-wrap">
+                                {msg.message}
+                              </p>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+
+                    {/* Reply Bar & Delete Conversation Footer */}
+                    <div className="pt-3 border-t flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                      <form
+                        onSubmit={(e) => handleSendReply(t.id, e)}
+                        className="flex-1 flex gap-2"
+                      >
+                        <Input
+                          placeholder={isStaff ? "Type reply to parent..." : "Type reply..."}
+                          value={replyTextMap[t.id] || ""}
+                          onChange={(e) => setReplyTextMap((prev) => ({ ...prev, [t.id]: e.target.value }))}
+                          className="rounded-xl text-xs flex-1"
+                        />
+                        <Button type="submit" size="sm" className="rounded-xl font-bold gap-1 shrink-0">
+                          <Send className="h-3.5 w-3.5" /> Reply
+                        </Button>
+                      </form>
+
                       {isStaff && (
-                        <button
-                          type="button"
-                          onClick={(e) => handleDeleteThread(t.id, e)}
-                          title="Delete thread"
-                          className="opacity-0 group-hover:opacity-100 p-1 text-muted-foreground hover:text-destructive transition-opacity"
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          className="rounded-xl font-bold text-xs gap-1.5 shrink-0"
+                          onClick={() => handleDeleteThread(t.id)}
                         >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
+                          <Trash2 className="h-3.5 w-3.5" /> Delete Enquiry
+                        </Button>
                       )}
                     </div>
                   </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-
-        {/* Right Side: Chat Window */}
-        <div className="md:col-span-8 flex flex-col h-full bg-white dark:bg-neutral-900/20">
-          {activeThread ? (
-            <>
-              {/* Header */}
-              <div className="p-4 border-b shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-neutral-50/20 dark:bg-neutral-900/25">
-                <div>
-                  <h3 className="font-bold text-base text-foreground">{activeThread.subject}</h3>
-                  <div className="flex items-center gap-2 text-[11px] text-muted-foreground mt-0.5">
-                    <span>
-                      From: {activeThread.parents?.profiles?.first_name} {activeThread.parents?.profiles?.last_name}
-                    </span>
-                    <span>•</span>
-                    <span>{new Date(activeThread.created_at).toLocaleString()}</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 shrink-0">
-                  {isStaff && activeThread.parents?.profiles?.email && (
-                    <a
-                      href={`mailto:${activeThread.parents.profiles.email}`}
-                      className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline bg-primary/10 px-3 py-1.5 rounded-full"
-                    >
-                      <Mail className="h-3.5 w-3.5" /> Direct Email
-                    </a>
-                  )}
-
-                  {/* Delete Conversation Button for Staff */}
-                  {isStaff && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-xs font-bold text-destructive hover:bg-destructive/10 rounded-full h-8"
-                      onClick={() => handleDeleteThread(activeThread.id)}
-                    >
-                      <Trash2 className="h-3.5 w-3.5 mr-1" /> Delete Thread
-                    </Button>
-                  )}
-                </div>
-              </div>
-
-              {/* Chat Message Logs */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                {loadingMessages ? (
-                  <div className="text-center text-xs text-muted-foreground py-8">Loading messages...</div>
-                ) : messages.length === 0 ? (
-                  <div className="text-center text-xs text-muted-foreground py-8">No messages in this thread.</div>
-                ) : (
-                  messages.map((msg) => {
-                    const isOwnMessage = msg.sender_id === currentUserProfile?.id;
-                    const senderName = isOwnMessage
-                      ? "Me"
-                      : `${msg.sender?.first_name || ""} ${msg.sender?.last_name || ""}`;
-                    const msgTime = new Date(msg.created_at).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    });
-
-                    return (
-                      <div
-                        key={msg.id}
-                        className={`flex flex-col group ${isOwnMessage ? "items-end" : "items-start"}`}
-                      >
-                        <div className="flex items-center gap-2 max-w-lg">
-                          {/* Staff individual message delete */}
-                          {isStaff && (
-                            <button
-                              type="button"
-                              onClick={() => handleDeleteMessage(msg.id)}
-                              title="Delete message"
-                              className="opacity-0 group-hover:opacity-100 p-1 text-muted-foreground hover:text-destructive transition-opacity"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </button>
-                          )}
-                          <div
-                            className={`rounded-2xl p-4 text-xs leading-relaxed shadow-sm ${
-                              isOwnMessage
-                                ? "bg-primary text-primary-foreground rounded-tr-none"
-                                : "bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 rounded-tl-none border"
-                            }`}
-                          >
-                            {msg.message}
-                          </div>
-                        </div>
-                        <span className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1 font-medium px-1">
-                          {senderName} • {msgTime}
-                        </span>
-                      </div>
-                    );
-                  })
                 )}
-                <div ref={messagesEndRef} />
               </div>
-
-              {/* Response Input Form for Both Staff and Parents */}
-              <form
-                onSubmit={handleSendMessage}
-                className="p-4 border-t shrink-0 flex gap-2 bg-neutral-50/20 dark:bg-neutral-900/25"
-              >
-                <Input
-                  value={newMessageText}
-                  onChange={(e) => setNewMessageText(e.target.value)}
-                  placeholder={isStaff ? "Type a reply to parent..." : "Type your message..."}
-                  className="rounded-full text-xs"
-                  required
-                />
-                <Button type="submit" size="icon" className="rounded-full shrink-0">
-                  <Send className="h-4 w-4" />
-                </Button>
-              </form>
-            </>
-          ) : (
-            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-muted-foreground">
-              <Inbox className="h-10 w-10 text-neutral-300 mb-2" />
-              <h4 className="font-bold text-foreground text-sm">No conversation selected</h4>
-              <p className="text-xs max-w-xs mx-auto mt-1">
-                Select an enquiry from the sidebar list to view the message history.
-              </p>
-            </div>
-          )}
-        </div>
+            );
+          })
+        )}
       </div>
     </div>
   );

@@ -57,7 +57,8 @@ export default async function MessagesPage() {
           profiles (
             first_name,
             last_name,
-            email
+            email,
+            phone
           )
         )
       `)
@@ -73,7 +74,8 @@ export default async function MessagesPage() {
         profiles (
           first_name,
           last_name,
-          email
+          email,
+          phone
         )
       )
     `);
