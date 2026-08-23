@@ -5,10 +5,12 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Baby, ExternalLink, Eye, Mail, MessageSquare, Pencil, Phone, Plus, Search, Trash2, Users } from "lucide-react";
+import { Baby, ExternalLink, Eye, KeyRound, Mail, MessageSquare, Pencil, Phone, Plus, Search, Trash2, Users } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+
+import { resetUserPasswordAction } from "@/app/(main)/dashboard/account/actions";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -106,6 +108,10 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
 
   const [parentModalOpen, setParentModalOpen] = React.useState(false);
   const [studentModalOpen, setStudentModalOpen] = React.useState(false);
+  // Reset user password state
+  const [resettingParent, setResettingParent] = React.useState<any | null>(null);
+  const [targetNewPassword, setTargetNewPassword] = React.useState("");
+  const [resettingPasswordLoading, setResettingPasswordLoading] = React.useState(false);
   const [viewingChild, setViewingChild] = React.useState<any | null>(null);
   const [editingChild, setEditingChild] = React.useState<any | null>(null);
   const [deletingChild, setDeletingChild] = React.useState<any | null>(null);
@@ -789,6 +795,7 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
                         <th className="p-4">Address</th>
                         <th className="p-4">Emergency Contact</th>
                         <th className="p-4">Marital Status</th>
+                        <th className="p-4 text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y">
@@ -804,6 +811,17 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
                           <td className="p-4 text-muted-foreground">
                             <Badge variant="outline">{parent.relationship_status}</Badge>
                           </td>
+                          <td className="p-4 text-right">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 text-xs font-bold text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg"
+                              onClick={() => setResettingParent(parent)}
+                              title="Reset User Password"
+                            >
+                              <KeyRound className="h-3.5 w-3.5 mr-1" /> Reset Password
+                            </Button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -814,6 +832,69 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
           </Card>
         </TabsContent>
       </Tabs>
+      {/* Admin Reset User Password Modal */}
+      <Dialog open={!!resettingParent} onOpenChange={(open) => !open && setResettingParent(null)}>
+        <DialogContent className="max-w-md rounded-3xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl font-bold">
+              <KeyRound className="h-5 w-5 text-primary" /> Reset User Password
+            </DialogTitle>
+            <DialogDescription>
+              Set a new password for {resettingParent?.profiles?.first_name} {resettingParent?.profiles?.last_name} ({resettingParent?.profiles?.email}).
+            </DialogDescription>
+          </DialogHeader>
+
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (!resettingParent?.profiles?.id || !targetNewPassword) return;
+              if (targetNewPassword.length < 6) {
+                toast.error("Validation Error", { description: "Password must be at least 6 characters." });
+                return;
+              }
+
+              setResettingPasswordLoading(true);
+              try {
+                await resetUserPasswordAction(resettingParent.profiles.id, targetNewPassword);
+                toast.success("User Password Reset Successfully!", {
+                  description: `Password updated for ${resettingParent.profiles.first_name} ${resettingParent.profiles.last_name}.`,
+                });
+                setResettingParent(null);
+                setTargetNewPassword("");
+              } catch (err: any) {
+                toast.error("Failed to reset password", { description: err.message });
+              } finally {
+                setResettingPasswordLoading(false);
+              }
+            }}
+            className="space-y-4 py-2"
+          >
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-muted-foreground" htmlFor="reset-user-pwd">
+                New Password *
+              </label>
+              <Input
+                id="reset-user-pwd"
+                type="password"
+                value={targetNewPassword}
+                onChange={(e) => setTargetNewPassword(e.target.value)}
+                placeholder="Enter new password (min 6 characters)..."
+                required
+              />
+            </div>
+
+            <DialogFooter className="pt-4">
+              <Button type="button" variant="ghost" onClick={() => setResettingParent(null)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={resettingPasswordLoading}>
+                {resettingPasswordLoading ? "Saving..." : "Set New Password"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
       {/* Student Detail Modal */}
       <Dialog open={!!viewingChild} onOpenChange={(open) => !open && setViewingChild(null)}>
         <DialogContent className="max-w-xl">

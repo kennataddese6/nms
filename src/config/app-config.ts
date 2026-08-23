@@ -3,12 +3,12 @@ import packageJson from "../../package.json";
 const currentYear = new Date().getFullYear();
 
 export const APP_CONFIG = {
-  name: "Studio Admin",
+  name: "Bubbly Day Nursery",
   version: packageJson.version,
-  copyright: `© ${currentYear}, Studio Admin.`,
+  copyright: `© ${currentYear} Bubbly Day Nursery Limited. All rights reserved.`,
   meta: {
-    title: "Studio Admin - Modern Next.js Dashboard Starter Template",
+    title: "Bubbly Day Nursery - Early Years Education & Nursery Portal",
     description:
-      "Studio Admin is a modern, open-source dashboard starter template built with Next.js 16, Tailwind CSS v4, and shadcn/ui. Perfect for SaaS apps, admin panels, and internal tools—fully customizable and production-ready.",
+      "Bubbly Day Nursery is an Ofsted-registered Early Years nursery in London. Providing warm, stimulating, and child-centric childcare for babies, toddlers, and preschool children with EYFS alignment.",
   },
 };

@@ -91,6 +91,12 @@ export const sidebarItems: NavGroup[] = [
         url: "/dashboard/messages",
         icon: MessageSquare,
       },
+      {
+        id: "account-settings",
+        title: "Account & Security",
+        url: "/dashboard/account",
+        icon: Lock,
+      },
     ],
   },
   {
@@ -109,6 +115,12 @@ export const sidebarItems: NavGroup[] = [
         title: "Messages",
         url: "/dashboard/messages",
         icon: MessageSquare,
+      },
+      {
+        id: "parent-account",
+        title: "Account & Security",
+        url: "/dashboard/account",
+        icon: Lock,
       },
     ],
   },
