@@ -1,6 +1,6 @@
 import { Apple, Heart } from "lucide-react";
 
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 import { NurseryFooter } from "../_components/nursery-footer";
 import { NurseryHeader } from "../_components/nursery-header";
@@ -9,44 +9,10 @@ import { MenuWorkspace } from "./_components/menu-workspace";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-const fallbackMenu = {
-  name: "Autumn Menu 2025 - Week 1 (Sample)",
-  breakfast: "Cereals, Fresh fruit, Porridge, Toast. Served on a rolling basis between 7.30-8.45",
-  morning_snack: "Served on a rolling basis from 10am",
-  lunch: {
-    Monday: "Creamy Cheese & Broccoli Pasta",
-    Tuesday: "Chicken Vermicelli Rice with Vegetables",
-    Wednesday: "Asian Noodle stir fry with a medley of vegetables",
-    Thursday: "Spaghetti with Meatballs in a rich Tomato & hidden vegetable sauce",
-    Friday: "Toma's Special Chicken Stew & Rice",
-  },
-  desserts: {
-    Monday: "Toma's famous, Vegan Chocolate Cake with yoghurt or custard",
-    Tuesday: "Jelly with a fruit surprise",
-    Wednesday: "Greek yoghurt & Bananas (& honey for our older children)",
-    Thursday: "Jam and coconut sponge",
-    Friday: "Rice Pudding",
-  },
-  afternoon_snack: {
-    Monday: "Home-made Date Loaf",
-    Tuesday: "Lemon mini muffins",
-    Wednesday: "Apple cinnamon bread",
-    Thursday: "Mini pinwheels",
-    Friday: "cheese, cucumber & breadsticks",
-  },
-  afternoon_tea: {
-    Monday: "White bean soup with homemade croutons",
-    Tuesday: "Fish fingers with roasted vegetables",
-    Wednesday: "Roasted Tomato soup",
-    Thursday: "Mini Burritos",
-    Friday: "Mac & Cheese",
-  },
-};
-
 export default async function PublicMenuPage() {
-  const supabase = await createClient();
+  const adminClient = createAdminClient();
 
-  const { data: activeMenu } = await supabase
+  const { data: activeMenu } = await adminClient
     .from("nursery_menus")
     .select("*")
     .eq("is_active", true)
