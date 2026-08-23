@@ -202,12 +202,50 @@ const routinesByAge: Record<string, Array<{ time: string; activity: string; deta
   ],
 };
 
+const defaultPresetRooms: DbRoom[] = [
+  {
+    id: "preset-babies",
+    name: "Baby Room",
+    min_age_months: 3,
+    max_age_months: 24,
+    capacity: 12,
+    description: "Cozy, sensory-rich environment tailored for infants and early walkers.",
+    branch: "Branch 1",
+    image_url: "/images/classroom-babies.png",
+  },
+  {
+    id: "preset-toddlers",
+    name: "Toddlers Room (Little Explorers)",
+    min_age_months: 24,
+    max_age_months: 36,
+    capacity: 15,
+    description: "Active discovery space encouraging early communication, messy art, and social play.",
+    branch: "Branch 1",
+    image_url: "/images/classroom-toddlers.png",
+  },
+  {
+    id: "preset-preschool",
+    name: "Preschool Room (Early Scholars)",
+    min_age_months: 36,
+    max_age_months: 60,
+    capacity: 20,
+    description: "Structured EYFS learning zone focusing on school readiness, phonics, and independence.",
+    branch: "Branch 1",
+    image_url: "/images/classroom-preschool.png",
+  },
+];
+
 export function RoomsClientWorkspace({ dbRooms, dbRoutines }: RoomsClientWorkspaceProps) {
+  const effectiveRooms = React.useMemo(() => {
+    return dbRooms && dbRooms.length > 0 ? dbRooms : defaultPresetRooms;
+  }, [dbRooms]);
+
   const [selectedRoomId, setSelectedRoomId] = React.useState<string | null>(
-    dbRooms.length > 0 ? dbRooms[0].id : null,
+    effectiveRooms.length > 0 ? effectiveRooms[0].id : null,
   );
 
-  const selectedRoom = dbRooms.find((r) => r.id === selectedRoomId) || dbRooms[0];
+  const selectedRoom =
+    effectiveRooms.find((r) => r.id === selectedRoomId) || effectiveRooms[0];
 
   const getAgeKey = (r?: DbRoom) => {
     if (!r) return "toddlers";
@@ -237,18 +275,18 @@ export function RoomsClientWorkspace({ dbRooms, dbRoutines }: RoomsClientWorkspa
   return (
     <div className="space-y-12">
       {/* Room Selector Buttons */}
-      {dbRooms.length > 0 && (
-        <div className="flex flex-wrap justify-center gap-3">
-          {dbRooms.map((room) => {
+      {effectiveRooms.length > 0 && (
+        <div className="flex flex-wrap justify-center gap-2.5 sm:gap-3">
+          {effectiveRooms.map((room) => {
             const isSelected = room.id === (selectedRoom?.id ?? "");
             return (
               <button
                 key={room.id}
                 type="button"
                 onClick={() => setSelectedRoomId(room.id)}
-                className={`flex items-center gap-2.5 px-6 py-3 rounded-full text-xs font-bold transition-all duration-200 shadow-sm ${
+                className={`flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs font-bold transition-all duration-200 shadow-sm w-full sm:w-auto ${
                   isSelected
-                    ? "bg-gradient-to-r from-orange-400 to-pink-500 text-white shadow-md scale-105"
+                    ? "bg-gradient-to-r from-orange-400 to-pink-500 text-white shadow-md scale-[1.02] sm:scale-105"
                     : "bg-white/90 backdrop-blur-sm text-foreground/80 hover:bg-white hover:text-foreground border border-orange-200"
                 }`}
               >
