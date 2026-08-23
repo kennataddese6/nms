@@ -3,9 +3,13 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
-export async function updateMyPasswordAction(newPassword: string) {
+export async function updateMyPasswordAction(currentPassword: string, newPassword: string) {
+  if (!currentPassword) {
+    throw new Error("Current password is required.");
+  }
+
   if (!newPassword || newPassword.length < 6) {
-    throw new Error("Password must be at least 6 characters long.");
+    throw new Error("New password must be at least 6 characters long.");
   }
 
   const supabase = await createClient();
@@ -13,17 +17,27 @@ export async function updateMyPasswordAction(newPassword: string) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (!user || !user.email) {
     throw new Error("Unauthorized: Please log in to update password.");
   }
 
-  // Update authenticated user's password using Supabase Auth
-  const { error } = await supabase.auth.updateUser({
+  // 1. Verify current password
+  const { error: signInErr } = await supabase.auth.signInWithPassword({
+    email: user.email,
+    password: currentPassword,
+  });
+
+  if (signInErr) {
+    throw new Error("Your current password is incorrect. Please check and try again.");
+  }
+
+  // 2. Update to new password
+  const { error: updateErr } = await supabase.auth.updateUser({
     password: newPassword,
   });
 
-  if (error) {
-    throw new Error(error.message || "Failed to update password.");
+  if (updateErr) {
+    throw new Error(updateErr.message || "Failed to update password.");
   }
 
   return { success: true };

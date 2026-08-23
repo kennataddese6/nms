@@ -23,6 +23,7 @@ interface AccountWorkspaceProps {
 }
 
 export function AccountWorkspace({ userProfile, roles }: AccountWorkspaceProps) {
+  const [currentPassword, setCurrentPassword] = React.useState("");
   const [newPassword, setNewPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
   const [showPassword, setShowPassword] = React.useState(false);
@@ -32,6 +33,11 @@ export function AccountWorkspace({ userProfile, roles }: AccountWorkspaceProps) 
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!currentPassword) {
+      toast.error("Validation Error", { description: "Please enter your current password." });
+      return;
+    }
 
     if (!newPassword) {
       toast.error("Validation Error", { description: "Please enter a new password." });
@@ -44,16 +50,17 @@ export function AccountWorkspace({ userProfile, roles }: AccountWorkspaceProps) 
     }
 
     if (newPassword !== confirmPassword) {
-      toast.error("Validation Error", { description: "Passwords do not match. Please re-enter." });
+      toast.error("Validation Error", { description: "New passwords do not match. Please re-enter." });
       return;
     }
 
     setUpdating(true);
     try {
-      await updateMyPasswordAction(newPassword);
+      await updateMyPasswordAction(currentPassword, newPassword);
       toast.success("Password Updated Successfully!", {
         description: "Your account password has been changed. Use your new password on next login.",
       });
+      setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (err: any) {
@@ -119,23 +126,24 @@ export function AccountWorkspace({ userProfile, roles }: AccountWorkspaceProps) 
               <Lock className="h-5 w-5 text-primary" /> Change Password
             </CardTitle>
             <CardDescription className="text-xs">
-              Enter a new secure password for your account. You will stay signed in on this device.
+              Verify your current password and enter a new secure password for your account.
             </CardDescription>
           </CardHeader>
 
           <CardContent>
             <form onSubmit={handlePasswordChange} className="space-y-5">
+              {/* Current Password Field */}
               <div className="space-y-2">
-                <label className="text-xs font-bold text-foreground" htmlFor="new-pwd">
-                  New Password *
+                <label className="text-xs font-bold text-foreground" htmlFor="curr-pwd">
+                  Current Password *
                 </label>
                 <div className="relative">
                   <Input
-                    id="new-pwd"
+                    id="curr-pwd"
                     type={showPassword ? "text" : "password"}
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="At least 6 characters..."
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="Enter your existing password..."
                     className="pr-10 rounded-xl text-xs sm:text-sm h-11"
                     required
                   />
@@ -150,6 +158,23 @@ export function AccountWorkspace({ userProfile, roles }: AccountWorkspaceProps) 
                 </div>
               </div>
 
+              {/* New Password Field */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-foreground" htmlFor="new-pwd">
+                  New Password *
+                </label>
+                <Input
+                  id="new-pwd"
+                  type={showPassword ? "text" : "password"}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="At least 6 characters..."
+                  className="rounded-xl text-xs sm:text-sm h-11"
+                  required
+                />
+              </div>
+
+              {/* Confirm New Password Field */}
               <div className="space-y-2">
                 <label className="text-xs font-bold text-foreground" htmlFor="confirm-pwd">
                   Confirm New Password *
@@ -172,7 +197,7 @@ export function AccountWorkspace({ userProfile, roles }: AccountWorkspaceProps) 
                 </div>
                 <ul className="text-muted-foreground text-[11px] list-disc list-inside space-y-0.5 font-medium">
                   <li>Minimum 6 characters long</li>
-                  <li>Mix numbers and letters for maximum strength</li>
+                  <li>Requires verification of your existing password</li>
                 </ul>
               </div>
 

@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Command } from "lucide-react";
 
 import { RegisterForm } from "../../_components/register-form";
-import { GoogleButton } from "../../_components/social-auth/google-button";
 
 export default function RegisterV1() {
   return (
@@ -13,12 +12,11 @@ export default function RegisterV1() {
           <div className="space-y-4 text-center">
             <div className="font-medium tracking-tight">Register</div>
             <div className="mx-auto max-w-xl text-muted-foreground">
-              Fill in your details below. We promise not to quiz you about your first pet&apos;s name (this time).
+              Fill in your details below to create your account.
             </div>
           </div>
           <div className="space-y-4">
             <RegisterForm />
-            <GoogleButton className="w-full" variant="outline" />
             <p className="text-center text-muted-foreground text-xs">
               Already have an account?{" "}
               <Link prefetch={false} href="login" className="text-primary">
