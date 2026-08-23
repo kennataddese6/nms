@@ -5,7 +5,7 @@ import { Calendar, Download, FileText, MapPin, Newspaper, Sparkles } from "lucid
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 import { NurseryFooter } from "../_components/nursery-footer";
 import { NurseryHeader } from "../_components/nursery-header";
@@ -14,10 +14,10 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function NewsPage() {
-  const supabase = await createClient();
+  const adminClient = createAdminClient();
 
   // Fetch live news & events from database
-  const { data: posts } = await supabase.from("news_events").select("*").order("created_at", { ascending: false });
+  const { data: posts } = await adminClient.from("news_events").select("*").order("created_at", { ascending: false });
 
   const newsEvents = posts || [];
 

@@ -2,7 +2,7 @@ import { ArrowDown, Award, Briefcase, Heart, MapPin, Sparkles } from "lucide-rea
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 import { NurseryFooter } from "../_components/nursery-footer";
 import { NurseryHeader } from "../_components/nursery-header";
@@ -12,10 +12,10 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function CareersPage() {
-  const supabase = await createClient();
+  const adminClient = createAdminClient();
 
   // Fetch dynamic job openings from database (excluding leadership team profiles)
-  const { data: dbJobs } = await supabase
+  const { data: dbJobs } = await adminClient
     .from("jobs")
     .select("*")
     .neq("type", "LEADERSHIP")

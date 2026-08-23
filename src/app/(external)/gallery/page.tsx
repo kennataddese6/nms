@@ -1,6 +1,6 @@
 import { Image as ImageIcon, Sparkles } from "lucide-react";
 
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 import { NurseryFooter } from "../_components/nursery-footer";
 import { NurseryHeader } from "../_components/nursery-header";
@@ -10,9 +10,9 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function GalleryPage() {
-  const supabase = await createClient();
+  const adminClient = createAdminClient();
 
-  const { data: media } = await supabase.from("gallery_media").select("*").order("created_at", { ascending: false });
+  const { data: media } = await adminClient.from("gallery_media").select("*").order("created_at", { ascending: false });
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-b from-sky-50 via-emerald-50 to-amber-50 text-foreground">

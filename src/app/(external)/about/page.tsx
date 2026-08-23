@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 import { NurseryFooter } from "../_components/nursery-footer";
 import { NurseryHeader } from "../_components/nursery-header";
@@ -12,9 +12,9 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function AboutPage() {
-  const supabase = await createClient();
+  const adminClient = createAdminClient();
 
-  const { data: leadershipMembers } = await supabase
+  const { data: leadershipMembers } = await adminClient
     .from("jobs")
     .select("*")
     .eq("type", "LEADERSHIP")
