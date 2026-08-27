@@ -41,7 +41,7 @@ export function NurseryHeader() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-none bg-gradient-to-r from-sky-200/90 via-cyan-100/85 to-emerald-100/85 backdrop-blur-xl dark:from-neutral-950/90 dark:via-neutral-900/90 dark:to-neutral-950/90">
+    <header className="sticky top-0 z-50 w-full border-none bg-white/20 backdrop-blur-md dark:bg-neutral-950/30 transition-colors">
       <div className="mx-auto flex max-w-7xl h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Bigger Logo & Brand Name */}
         <Link href="/" className="flex items-center gap-3.5 group shrink-0 py-1">

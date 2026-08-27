@@ -18,8 +18,8 @@ export function Hero() {
           className="object-cover object-center"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-sky-950/85 via-sky-900/65 to-emerald-950/75 mix-blend-multiply" />
-        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-b from-sky-950/45 via-sky-900/25 to-emerald-950/35" />
+        <div className="absolute inset-0 bg-black/10" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
