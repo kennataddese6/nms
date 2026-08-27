@@ -5,7 +5,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Baby, ExternalLink, Eye, KeyRound, Mail, MessageSquare, Pencil, Phone, Plus, Search, Trash2, Users } from "lucide-react";
+import { Baby, ExternalLink, Eye, KeyRound, Mail, MessageSquare, Pencil, Phone, Plus, Search, ShieldCheck, Trash2, UserCheck, Users, Briefcase, CheckSquare } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -32,7 +32,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { createClient } from "@/lib/supabase/client";
 
-import { deleteStudentAction, registerParentAction, registerStudentAction, updateStudentAction } from "../actions";
+import { deleteStaffAction, deleteStudentAction, registerParentAction, registerStaffAction, registerStudentAction, updateStudentAction } from "../actions";
 
 // ==========================================
 // SCHEMAS
@@ -50,6 +50,36 @@ const parentRegisterSchema = z.object({
 
 type ParentFormValues = z.infer<typeof parentRegisterSchema>;
 
+const staffRegisterSchema = z
+  .object({
+    firstName: z.string().min(2, "First name is required"),
+    lastName: z.string().min(2, "Last name is required"),
+    preferredName: z.string().optional(),
+    email: z.string().email("Invalid email address"),
+    mobileNumber: z.string().min(5, "Mobile number is required"),
+    niNumber: z.string().min(5, "National Insurance number is required"),
+    jobTitle: z.string().min(2, "Job title / role is required"),
+    nurseryBranch: z.string().min(2, "Nursery location / branch is required"),
+    roomDepartment: z.string().min(2, "Room / department is required"),
+    employmentType: z.string().min(1, "Employment type is required"),
+    dbsCertificateNumber: z.string().min(5, "DBS certificate number is required"),
+    username: z.string().min(3, "Username is required"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z.string().min(6, "Confirm password is required"),
+    emergencyContactName: z.string().min(2, "Emergency contact name is required"),
+    emergencyContactRelationship: z.string().min(2, "Relationship is required"),
+    emergencyContactNumber: z.string().min(5, "Emergency contact number is required"),
+    confirmCorrect: z.boolean().refine((val) => val === true, { message: "Confirmation is required" }),
+    agreePolicies: z.boolean().refine((val) => val === true, { message: "Agreement to policies is required" }),
+    agreeTerms: z.boolean().refine((val) => val === true, { message: "Agreement to terms is required" }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+type StaffFormValues = z.infer<typeof staffRegisterSchema>;
+
 const studentRegisterSchema = z.object({
   firstName: z.string().min(2, "First name is required"),
   lastName: z.string().min(2, "Last name is required"),
@@ -65,6 +95,7 @@ const studentRegisterSchema = z.object({
   photoConsent: z.boolean(),
   parentId: z.string().min(1, "Please link a parent to the child"),
   relationship: z.string().min(2, "Please specify relationship (e.g. Mother, Father)"),
+  staffId: z.string().optional(),
 });
 
 type StudentFormValues = z.infer<typeof studentRegisterSchema>;
@@ -81,6 +112,7 @@ const studentEditSchema = z.object({
   allergies: z.string().optional(),
   parentId: z.string().optional(),
   relationship: z.string().optional(),
+  staffId: z.string().optional(),
 });
 
 type StudentEditFormValues = z.infer<typeof studentEditSchema>;
@@ -92,22 +124,26 @@ type StudentEditFormValues = z.infer<typeof studentEditSchema>;
 interface NurseryCrmProps {
   initialParents: any[];
   initialChildren: any[];
+  initialStaff?: any[];
   rooms: any[];
 }
 
-export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCrmProps) {
+export function NurseryCrm({ initialParents, initialChildren, initialStaff = [], rooms }: NurseryCrmProps) {
   const _supabase = createClient();
   const router = useRouter();
 
   const [parents, setParents] = React.useState(initialParents);
   const [children, setChildren] = React.useState(initialChildren);
+  const [staffList, setStaffList] = React.useState(initialStaff);
 
   const [parentSearch, setParentSearch] = React.useState("");
   const [studentSearch, setStudentSearch] = React.useState("");
+  const [staffSearch, setStaffSearch] = React.useState("");
   const [branchFilter, setBranchFilter] = React.useState<"All" | "Branch 1" | "Branch 2">("All");
 
   const [parentModalOpen, setParentModalOpen] = React.useState(false);
   const [studentModalOpen, setStudentModalOpen] = React.useState(false);
+  const [staffModalOpen, setStaffModalOpen] = React.useState(false);
   // Reset user password state
   const [resettingParent, setResettingParent] = React.useState<any | null>(null);
   const [targetNewPassword, setTargetNewPassword] = React.useState("");
@@ -115,6 +151,7 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
   const [viewingChild, setViewingChild] = React.useState<any | null>(null);
   const [editingChild, setEditingChild] = React.useState<any | null>(null);
   const [deletingChild, setDeletingChild] = React.useState<any | null>(null);
+  const [deletingStaff, setDeletingStaff] = React.useState<any | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
 
   const handleDeleteStudent = async () => {
@@ -129,6 +166,21 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
       router.refresh();
     } catch (err: any) {
       toast.error("Failed to delete student", { description: err.message });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDeleteStaff = async () => {
+    if (!deletingStaff) return;
+    setSubmitting(true);
+    try {
+      await deleteStaffAction(deletingStaff.id);
+      toast.success("Staff record removed successfully!");
+      setDeletingStaff(null);
+      router.refresh();
+    } catch (err: any) {
+      toast.error("Failed to remove staff", { description: err.message });
     } finally {
       setSubmitting(false);
     }
@@ -191,6 +243,10 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
     setChildren(initialChildren);
   }, [initialChildren]);
 
+  React.useEffect(() => {
+    setStaffList(initialStaff);
+  }, [initialStaff]);
+
   // Forms Setup
   const parentForm = useForm<ParentFormValues>({
     resolver: zodResolver(parentRegisterSchema),
@@ -202,6 +258,33 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
       address: "",
       emergencyContact: "",
       relationshipStatus: "Married",
+    },
+    mode: "onTouched",
+  });
+
+  const staffForm = useForm<StaffFormValues>({
+    resolver: zodResolver(staffRegisterSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      preferredName: "",
+      email: "",
+      mobileNumber: "",
+      niNumber: "",
+      jobTitle: "",
+      nurseryBranch: "Bubbly Day Nursery - Main Branch",
+      roomDepartment: "Toddler Room (2-3 Yrs)",
+      employmentType: "Full-time",
+      dbsCertificateNumber: "",
+      username: "",
+      password: "",
+      confirmPassword: "",
+      emergencyContactName: "",
+      emergencyContactRelationship: "Spouse",
+      emergencyContactNumber: "",
+      confirmCorrect: false,
+      agreePolicies: false,
+      agreeTerms: false,
     },
     mode: "onTouched",
   });
@@ -221,9 +304,26 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
       photoConsent: false,
       parentId: "",
       relationship: "Mother",
+      staffId: "",
     },
     mode: "onTouched",
   });
+
+  // Handle Staff Submission
+  const onStaffSubmit = async (data: StaffFormValues) => {
+    setSubmitting(true);
+    try {
+      await registerStaffAction(data);
+      toast.success("Bubbly Day Nursery Staff Member Registered!");
+      staffForm.reset();
+      setStaffModalOpen(false);
+      router.refresh();
+    } catch (err: any) {
+      toast.error("Staff registration failed", { description: err.message });
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   // Handle Parent Submission
   const onParentSubmit = async (data: ParentFormValues) => {
@@ -271,6 +371,14 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
     return matchesSearch && matchesBranch;
   });
 
+  const filteredStaff = staffList.filter((s) => {
+    const name = `${s.profiles?.first_name || ""} ${s.profiles?.last_name || ""} ${s.preferred_name || ""} ${s.username || ""}`.toLowerCase();
+    const role = (s.job_title || "").toLowerCase();
+    const branch = (s.nursery_branch || "").toLowerCase();
+    const query = staffSearch.toLowerCase();
+    return name.includes(query) || role.includes(query) || branch.includes(query);
+  });
+
   return (
     <div className="space-y-6">
       {/* Branch View Selector Banner */}
@@ -297,8 +405,12 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
         </div>
       </div>
 
-      <Tabs defaultValue="students" className="space-y-4">
+      <Tabs defaultValue="staff" className="space-y-4">
         <TabsList className="rounded-xl bg-neutral-100 p-1 dark:bg-neutral-800">
+          <TabsTrigger value="staff" className="flex gap-2 rounded-lg">
+            <UserCheck className="h-4 w-4" />
+            Staff ({filteredStaff.length})
+          </TabsTrigger>
           <TabsTrigger value="students" className="flex gap-2 rounded-lg">
             <Baby className="h-4 w-4" />
             Students ({filteredChildren.length})
@@ -308,6 +420,427 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
             Parents ({parents.length})
           </TabsTrigger>
         </TabsList>
+
+        {/* ==========================================
+          STAFF TAB CONTENT
+         ========================================== */}
+        <TabsContent value="staff" className="space-y-4 focus:outline-none">
+          <Card>
+            <CardHeader className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+              <div>
+                <CardTitle>Staff Directory & Registration</CardTitle>
+                <CardDescription>Manage Bubbly Day Nursery staff members, DBS checks, and key worker assignments (max 3 students per staff).</CardDescription>
+              </div>
+              <div className="flex gap-2">
+                <InputGroup className="w-full md:w-64">
+                  <InputGroupAddon align="inline-start">
+                    <Search className="h-4 w-4" />
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    placeholder="Search staff members..."
+                    value={staffSearch}
+                    onChange={(e) => setStaffSearch(e.target.value)}
+                  />
+                </InputGroup>
+
+                {/* Staff Registration Dialog */}
+                <Dialog open={staffModalOpen} onOpenChange={setStaffModalOpen}>
+                  <DialogTrigger asChild>
+                    <Button size="sm" className="rounded-lg">
+                      <Plus className="mr-1 h-4 w-4" />
+                      Register Staff
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-h-[85vh] max-w-xl overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Bubbly Day Nursery Staff Registration</DialogTitle>
+                      <DialogDescription>
+                        Complete all 6 sections to register a new staff member into the nursery system.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <form noValidate onSubmit={staffForm.handleSubmit(onStaffSubmit)} className="space-y-6 py-2">
+                      {/* 1. Personal Details */}
+                      <div className="rounded-xl border p-4 space-y-3 bg-muted/20">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
+                          <Users className="h-4 w-4" /> 1. Personal Details
+                        </h4>
+                        <div className="grid grid-cols-2 gap-3">
+                          <Controller
+                            control={staffForm.control}
+                            name="firstName"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-fn" className="text-xs">First Name *</FieldLabel>
+                                <Input {...field} id="staff-fn" placeholder="Sarah" />
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                          <Controller
+                            control={staffForm.control}
+                            name="lastName"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-ln" className="text-xs">Last Name *</FieldLabel>
+                                <Input {...field} id="staff-ln" placeholder="Jenkins" />
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <Controller
+                            control={staffForm.control}
+                            name="preferredName"
+                            render={({ field }) => (
+                              <Field className="gap-1">
+                                <FieldLabel htmlFor="staff-pn" className="text-xs">Preferred Name</FieldLabel>
+                                <Input {...field} id="staff-pn" placeholder="Sarah" />
+                              </Field>
+                            )}
+                          />
+                          <Controller
+                            control={staffForm.control}
+                            name="niNumber"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-ni" className="text-xs">National Insurance Number *</FieldLabel>
+                                <Input {...field} id="staff-ni" placeholder="QQ 12 34 56 A font-mono" />
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <Controller
+                            control={staffForm.control}
+                            name="email"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-email" className="text-xs">Email Address *</FieldLabel>
+                                <Input {...field} id="staff-email" type="email" placeholder="sarah.j@bubblynursery.co.uk" />
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                          <Controller
+                            control={staffForm.control}
+                            name="mobileNumber"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-phone" className="text-xs">Mobile Number *</FieldLabel>
+                                <Input {...field} id="staff-phone" placeholder="07700 900123" />
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                        </div>
+                      </div>
+
+                      {/* 2. Work Details */}
+                      <div className="rounded-xl border p-4 space-y-3 bg-muted/20">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
+                          <Briefcase className="h-4 w-4" /> 2. Work Details
+                        </h4>
+                        <div className="grid grid-cols-2 gap-3">
+                          <Controller
+                            control={staffForm.control}
+                            name="jobTitle"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-title" className="text-xs">Job Title / Role *</FieldLabel>
+                                <Input {...field} id="staff-title" placeholder="Senior Nursery Practitioner" />
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                          <Controller
+                            control={staffForm.control}
+                            name="nurseryBranch"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-branch" className="text-xs">Nursery Location / Branch *</FieldLabel>
+                                <Input {...field} id="staff-branch" placeholder="Bubbly Day Nursery - Main Branch" />
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <Controller
+                            control={staffForm.control}
+                            name="roomDepartment"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-room" className="text-xs">Room / Department *</FieldLabel>
+                                <Input {...field} id="staff-room" placeholder="Toddler Room (2-3 Yrs)" />
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                          <Controller
+                            control={staffForm.control}
+                            name="employmentType"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-emp" className="text-xs">Employment Type *</FieldLabel>
+                                <NativeSelect {...field} id="staff-emp">
+                                  <option value="Full-time">Full-time</option>
+                                  <option value="Part-time">Part-time</option>
+                                  <option value="Apprenticeship">Apprenticeship</option>
+                                  <option value="Bank">Bank</option>
+                                  <option value="Agency">Agency</option>
+                                  <option value="Volunteer">Volunteer</option>
+                                </NativeSelect>
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                        </div>
+                      </div>
+
+                      {/* 3. DBS Details */}
+                      <div className="rounded-xl border p-4 space-y-3 bg-muted/20">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-500 flex items-center gap-1.5">
+                          <ShieldCheck className="h-4 w-4" /> 3. DBS Details
+                        </h4>
+                        <Controller
+                          control={staffForm.control}
+                          name="dbsCertificateNumber"
+                          render={({ field, fieldState }) => (
+                            <Field className="gap-1" data-invalid={fieldState.invalid}>
+                              <FieldLabel htmlFor="staff-dbs" className="text-xs">DBS Certificate Number *</FieldLabel>
+                              <Input {...field} id="staff-dbs" placeholder="001594830129" className="font-mono" />
+                              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                            </Field>
+                          )}
+                        />
+                      </div>
+
+                      {/* 4. Account Details */}
+                      <div className="rounded-xl border p-4 space-y-3 bg-muted/20">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
+                          <KeyRound className="h-4 w-4" /> 4. Account Details
+                        </h4>
+                        <Controller
+                          control={staffForm.control}
+                          name="username"
+                          render={({ field, fieldState }) => (
+                            <Field className="gap-1" data-invalid={fieldState.invalid}>
+                              <FieldLabel htmlFor="staff-un" className="text-xs">Username *</FieldLabel>
+                              <Input {...field} id="staff-un" placeholder="sjenkins" className="font-mono" />
+                              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                            </Field>
+                          )}
+                        />
+                        <div className="grid grid-cols-2 gap-3">
+                          <Controller
+                            control={staffForm.control}
+                            name="password"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-pass" className="text-xs">Password *</FieldLabel>
+                                <Input {...field} id="staff-pass" type="password" placeholder="••••••••" />
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                          <Controller
+                            control={staffForm.control}
+                            name="confirmPassword"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-cpass" className="text-xs">Confirm Password *</FieldLabel>
+                                <Input {...field} id="staff-cpass" type="password" placeholder="••••••••" />
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                        </div>
+                      </div>
+
+                      {/* 5. Emergency Contact */}
+                      <div className="rounded-xl border p-4 space-y-3 bg-muted/20">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-amber-500 flex items-center gap-1.5">
+                          <Phone className="h-4 w-4" /> 5. Emergency Contact
+                        </h4>
+                        <div className="grid grid-cols-2 gap-3">
+                          <Controller
+                            control={staffForm.control}
+                            name="emergencyContactName"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-ecn" className="text-xs">Contact Name *</FieldLabel>
+                                <Input {...field} id="staff-ecn" placeholder="David Jenkins" />
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                          <Controller
+                            control={staffForm.control}
+                            name="emergencyContactRelationship"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-ecr" className="text-xs">Relationship *</FieldLabel>
+                                <Input {...field} id="staff-ecr" placeholder="Spouse" />
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                        </div>
+                        <Controller
+                          control={staffForm.control}
+                          name="emergencyContactNumber"
+                          render={({ field, fieldState }) => (
+                            <Field className="gap-1" data-invalid={fieldState.invalid}>
+                              <FieldLabel htmlFor="staff-ecnum" className="text-xs">Emergency Phone Number *</FieldLabel>
+                              <Input {...field} id="staff-ecnum" placeholder="07700 900456" />
+                              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                            </Field>
+                          )}
+                        />
+                      </div>
+
+                      {/* 6. Confirmation */}
+                      <div className="rounded-xl border border-primary/30 p-4 space-y-3 bg-primary/5">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
+                          <CheckSquare className="h-4 w-4" /> 6. Confirmation & Policy Agreements
+                        </h4>
+
+                        <Controller
+                          control={staffForm.control}
+                          name="confirmCorrect"
+                          render={({ field, fieldState }) => (
+                            <label className="flex items-start space-x-2 text-xs font-medium cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={field.value}
+                                onChange={(e) => field.onChange(e.target.checked)}
+                                className="mt-0.5 rounded border-input text-primary"
+                              />
+                              <span>I confirm the information provided is correct.</span>
+                            </label>
+                          )}
+                        />
+
+                        <Controller
+                          control={staffForm.control}
+                          name="agreePolicies"
+                          render={({ field, fieldState }) => (
+                            <label className="flex items-start space-x-2 text-xs font-medium cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={field.value}
+                                onChange={(e) => field.onChange(e.target.checked)}
+                                className="mt-0.5 rounded border-input text-primary"
+                              />
+                              <span>I agree to follow Bubbly Day Nursery’s staff policies and confidentiality requirements.</span>
+                            </label>
+                          )}
+                        />
+
+                        <Controller
+                          control={staffForm.control}
+                          name="agreeTerms"
+                          render={({ field, fieldState }) => (
+                            <label className="flex items-start space-x-2 text-xs font-medium cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={field.value}
+                                onChange={(e) => field.onChange(e.target.checked)}
+                                className="mt-0.5 rounded border-input text-primary"
+                              />
+                              <span>I agree to the Privacy Policy and Terms of Use.</span>
+                            </label>
+                          )}
+                        />
+                      </div>
+
+                      <DialogFooter>
+                        <Button type="button" variant="outline" onClick={() => setStaffModalOpen(false)}>
+                          Cancel
+                        </Button>
+                        <Button type="submit" disabled={submitting}>
+                          {submitting ? "Registering..." : "Submit Registration"}
+                        </Button>
+                      </DialogFooter>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </CardHeader>
+
+            <CardContent>
+              {filteredStaff.length === 0 ? (
+                <div className="py-8 text-center text-muted-foreground text-sm">
+                  No staff members registered. Click &quot;Register Staff&quot; above to add your first staff member.
+                </div>
+              ) : (
+                <div className="divide-y border-t">
+                  {filteredStaff.map((st) => {
+                    const assignedChildren = st.child_staff || [];
+                    const assignedCount = assignedChildren.length;
+                    const maxCapacity = 3;
+
+                    const name = st.profiles
+                      ? `${st.profiles.first_name || ""} ${st.profiles.last_name || ""}`.trim()
+                      : st.username || "Staff Member";
+
+                    return (
+                      <div key={st.id} className="flex flex-col justify-between gap-4 py-4 md:flex-row md:items-center">
+                        <div className="space-y-1">
+                          <div className="flex items-center space-x-2">
+                            <span className="font-bold text-sm text-foreground">{name}</span>
+                            {st.preferred_name && (
+                              <span className="text-xs text-muted-foreground">(&quot;{st.preferred_name}&quot;)</span>
+                            )}
+                            <Badge variant="secondary" className="capitalize text-[10px] font-semibold">
+                              {st.employment_type || "Full-time"}
+                            </Badge>
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            <span>💼 {st.job_title || "Staff Practitioner"}</span> • <span>📍 {st.room_department || "General"} ({st.nursery_branch || "Main"})</span>
+                          </div>
+                          <div className="flex items-center space-x-3 text-[11px] text-muted-foreground font-mono pt-0.5">
+                            <span className="text-emerald-500 font-semibold">DBS: {st.dbs_certificate_number || "Verified"}</span>
+                            <span>NI: {st.ni_number || "On file"}</span>
+                            <span>📱 {st.mobile_number || st.profiles?.phone || "N/A"}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center space-x-4">
+                          <div className="text-right">
+                            <Badge
+                              variant={assignedCount >= maxCapacity ? "destructive" : "outline"}
+                              className="text-xs font-bold"
+                            >
+                              {assignedCount} / {maxCapacity} Children Assigned
+                            </Badge>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">
+                              {assignedCount >= maxCapacity ? "Full Capacity" : `${maxCapacity - assignedCount} slots available`}
+                            </p>
+                          </div>
+
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-destructive hover:bg-destructive/10"
+                            onClick={() => setDeletingStaff(st)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         {/* ==========================================
           STUDENTS TAB CONTENT
@@ -441,6 +974,30 @@ export function NurseryCrm({ initialParents, initialChildren, rooms }: NurseryCr
                           )}
                         />
                       </div>
+
+                      <Controller
+                        control={studentForm.control}
+                        name="staffId"
+                        render={({ field, fieldState }) => (
+                          <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                            <FieldLabel htmlFor="child-staff">Assign Key Worker Staff (Max 3)</FieldLabel>
+                            <NativeSelect {...field} id="child-staff">
+                              <option value="">-- Unassigned --</option>
+                              {staffList.map((st) => {
+                                const assignedCount = (st.child_staff || []).length;
+                                const isFull = assignedCount >= 3;
+                                const name = st.profiles ? `${st.profiles.first_name || ""} ${st.profiles.last_name || ""}`.trim() : st.username || "Staff Member";
+                                return (
+                                  <option key={st.id} value={st.id} disabled={isFull}>
+                                    {name} ({st.job_title || "Staff"}) — {isFull ? "⚠️ FULL (3/3 Students)" : `${assignedCount}/3 Students Assigned`}
+                                  </option>
+                                );
+                              })}
+                            </NativeSelect>
+                            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                          </Field>
+                        )}
+                      />
 
                       <Controller
                         control={studentForm.control}
