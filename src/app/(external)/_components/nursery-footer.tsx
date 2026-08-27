@@ -55,7 +55,7 @@ export function NurseryFooter() {
             <Link href="/" className="flex items-center gap-3 group">
               <div className="relative h-14 w-14 overflow-hidden rounded-full bg-orange-100 ring-4 ring-orange-200 group-hover:ring-orange-400 transition-all shadow-sm">
                 <Image
-                  src="/images/logo.png"
+                  src="/images/newlogo.png"
                   alt="Bubbly Day Nursery logo"
                   fill
                   className="object-cover"

@@ -5,7 +5,7 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { CircleHelp, ClipboardList, Command, Database, File, Search, Settings } from "lucide-react";
+import { CircleHelp, ClipboardList, Database, File, Search, Settings } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import {
@@ -24,7 +24,6 @@ import { usePreferencesStore } from "@/stores/preferences/preferences-provider";
 
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
-import { SidebarSupportCard } from "./sidebar-support-card";
 
 const _data = {
   navSecondary: [
@@ -142,7 +141,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               >
                 <div className="relative h-7 w-7 overflow-hidden rounded-full shrink-0 border bg-background">
                   <Image
-                    src="/images/logo.png"
+                    src="/images/newlogo.png"
                     alt="Bubbly Day Nursery logo"
                     fill
                     className="object-cover"

@@ -47,7 +47,7 @@ export function NurseryHeader() {
         <Link href="/" className="flex items-center gap-3.5 group shrink-0 py-1">
           <div className="relative h-14 w-14 sm:h-16 sm:w-16 overflow-hidden rounded-2xl bg-orange-100 ring-4 ring-orange-200 group-hover:ring-orange-400 transition-all shadow-md shrink-0">
             <Image
-              src="/images/logo.png"
+              src="/images/newlogo.png"
               alt="Bubbly Day Nursery logo"
               fill
               className="object-cover group-hover:scale-105 transition-transform"

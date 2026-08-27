@@ -210,7 +210,7 @@ export function Hero() {
             <div className="mx-auto mb-6 inline-flex items-center gap-3 rounded-full bg-white/90 backdrop-blur-md border-2 border-orange-200 px-4.5 py-2 shadow-md nursery-pop-in">
               <div className="relative h-9 w-9 overflow-hidden rounded-full bg-orange-100 ring-2 ring-orange-300 shrink-0">
                 <Image
-                  src="/images/logo.png"
+                  src="/images/newlogo.png"
                   alt="Bubbly Day Nursery logo"
                   fill
                   className="object-cover"
