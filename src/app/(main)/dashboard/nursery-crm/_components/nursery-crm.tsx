@@ -272,8 +272,8 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
       mobileNumber: "",
       niNumber: "",
       jobTitle: "",
-      nurseryBranch: "Bubbly Day Nursery - Main Branch",
-      roomDepartment: "Toddler Room (2-3 Yrs)",
+      nurseryBranch: "Branch 1",
+      roomDepartment: rooms[0]?.name || "Management / Admin",
       employmentType: "Full-time",
       dbsCertificateNumber: "",
       username: "",
@@ -562,7 +562,10 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                             render={({ field, fieldState }) => (
                               <Field className="gap-1" data-invalid={fieldState.invalid}>
                                 <FieldLabel htmlFor="staff-branch" className="text-xs">Nursery Location / Branch *</FieldLabel>
-                                <Input {...field} id="staff-branch" placeholder="Bubbly Day Nursery - Main Branch" />
+                                <NativeSelect {...field} id="staff-branch">
+                                  <option value="Branch 1">Branch 1</option>
+                                  <option value="Branch 2">Branch 2</option>
+                                </NativeSelect>
                                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                               </Field>
                             )}
@@ -573,13 +576,37 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                           <Controller
                             control={staffForm.control}
                             name="roomDepartment"
-                            render={({ field, fieldState }) => (
-                              <Field className="gap-1" data-invalid={fieldState.invalid}>
-                                <FieldLabel htmlFor="staff-room" className="text-xs">Room / Department *</FieldLabel>
-                                <Input {...field} id="staff-room" placeholder="Toddler Room (2-3 Yrs)" />
-                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                              </Field>
-                            )}
+                            render={({ field, fieldState }) => {
+                              const currentBranch = staffForm.watch("nurseryBranch");
+                              const filteredRooms = rooms.filter(
+                                (r) => !r.branch || r.branch.toLowerCase() === (currentBranch || "").toLowerCase()
+                              );
+                              const availableRooms = filteredRooms.length > 0 ? filteredRooms : rooms;
+
+                              return (
+                                <Field className="gap-1" data-invalid={fieldState.invalid}>
+                                  <FieldLabel htmlFor="staff-room" className="text-xs">Room / Department *</FieldLabel>
+                                  <NativeSelect {...field} id="staff-room">
+                                    {availableRooms.length > 0 && (
+                                      <optgroup label="Created Nursery Classrooms">
+                                        {availableRooms.map((r) => (
+                                          <option key={r.id} value={r.name}>
+                                            {r.name} {r.branch ? `(${r.branch})` : ""}
+                                          </option>
+                                        ))}
+                                      </optgroup>
+                                    )}
+                                    <optgroup label="General Departments">
+                                      <option value="Management / Admin">Management / Admin</option>
+                                      <option value="Kitchen / Catering">Kitchen / Catering</option>
+                                      <option value="Facilities / Operations">Facilities / Operations</option>
+                                      <option value="Float / Cover Staff">Float / Cover Staff</option>
+                                    </optgroup>
+                                  </NativeSelect>
+                                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                                </Field>
+                              );
+                            }}
                           />
                           <Controller
                             control={staffForm.control}

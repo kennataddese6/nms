@@ -113,7 +113,7 @@ export default async function NurseryCrmPage() {
     .order("created_at", { ascending: false });
 
   // 4. Fetch rooms for classroom assignments
-  const { data: rooms } = await adminClient.from("rooms").select("id, name, min_age_months, max_age_months");
+  const { data: rooms } = await adminClient.from("rooms").select("id, name, branch, min_age_months, max_age_months");
 
   return (
     <div className="space-y-6 px-4 py-6 md:px-8">
