@@ -45,12 +45,12 @@ export function NurseryHeader() {
       <div className="mx-auto flex max-w-7xl h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Bigger Logo & Brand Name */}
         <Link href="/" className="flex items-center gap-3.5 group shrink-0 py-1">
-          <div className="relative h-14 w-14 sm:h-16 sm:w-16 overflow-hidden rounded-2xl bg-orange-100 ring-4 ring-orange-200 group-hover:ring-orange-400 transition-all shadow-md shrink-0">
+          <div className="relative h-14 w-14 sm:h-16 sm:w-16 overflow-hidden transition-all shrink-0">
             <Image
               src="/images/newlogo.png"
               alt="Bubbly Day Nursery logo"
               fill
-              className="object-cover group-hover:scale-105 transition-transform"
+              className="object-contain group-hover:scale-105 transition-transform"
               sizes="64px"
               priority
             />

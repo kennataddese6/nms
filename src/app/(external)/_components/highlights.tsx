@@ -49,7 +49,7 @@ export function Highlights() {
 
   return (
     <section className="relative py-16 sm:py-24 overflow-hidden">
-      {/* Subtle ambient decorations */}
+      {/* ── Floating animated decorations spread across Highlights ── */}
       <span
         aria-hidden="true"
         className="absolute top-6 left-8 text-4xl pointer-events-none select-none nursery-twinkle opacity-60"
@@ -66,17 +66,38 @@ export function Highlights() {
       </span>
       <span
         aria-hidden="true"
+        className="absolute top-1/2 left-4 text-4xl pointer-events-none select-none nursery-float-slow opacity-60 hidden lg:block"
+        style={{ animationDelay: "0.4s" }}
+      >
+        🦁
+      </span>
+      <span
+        aria-hidden="true"
+        className="absolute top-1/3 right-6 text-4xl pointer-events-none select-none nursery-wiggle opacity-60 hidden lg:block"
+        style={{ animationDelay: "0.8s" }}
+      >
+        🦋
+      </span>
+      <span
+        aria-hidden="true"
         className="absolute bottom-8 left-1/3 text-3xl pointer-events-none select-none nursery-wiggle opacity-50 hidden md:block"
         style={{ animationDelay: "0.7s" }}
       >
-        🦋
+        🧸
       </span>
       <span
         aria-hidden="true"
         className="absolute bottom-6 right-10 text-3xl pointer-events-none select-none nursery-float-slow opacity-50 hidden sm:block"
         style={{ animationDelay: "0.2s" }}
       >
-        ⭐
+        🌈
+      </span>
+      <span
+        aria-hidden="true"
+        className="absolute top-4 right-1/3 text-3xl pointer-events-none select-none nursery-spin-slow opacity-50 hidden md:block"
+        style={{ animationDelay: "1.2s" }}
+      >
+        🌍
       </span>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -113,7 +134,7 @@ export function Highlights() {
               <h3 className={`text-xl font-extrabold mb-3 ${item.accentColor}`}>
                 {item.emoji} {item.title}
               </h3>
-              <p className="text-foreground/70 text-sm leading-relaxed">{item.description}</p>
+              <p className="text-foreground/80 text-sm leading-relaxed font-medium">{item.description}</p>
             </div>
           ))}
         </div>

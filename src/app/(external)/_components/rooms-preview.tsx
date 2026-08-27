@@ -73,6 +73,20 @@ export function RoomsPreview() {
       </span>
       <span
         aria-hidden="true"
+        className="absolute top-1/2 left-4 text-3xl pointer-events-none select-none nursery-wiggle opacity-60 hidden lg:block"
+        style={{ animationDelay: "0.5s" }}
+      >
+        🐸
+      </span>
+      <span
+        aria-hidden="true"
+        className="absolute top-1/3 right-6 text-3xl pointer-events-none select-none nursery-float-slow opacity-60 hidden lg:block"
+        style={{ animationDelay: "1.3s" }}
+      >
+        🐰
+      </span>
+      <span
+        aria-hidden="true"
         className="absolute bottom-10 left-1/4 text-3xl pointer-events-none select-none nursery-wiggle opacity-50 hidden md:block"
         style={{ animationDelay: "0.6s" }}
       >
