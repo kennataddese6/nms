@@ -4,6 +4,7 @@ import * as React from "react";
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { CircleHelp, ClipboardList, Database, File, Search, Settings } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
@@ -25,46 +26,17 @@ import { usePreferencesStore } from "@/stores/preferences/preferences-provider";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
 
-const _data = {
-  navSecondary: [
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings,
-    },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: CircleHelp,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: Search,
-    },
-  ],
-  documents: [
-    {
-      name: "Data Library",
-      url: "#",
-      icon: Database,
-    },
-    {
-      name: "Reports",
-      url: "#",
-      icon: ClipboardList,
-    },
-    {
-      name: "Word Assistant",
-      url: "#",
-      icon: File,
-    },
-  ],
-};
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const supabase = createClient();
-  const [userRole, setUserRole] = React.useState<string>("PARENT");
+  const pathname = usePathname();
+
+  // If directly navigating to admin routes (nursery-crm, rooms, content-manager), default role to NURSERY_MANAGER
+  const isAdminRoute =
+    pathname.includes("/nursery-crm") ||
+    pathname.includes("/rooms") ||
+    pathname.includes("/content-manager");
+
+  const [userRole, setUserRole] = React.useState<string>(isAdminRoute ? "NURSERY_MANAGER" : "PARENT");
   const [currentUser, setCurrentUser] = React.useState({
     name: "Staff / Parent",
     email: "user@bubblydnursery.co.uk",
@@ -96,13 +68,38 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(avatarSeed)}`,
         });
 
+        // 1. Query user_roles table
         const { data: roleMappings } = await supabase
           .from("user_roles")
           .select("roles(name)")
           .eq("user_id", session.user.id);
 
-        const roleNames = roleMappings?.map((rm: any) => rm.roles?.name) || [];
-        if (roleNames.includes("NURSERY_MANAGER") || roleNames.includes("STAFF") || roleNames.includes("SUPER_ADMIN")) {
+        const roleNames = (roleMappings?.map((rm: any) => rm.roles?.name) || []).map((r: string) =>
+          (r || "").toUpperCase()
+        );
+
+        // 2. Query staff table
+        const { data: staffMember } = await supabase
+          .from("staff")
+          .select("id")
+          .or(`profile_id.eq.${session.user.id},email.eq.${session.user.email}`)
+          .maybeSingle();
+
+        // 3. Query metadata role
+        const metadataRole = (
+          session.user.app_metadata?.role ||
+          session.user.user_metadata?.role ||
+          ""
+        ).toUpperCase();
+
+        const adminRoles = ["NURSERY_MANAGER", "STAFF", "SUPER_ADMIN", "ADMIN", "MANAGER"];
+        const isAdminUser =
+          !!staffMember ||
+          adminRoles.some((r) => roleNames.includes(r)) ||
+          adminRoles.includes(metadataRole) ||
+          isAdminRoute;
+
+        if (isAdminUser) {
           setUserRole("NURSERY_MANAGER");
         } else {
           setUserRole("PARENT");
@@ -110,7 +107,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       }
     }
     getRole();
-  }, [supabase]);
+  }, [supabase, isAdminRoute]);
 
   const { sidebarVariant, sidebarCollapsible, isSynced } = usePreferencesStore(
     useShallow((s) => ({
@@ -156,8 +153,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={filteredItems} />
-        {/* <NavDocuments items={data.documents} /> */}
-        {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={currentUser} />

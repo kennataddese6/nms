@@ -65,7 +65,7 @@ export const sidebarItems: NavGroup[] = [
   {
     id: 2,
     label: "Nursery Operations",
-    roles: ["NURSERY_MANAGER", "STAFF", "SUPER_ADMIN"],
+    roles: ["NURSERY_MANAGER", "STAFF", "SUPER_ADMIN", "ADMIN", "MANAGER"],
     items: [
       {
         id: "nursery-crm",
