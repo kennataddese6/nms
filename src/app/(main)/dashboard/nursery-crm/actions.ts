@@ -242,6 +242,9 @@ export async function registerStaffAction(data: RegisterStaffInput) {
     emergency_contact_name: data.emergencyContactName,
     emergency_contact_relationship: data.emergencyContactRelationship,
     emergency_contact_number: data.emergencyContactNumber,
+    confirm_correct: data.confirmCorrect,
+    agree_policies: data.agreePolicies,
+    agree_terms: data.agreeTerms,
   });
 
   if (staffError) {

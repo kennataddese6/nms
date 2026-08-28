@@ -23,12 +23,14 @@ alter table public.room_routines enable row level security;
 
 -- 2. Row Level Security Policies
 -- Public / authenticated users can view classroom routines without RLS error
+drop policy if exists "Allow public read access to room_routines" on public.room_routines;
 create policy "Allow public read access to room_routines"
   on public.room_routines
   for select
   using (true);
 
 -- Staff / admin users can manage room_routines
+drop policy if exists "Allow staff full access to room_routines" on public.room_routines;
 create policy "Allow staff full access to room_routines"
   on public.room_routines
   for all
