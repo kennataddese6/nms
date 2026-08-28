@@ -326,13 +326,13 @@ export default function CurriculumPage() {
                     </div>
                     <div>
                       <h4 className="font-black text-base text-foreground">Bubbly Journal Sample</h4>
-                      <p className="text-xs text-muted-foreground font-bold">Live Parent Portal Update</p>
+                      <p className="text-xs text-muted-foreground font-bold">Live Parent Portal</p>
                     </div>
                   </div>
                   <Badge className="bg-emerald-500 text-white text-xs font-bold px-3 py-1">✓ Verified EYFS</Badge>
                 </div>
 
-                <div className="space-y-3">
+                {/*    <div className="space-y-3">
                   <div className="p-5 rounded-2xl border-2 border-orange-100 bg-white dark:bg-neutral-900 space-y-2 shadow-sm">
                     <div className="flex items-center justify-between text-xs text-muted-foreground font-black">
                       <span className="text-orange-600 uppercase tracking-wider">🌟 Observation Log</span>
@@ -358,7 +358,7 @@ export default function CurriculumPage() {
                       </Badge>
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
