@@ -1705,9 +1705,11 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                         size="sm"
                         className="rounded-xl font-bold gap-1 text-xs self-start sm:self-center"
                         onClick={() => {
-                          const st = keyWorkerStaff;
+                          const fullStaff =
+                            staffList.find((st) => st.id === (keyWorkerStaff?.id || staffLink?.staff_id)) ||
+                            keyWorkerStaff;
                           setViewingChild(null);
-                          setViewingStaff(st);
+                          setViewingStaff(fullStaff);
                         }}
                       >
                         <Eye className="h-3.5 w-3.5" />
@@ -2410,10 +2412,15 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
           </DialogHeader>
 
           {viewingStaff && (() => {
-            const assignedLinks = viewingStaff.child_staff || [];
-            const assignedChildren = children.filter((ch) =>
-              assignedLinks.some((link: any) => link.child_id === ch.id || link.children?.id === ch.id)
-            );
+            const assignedChildren = children.filter((ch) => {
+              const isLinkedFromChild = ch.child_staff?.some(
+                (cs: any) => cs.staff_id === viewingStaff.id || cs.staff?.id === viewingStaff.id
+              );
+              const isLinkedFromStaff = viewingStaff.child_staff?.some(
+                (cs: any) => cs.child_id === ch.id || cs.children?.id === ch.id
+              );
+              return isLinkedFromChild || isLinkedFromStaff;
+            });
 
             return (
               <div className="space-y-6 py-4 text-sm">
