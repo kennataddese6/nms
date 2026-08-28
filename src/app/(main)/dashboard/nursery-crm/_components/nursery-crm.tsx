@@ -594,31 +594,23 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                           <Controller
                             control={staffForm.control}
                             name="roomDepartment"
-                            render={({ field, fieldState }) => {
-                              const currentBranch = staffForm.watch("nurseryBranch");
-                              const filteredRooms = rooms.filter(
-                                (r) => !r.branch || r.branch.toLowerCase() === (currentBranch || "").toLowerCase()
-                              );
-                              const availableRooms = filteredRooms.length > 0 ? filteredRooms : rooms;
-
-                              return (
-                                <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                                  <FieldLabel htmlFor="staff-room" className="text-xs font-bold">Assigned Room *</FieldLabel>
-                                  <NativeSelect {...field} id="staff-room" className="rounded-xl">
-                                    {availableRooms.length === 0 ? (
-                                      <option value="" disabled>No created rooms found</option>
-                                    ) : (
-                                      availableRooms.map((r) => (
-                                        <option key={r.id} value={r.name}>
-                                          {r.name} {r.branch ? `(${r.branch})` : ""}
-                                        </option>
-                                      ))
-                                    )}
-                                  </NativeSelect>
-                                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                                </Field>
-                              );
-                            }}
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-room" className="text-xs font-bold">Assigned Room *</FieldLabel>
+                                <NativeSelect {...field} id="staff-room" className="rounded-xl">
+                                  {rooms.length === 0 ? (
+                                    <option value="" disabled>No created rooms found</option>
+                                  ) : (
+                                    rooms.map((r) => (
+                                      <option key={r.id} value={r.name}>
+                                        {r.name} {r.branch ? `(${r.branch})` : ""}
+                                      </option>
+                                    ))
+                                  )}
+                                </NativeSelect>
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
                           />
                         </div>
                       </div>
