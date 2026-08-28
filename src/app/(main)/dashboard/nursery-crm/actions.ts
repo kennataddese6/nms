@@ -119,6 +119,96 @@ export async function registerParentAction(data: RegisterParentInput) {
   return { success: true };
 }
 
+export interface UpdateParentInput {
+  parentId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address: string;
+  emergencyContact: string;
+  relationshipStatus: string;
+}
+
+export async function updateParentAction(data: UpdateParentInput) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized: Log in required.");
+  }
+
+  const { data: roleMappings } = await supabase.from("user_roles").select("roles(name)").eq("user_id", user.id);
+
+  const roleNames =
+    (roleMappings as unknown as Array<{ roles: { name: string } | null }>)
+      ?.map((rm) => rm.roles?.name)
+      .filter(Boolean) || [];
+
+  const isStaff =
+    roleNames.includes("NURSERY_MANAGER") || roleNames.includes("STAFF") || roleNames.includes("SUPER_ADMIN");
+
+  if (!isStaff) {
+    throw new Error("Forbidden: Only nursery staff can update parent profiles.");
+  }
+
+  const adminClient = createAdminClient();
+
+  // 1. Fetch parent record to find associated profile_id
+  const { data: parentRecord, error: fetchErr } = await adminClient
+    .from("parents")
+    .select("profile_id")
+    .eq("id", data.parentId)
+    .single();
+
+  if (fetchErr || !parentRecord) {
+    throw new Error("Parent record not found.");
+  }
+
+  // 2. Update profile name, email, and phone
+  if (parentRecord.profile_id) {
+    await adminClient
+      .from("profiles")
+      .update({
+        first_name: data.firstName,
+        last_name: data.lastName,
+        email: data.email,
+        phone: data.phone,
+      })
+      .eq("id", parentRecord.profile_id);
+
+    try {
+      await adminClient.auth.admin.updateUserById(parentRecord.profile_id, {
+        email: data.email,
+        user_metadata: {
+          first_name: data.firstName,
+          last_name: data.lastName,
+        },
+      });
+    } catch {
+      // Ignore if auth email update fails
+    }
+  }
+
+  // 3. Update parent details
+  const { error: parentErr } = await adminClient
+    .from("parents")
+    .update({
+      address: data.address,
+      emergency_contact: data.emergencyContact,
+      relationship_status: data.relationshipStatus,
+    })
+    .eq("id", data.parentId);
+
+  if (parentErr) {
+    throw new Error(parentErr.message || "Failed to update parent record.");
+  }
+
+  return { success: true };
+}
+
 // ==========================================
 // STAFF ACTIONS & CAPACTIY CHECK
 // ==========================================

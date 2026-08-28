@@ -32,7 +32,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { createClient } from "@/lib/supabase/client";
 
-import { deleteStaffAction, deleteStudentAction, registerParentAction, registerStaffAction, registerStudentAction, updateStaffAction, updateStudentAction } from "../actions";
+import { deleteStaffAction, deleteStudentAction, registerParentAction, registerStaffAction, registerStudentAction, updateParentAction, updateStaffAction, updateStudentAction } from "../actions";
 
 // ==========================================
 // SCHEMAS
@@ -49,6 +49,18 @@ const parentRegisterSchema = z.object({
 });
 
 type ParentFormValues = z.infer<typeof parentRegisterSchema>;
+
+const parentEditSchema = z.object({
+  firstName: z.string().min(2, "First name is required"),
+  lastName: z.string().min(2, "Last name is required"),
+  email: z.string().email("Invalid email address"),
+  phone: z.string().min(5, "Phone number is required"),
+  address: z.string().min(5, "Address is required"),
+  emergencyContact: z.string().min(5, "Emergency contact details are required"),
+  relationshipStatus: z.string().min(1, "Relationship status is required"),
+});
+
+type ParentEditFormValues = z.infer<typeof parentEditSchema>;
 
 const staffRegisterSchema = z
   .object({
@@ -171,8 +183,44 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
   const [deletingChild, setDeletingChild] = React.useState<any | null>(null);
   const [viewingStaff, setViewingStaff] = React.useState<any | null>(null);
   const [editingStaff, setEditingStaff] = React.useState<any | null>(null);
+  const [editingParent, setEditingParent] = React.useState<any | null>(null);
   const [deletingStaff, setDeletingStaff] = React.useState<any | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
+
+  const parentEditForm = useForm<ParentEditFormValues>({
+    resolver: zodResolver(parentEditSchema),
+  });
+
+  const handleOpenEditParent = (p: any) => {
+    setEditingParent(p);
+    parentEditForm.reset({
+      firstName: p.profiles?.first_name || "",
+      lastName: p.profiles?.last_name || "",
+      email: p.profiles?.email || "",
+      phone: p.profiles?.phone || "",
+      address: p.address || "",
+      emergencyContact: p.emergency_contact || "",
+      relationshipStatus: p.relationship_status || "Single",
+    });
+  };
+
+  const onParentEditSubmit = async (data: ParentEditFormValues) => {
+    if (!editingParent) return;
+    setSubmitting(true);
+    try {
+      await updateParentAction({
+        parentId: editingParent.id,
+        ...data,
+      });
+      toast.success("Parent profile updated successfully!");
+      setEditingParent(null);
+      router.refresh();
+    } catch (err: any) {
+      toast.error("Failed to update parent profile", { description: err.message });
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const handleDeleteStudent = async () => {
     if (!deletingChild) return;
@@ -1531,15 +1579,26 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                             <Badge variant="outline">{parent.relationship_status}</Badge>
                           </td>
                           <td className="p-4 text-right">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 text-xs font-bold text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg"
-                              onClick={() => setResettingParent(parent)}
-                              title="Reset User Password"
-                            >
-                              <KeyRound className="h-3.5 w-3.5 mr-1" /> Reset Password
-                            </Button>
+                            <div className="flex items-center justify-end gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-8 text-xs font-bold rounded-lg gap-1"
+                                onClick={() => handleOpenEditParent(parent)}
+                                title="Edit Parent Profile"
+                              >
+                                <Pencil className="h-3.5 w-3.5" /> Edit
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 text-xs font-bold text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg"
+                                onClick={() => setResettingParent(parent)}
+                                title="Reset User Password"
+                              >
+                                <KeyRound className="h-3.5 w-3.5 mr-1" /> Reset Password
+                              </Button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -2577,6 +2636,134 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
               </Button>
             </div>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* Edit Parent Modal */}
+      <Dialog open={!!editingParent} onOpenChange={(open) => !open && setEditingParent(null)}>
+        <DialogContent className="max-h-[90vh] max-w-full sm:max-w-3xl md:max-w-4xl overflow-y-auto rounded-3xl p-6 sm:p-8">
+          <DialogHeader className="pb-4 border-b">
+            <DialogTitle className="text-xl sm:text-2xl font-black flex items-center gap-2">
+              <Pencil className="h-6 w-6 text-primary" />
+              Edit Parent Profile
+            </DialogTitle>
+            <DialogDescription className="text-sm">
+              Update parent contact information, residential address, marital status, and emergency contact card.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form noValidate onSubmit={parentEditForm.handleSubmit(onParentEditSubmit)} className="space-y-6 py-4">
+            {/* 1. Personal Identity & Contact */}
+            <div className="rounded-2xl border-2 p-5 space-y-4 bg-muted/20 hover:bg-muted/30 transition-all">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 border-b pb-2">
+                <Users className="h-4 w-4" /> 1. Parent Identity & Contact Details
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <Controller
+                  control={parentEditForm.control}
+                  name="firstName"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-parent-fn" className="text-xs font-bold">First Name *</FieldLabel>
+                      <Input {...field} id="edit-parent-fn" className="rounded-xl" />
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  control={parentEditForm.control}
+                  name="lastName"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-parent-ln" className="text-xs font-bold">Last Name *</FieldLabel>
+                      <Input {...field} id="edit-parent-ln" className="rounded-xl" />
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  control={parentEditForm.control}
+                  name="relationshipStatus"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-parent-rel" className="text-xs font-bold">Relationship Status *</FieldLabel>
+                      <NativeSelect {...field} id="edit-parent-rel" className="rounded-xl">
+                        <option value="Married">Married</option>
+                        <option value="Single">Single</option>
+                        <option value="Co-parenting">Co-parenting</option>
+                        <option value="Divorced">Divorced</option>
+                      </NativeSelect>
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Controller
+                  control={parentEditForm.control}
+                  name="email"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-parent-email" className="text-xs font-bold">Email Address *</FieldLabel>
+                      <Input {...field} id="edit-parent-email" type="email" className="rounded-xl" />
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  control={parentEditForm.control}
+                  name="phone"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-parent-phone" className="text-xs font-bold">Phone Number *</FieldLabel>
+                      <Input {...field} id="edit-parent-phone" className="rounded-xl" />
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* 2. Residence & Emergency */}
+            <div className="rounded-2xl border-2 p-5 space-y-4 bg-muted/20 hover:bg-muted/30 transition-all">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-amber-600 flex items-center gap-2 border-b pb-2">
+                <Phone className="h-4 w-4" /> 2. Home Residence & Emergency Contact
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Controller
+                  control={parentEditForm.control}
+                  name="address"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-parent-addr" className="text-xs font-bold">Home Address *</FieldLabel>
+                      <Input {...field} id="edit-parent-addr" className="rounded-xl" />
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  control={parentEditForm.control}
+                  name="emergencyContact"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-parent-emergency" className="text-xs font-bold">Emergency Contact Details *</FieldLabel>
+                      <Input {...field} id="edit-parent-emergency" className="rounded-xl" />
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+              </div>
+            </div>
+
+            <DialogFooter className="pt-4 border-t gap-3 flex justify-end">
+              <Button type="button" variant="outline" className="rounded-xl px-6" onClick={() => setEditingParent(null)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={submitting} className="rounded-xl px-8 font-bold">
+                {submitting ? "Saving..." : "Update Parent Profile"}
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
       {/* Delete Staff Confirmation Dialog */}
