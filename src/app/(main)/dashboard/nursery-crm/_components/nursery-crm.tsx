@@ -451,27 +451,30 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                       Register Staff
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-h-[85vh] max-w-xl overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle>Bubbly Day Nursery Staff Registration</DialogTitle>
-                      <DialogDescription>
+                  <DialogContent className="max-h-[90vh] max-w-full sm:max-w-3xl md:max-w-4xl overflow-y-auto rounded-3xl p-6 sm:p-8">
+                    <DialogHeader className="pb-4 border-b">
+                      <DialogTitle className="text-xl sm:text-2xl font-black flex items-center gap-2">
+                        <Users className="h-6 w-6 text-primary" />
+                        Bubbly Day Nursery Staff Registration
+                      </DialogTitle>
+                      <DialogDescription className="text-sm">
                         Complete all 6 sections to register a new staff member into the nursery system.
                       </DialogDescription>
                     </DialogHeader>
-                    <form noValidate onSubmit={staffForm.handleSubmit(onStaffSubmit)} className="space-y-6 py-2">
+                    <form noValidate onSubmit={staffForm.handleSubmit(onStaffSubmit)} className="space-y-6 py-4">
                       {/* 1. Personal Details */}
-                      <div className="rounded-xl border p-4 space-y-3 bg-muted/20">
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
+                      <div className="rounded-2xl border-2 p-5 space-y-4 bg-muted/20 hover:bg-muted/30 transition-all">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 border-b pb-2">
                           <Users className="h-4 w-4" /> 1. Personal Details
                         </h4>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                           <Controller
                             control={staffForm.control}
                             name="firstName"
                             render={({ field, fieldState }) => (
-                              <Field className="gap-1" data-invalid={fieldState.invalid}>
-                                <FieldLabel htmlFor="staff-fn" className="text-xs">First Name *</FieldLabel>
-                                <Input {...field} id="staff-fn" placeholder="Sarah" />
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-fn" className="text-xs font-bold">First Name *</FieldLabel>
+                                <Input {...field} id="staff-fn" placeholder="Sarah" className="rounded-xl" />
                                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                               </Field>
                             )}
@@ -480,47 +483,44 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                             control={staffForm.control}
                             name="lastName"
                             render={({ field, fieldState }) => (
-                              <Field className="gap-1" data-invalid={fieldState.invalid}>
-                                <FieldLabel htmlFor="staff-ln" className="text-xs">Last Name *</FieldLabel>
-                                <Input {...field} id="staff-ln" placeholder="Jenkins" />
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-ln" className="text-xs font-bold">Last Name *</FieldLabel>
+                                <Input {...field} id="staff-ln" placeholder="Jenkins" className="rounded-xl" />
                                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                               </Field>
                             )}
                           />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-3">
                           <Controller
                             control={staffForm.control}
                             name="preferredName"
                             render={({ field }) => (
-                              <Field className="gap-1">
-                                <FieldLabel htmlFor="staff-pn" className="text-xs">Preferred Name</FieldLabel>
-                                <Input {...field} id="staff-pn" placeholder="Sarah" />
-                              </Field>
-                            )}
-                          />
-                          <Controller
-                            control={staffForm.control}
-                            name="niNumber"
-                            render={({ field, fieldState }) => (
-                              <Field className="gap-1" data-invalid={fieldState.invalid}>
-                                <FieldLabel htmlFor="staff-ni" className="text-xs">National Insurance Number *</FieldLabel>
-                                <Input {...field} id="staff-ni" placeholder="QQ 12 34 56 A font-mono" />
-                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              <Field className="gap-1.5">
+                                <FieldLabel htmlFor="staff-pn" className="text-xs font-bold">Preferred Name</FieldLabel>
+                                <Input {...field} id="staff-pn" placeholder="Sarah" className="rounded-xl" />
                               </Field>
                             )}
                           />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                          <Controller
+                            control={staffForm.control}
+                            name="niNumber"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-ni" className="text-xs font-bold">National Insurance Number *</FieldLabel>
+                                <Input {...field} id="staff-ni" placeholder="QQ 12 34 56 A" className="font-mono rounded-xl" />
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
                           <Controller
                             control={staffForm.control}
                             name="email"
                             render={({ field, fieldState }) => (
-                              <Field className="gap-1" data-invalid={fieldState.invalid}>
-                                <FieldLabel htmlFor="staff-email" className="text-xs">Email Address *</FieldLabel>
-                                <Input {...field} id="staff-email" type="email" placeholder="sarah.j@bubblynursery.co.uk" />
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-email" className="text-xs font-bold">Email Address *</FieldLabel>
+                                <Input {...field} id="staff-email" type="email" placeholder="sarah.j@bubblynursery.co.uk" className="rounded-xl" />
                                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                               </Field>
                             )}
@@ -529,9 +529,9 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                             control={staffForm.control}
                             name="mobileNumber"
                             render={({ field, fieldState }) => (
-                              <Field className="gap-1" data-invalid={fieldState.invalid}>
-                                <FieldLabel htmlFor="staff-phone" className="text-xs">Mobile Number *</FieldLabel>
-                                <Input {...field} id="staff-phone" placeholder="07700 900123" />
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-phone" className="text-xs font-bold">Mobile Number *</FieldLabel>
+                                <Input {...field} id="staff-phone" placeholder="07700 900123" className="rounded-xl" />
                                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                               </Field>
                             )}
@@ -539,19 +539,19 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                         </div>
                       </div>
 
-                      {/* 2. Work Details */}
-                      <div className="rounded-xl border p-4 space-y-3 bg-muted/20">
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
-                          <Briefcase className="h-4 w-4" /> 2. Work Details
+                      {/* 2. Work & Assignment */}
+                      <div className="rounded-2xl border-2 p-5 space-y-4 bg-muted/20 hover:bg-muted/30 transition-all">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 border-b pb-2">
+                          <Briefcase className="h-4 w-4" /> 2. Work Details & Placement
                         </h4>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                           <Controller
                             control={staffForm.control}
                             name="jobTitle"
                             render={({ field, fieldState }) => (
-                              <Field className="gap-1" data-invalid={fieldState.invalid}>
-                                <FieldLabel htmlFor="staff-title" className="text-xs">Job Title / Role *</FieldLabel>
-                                <Input {...field} id="staff-title" placeholder="Senior Nursery Practitioner" />
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-title" className="text-xs font-bold">Job Title / Role *</FieldLabel>
+                                <Input {...field} id="staff-title" placeholder="Senior Nursery Practitioner" className="rounded-xl" />
                                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                               </Field>
                             )}
@@ -560,9 +560,9 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                             control={staffForm.control}
                             name="nurseryBranch"
                             render={({ field, fieldState }) => (
-                              <Field className="gap-1" data-invalid={fieldState.invalid}>
-                                <FieldLabel htmlFor="staff-branch" className="text-xs">Nursery Location / Branch *</FieldLabel>
-                                <NativeSelect {...field} id="staff-branch">
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-branch" className="text-xs font-bold">Nursery Location / Branch *</FieldLabel>
+                                <NativeSelect {...field} id="staff-branch" className="rounded-xl">
                                   <option value="Branch 1">Branch 1</option>
                                   <option value="Branch 2">Branch 2</option>
                                 </NativeSelect>
@@ -570,9 +570,27 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                               </Field>
                             )}
                           />
+                          <Controller
+                            control={staffForm.control}
+                            name="employmentType"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-emp" className="text-xs font-bold">Employment Type *</FieldLabel>
+                                <NativeSelect {...field} id="staff-emp" className="rounded-xl">
+                                  <option value="Full-time">Full-time</option>
+                                  <option value="Part-time">Part-time</option>
+                                  <option value="Apprenticeship">Apprenticeship</option>
+                                  <option value="Bank">Bank</option>
+                                  <option value="Agency">Agency</option>
+                                  <option value="Volunteer">Volunteer</option>
+                                </NativeSelect>
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <Controller
                             control={staffForm.control}
                             name="roomDepartment"
@@ -584,9 +602,9 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                               const availableRooms = filteredRooms.length > 0 ? filteredRooms : rooms;
 
                               return (
-                                <Field className="gap-1" data-invalid={fieldState.invalid}>
-                                  <FieldLabel htmlFor="staff-room" className="text-xs">Room / Department *</FieldLabel>
-                                  <NativeSelect {...field} id="staff-room">
+                                <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                  <FieldLabel htmlFor="staff-room" className="text-xs font-bold">Room / Department *</FieldLabel>
+                                  <NativeSelect {...field} id="staff-room" className="rounded-xl">
                                     {availableRooms.length > 0 && (
                                       <optgroup label="Created Nursery Classrooms">
                                         {availableRooms.map((r) => (
@@ -608,20 +626,22 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                               );
                             }}
                           />
+                        </div>
+                      </div>
+
+                      {/* 3. DBS Safeguarding Details */}
+                      <div className="rounded-2xl border-2 p-5 space-y-4 bg-muted/20 hover:bg-muted/30 transition-all">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-600 flex items-center gap-2 border-b pb-2">
+                          <ShieldCheck className="h-4 w-4" /> 3. DBS Safeguarding Details
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <Controller
                             control={staffForm.control}
-                            name="employmentType"
+                            name="dbsCertificateNumber"
                             render={({ field, fieldState }) => (
-                              <Field className="gap-1" data-invalid={fieldState.invalid}>
-                                <FieldLabel htmlFor="staff-emp" className="text-xs">Employment Type *</FieldLabel>
-                                <NativeSelect {...field} id="staff-emp">
-                                  <option value="Full-time">Full-time</option>
-                                  <option value="Part-time">Part-time</option>
-                                  <option value="Apprenticeship">Apprenticeship</option>
-                                  <option value="Bank">Bank</option>
-                                  <option value="Agency">Agency</option>
-                                  <option value="Volunteer">Volunteer</option>
-                                </NativeSelect>
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-dbs" className="text-xs font-bold">DBS Certificate Number *</FieldLabel>
+                                <Input {...field} id="staff-dbs" placeholder="001594830129" className="font-mono rounded-xl" />
                                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                               </Field>
                             )}
@@ -629,48 +649,30 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                         </div>
                       </div>
 
-                      {/* 3. DBS Details */}
-                      <div className="rounded-xl border p-4 space-y-3 bg-muted/20">
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-500 flex items-center gap-1.5">
-                          <ShieldCheck className="h-4 w-4" /> 3. DBS Details
+                      {/* 4. Account Credentials */}
+                      <div className="rounded-2xl border-2 p-5 space-y-4 bg-muted/20 hover:bg-muted/30 transition-all">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 border-b pb-2">
+                          <KeyRound className="h-4 w-4" /> 4. Account Credentials
                         </h4>
-                        <Controller
-                          control={staffForm.control}
-                          name="dbsCertificateNumber"
-                          render={({ field, fieldState }) => (
-                            <Field className="gap-1" data-invalid={fieldState.invalid}>
-                              <FieldLabel htmlFor="staff-dbs" className="text-xs">DBS Certificate Number *</FieldLabel>
-                              <Input {...field} id="staff-dbs" placeholder="001594830129" className="font-mono" />
-                              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                            </Field>
-                          )}
-                        />
-                      </div>
-
-                      {/* 4. Account Details */}
-                      <div className="rounded-xl border p-4 space-y-3 bg-muted/20">
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
-                          <KeyRound className="h-4 w-4" /> 4. Account Details
-                        </h4>
-                        <Controller
-                          control={staffForm.control}
-                          name="username"
-                          render={({ field, fieldState }) => (
-                            <Field className="gap-1" data-invalid={fieldState.invalid}>
-                              <FieldLabel htmlFor="staff-un" className="text-xs">Username *</FieldLabel>
-                              <Input {...field} id="staff-un" placeholder="sjenkins" className="font-mono" />
-                              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                            </Field>
-                          )}
-                        />
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                          <Controller
+                            control={staffForm.control}
+                            name="username"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-un" className="text-xs font-bold">Username *</FieldLabel>
+                                <Input {...field} id="staff-un" placeholder="sjenkins" className="font-mono rounded-xl" />
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
                           <Controller
                             control={staffForm.control}
                             name="password"
                             render={({ field, fieldState }) => (
-                              <Field className="gap-1" data-invalid={fieldState.invalid}>
-                                <FieldLabel htmlFor="staff-pass" className="text-xs">Password *</FieldLabel>
-                                <Input {...field} id="staff-pass" type="password" placeholder="••••••••" />
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-pass" className="text-xs font-bold">Password *</FieldLabel>
+                                <Input {...field} id="staff-pass" type="password" placeholder="••••••••" className="rounded-xl" />
                                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                               </Field>
                             )}
@@ -679,9 +681,9 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                             control={staffForm.control}
                             name="confirmPassword"
                             render={({ field, fieldState }) => (
-                              <Field className="gap-1" data-invalid={fieldState.invalid}>
-                                <FieldLabel htmlFor="staff-cpass" className="text-xs">Confirm Password *</FieldLabel>
-                                <Input {...field} id="staff-cpass" type="password" placeholder="••••••••" />
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-cpass" className="text-xs font-bold">Confirm Password *</FieldLabel>
+                                <Input {...field} id="staff-cpass" type="password" placeholder="••••••••" className="rounded-xl" />
                                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                               </Field>
                             )}
@@ -690,18 +692,18 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                       </div>
 
                       {/* 5. Emergency Contact */}
-                      <div className="rounded-xl border p-4 space-y-3 bg-muted/20">
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-amber-500 flex items-center gap-1.5">
+                      <div className="rounded-2xl border-2 p-5 space-y-4 bg-muted/20 hover:bg-muted/30 transition-all">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-amber-600 flex items-center gap-2 border-b pb-2">
                           <Phone className="h-4 w-4" /> 5. Emergency Contact
                         </h4>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                           <Controller
                             control={staffForm.control}
                             name="emergencyContactName"
                             render={({ field, fieldState }) => (
-                              <Field className="gap-1" data-invalid={fieldState.invalid}>
-                                <FieldLabel htmlFor="staff-ecn" className="text-xs">Contact Name *</FieldLabel>
-                                <Input {...field} id="staff-ecn" placeholder="David Jenkins" />
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-ecn" className="text-xs font-bold">Contact Name *</FieldLabel>
+                                <Input {...field} id="staff-ecn" placeholder="David Jenkins" className="rounded-xl" />
                                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                               </Field>
                             )}
@@ -710,37 +712,37 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                             control={staffForm.control}
                             name="emergencyContactRelationship"
                             render={({ field, fieldState }) => (
-                              <Field className="gap-1" data-invalid={fieldState.invalid}>
-                                <FieldLabel htmlFor="staff-ecr" className="text-xs">Relationship *</FieldLabel>
-                                <Input {...field} id="staff-ecr" placeholder="Spouse" />
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-ecr" className="text-xs font-bold">Relationship *</FieldLabel>
+                                <Input {...field} id="staff-ecr" placeholder="Spouse" className="rounded-xl" />
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                          <Controller
+                            control={staffForm.control}
+                            name="emergencyContactNumber"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="staff-ecnum" className="text-xs font-bold">Emergency Phone Number *</FieldLabel>
+                                <Input {...field} id="staff-ecnum" placeholder="07700 900456" className="rounded-xl" />
                                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                               </Field>
                             )}
                           />
                         </div>
-                        <Controller
-                          control={staffForm.control}
-                          name="emergencyContactNumber"
-                          render={({ field, fieldState }) => (
-                            <Field className="gap-1" data-invalid={fieldState.invalid}>
-                              <FieldLabel htmlFor="staff-ecnum" className="text-xs">Emergency Phone Number *</FieldLabel>
-                              <Input {...field} id="staff-ecnum" placeholder="07700 900456" />
-                              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                            </Field>
-                          )}
-                        />
                       </div>
 
                       {/* 6. Confirmation */}
-                      <div className="rounded-xl border border-primary/30 p-4 space-y-3 bg-primary/5">
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
+                      <div className="rounded-2xl border-2 border-primary/30 p-5 space-y-3 bg-primary/5">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 border-b pb-2">
                           <CheckSquare className="h-4 w-4" /> 6. Confirmation & Policy Agreements
                         </h4>
 
                         <Controller
                           control={staffForm.control}
                           name="confirmCorrect"
-                          render={({ field, fieldState }) => (
+                          render={({ field }) => (
                             <label className="flex items-start space-x-2 text-xs font-medium cursor-pointer">
                               <input
                                 type="checkbox"
@@ -756,7 +758,7 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                         <Controller
                           control={staffForm.control}
                           name="agreePolicies"
-                          render={({ field, fieldState }) => (
+                          render={({ field }) => (
                             <label className="flex items-start space-x-2 text-xs font-medium cursor-pointer">
                               <input
                                 type="checkbox"
@@ -772,7 +774,7 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                         <Controller
                           control={staffForm.control}
                           name="agreeTerms"
-                          render={({ field, fieldState }) => (
+                          render={({ field }) => (
                             <label className="flex items-start space-x-2 text-xs font-medium cursor-pointer">
                               <input
                                 type="checkbox"
@@ -786,12 +788,12 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                         />
                       </div>
 
-                      <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setStaffModalOpen(false)}>
+                      <DialogFooter className="pt-4 border-t gap-3">
+                        <Button type="button" variant="outline" className="rounded-xl px-6" onClick={() => setStaffModalOpen(false)}>
                           Cancel
                         </Button>
-                        <Button type="submit" disabled={submitting}>
-                          {submitting ? "Registering..." : "Submit Registration"}
+                        <Button type="submit" disabled={submitting} className="rounded-xl px-8 font-bold">
+                          {submitting ? "Registering..." : "Submit Staff Registration"}
                         </Button>
                       </DialogFooter>
                     </form>
@@ -899,221 +901,244 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                       Register Student
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-h-[85vh] max-w-md overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle>Register New Student</DialogTitle>
-                      <DialogDescription>
-                        Add a child record and link them to an existing registered parent profile.
+                  <DialogContent className="max-h-[90vh] max-w-full sm:max-w-3xl md:max-w-4xl overflow-y-auto rounded-3xl p-6 sm:p-8">
+                    <DialogHeader className="pb-4 border-b">
+                      <DialogTitle className="text-xl sm:text-2xl font-black flex items-center gap-2">
+                        <Baby className="h-6 w-6 text-primary" />
+                        Register New Nursery Student
+                      </DialogTitle>
+                      <DialogDescription className="text-sm">
+                        Add a child record, select classroom preferences, and link them to a registered parent profile.
                       </DialogDescription>
                     </DialogHeader>
-                    <form noValidate onSubmit={studentForm.handleSubmit(onStudentSubmit)} className="space-y-4 py-2">
-                      <div className="grid grid-cols-2 gap-4">
-                        <Controller
-                          control={studentForm.control}
-                          name="firstName"
-                          render={({ field, fieldState }) => (
-                            <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                              <FieldLabel htmlFor="child-fn">First Name</FieldLabel>
-                              <Input {...field} id="child-fn" />
-                              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                            </Field>
-                          )}
-                        />
-                        <Controller
-                          control={studentForm.control}
-                          name="lastName"
-                          render={({ field, fieldState }) => (
-                            <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                              <FieldLabel htmlFor="child-ln">Last Name</FieldLabel>
-                              <Input {...field} id="child-ln" />
-                              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                            </Field>
-                          )}
-                        />
+                    <form noValidate onSubmit={studentForm.handleSubmit(onStudentSubmit)} className="space-y-6 py-4">
+                      {/* 1. Child Information */}
+                      <div className="rounded-2xl border-2 p-5 space-y-4 bg-muted/20 hover:bg-muted/30 transition-all">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 border-b pb-2">
+                          <Baby className="h-4 w-4" /> 1. Child Profile & Location
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                          <Controller
+                            control={studentForm.control}
+                            name="firstName"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="child-fn" className="text-xs font-bold">First Name *</FieldLabel>
+                                <Input {...field} id="child-fn" placeholder="Tommy" className="rounded-xl" />
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                          <Controller
+                            control={studentForm.control}
+                            name="lastName"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="child-ln" className="text-xs font-bold">Last Name *</FieldLabel>
+                                <Input {...field} id="child-ln" placeholder="Smith" className="rounded-xl" />
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                          <Controller
+                            control={studentForm.control}
+                            name="dob"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="child-dob" className="text-xs font-bold">Date of Birth *</FieldLabel>
+                                <Input {...field} id="child-dob" type="date" className="rounded-xl" />
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                          <Controller
+                            control={studentForm.control}
+                            name="gender"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="child-gender" className="text-xs font-bold">Gender *</FieldLabel>
+                                <NativeSelect {...field} id="child-gender" className="rounded-xl">
+                                  <option value="Male">Male</option>
+                                  <option value="Female">Female</option>
+                                </NativeSelect>
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                          <Controller
+                            control={studentForm.control}
+                            name="branch"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="child-branch" className="text-xs font-bold">Nursery Branch *</FieldLabel>
+                                <NativeSelect {...field} id="child-branch" className="rounded-xl">
+                                  <option value="Branch 1">Branch 1 (Galleywall Road)</option>
+                                  <option value="Branch 2">Branch 2 (Corbetts Lane)</option>
+                                </NativeSelect>
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                          <Controller
+                            control={studentForm.control}
+                            name="roomId"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="child-room" className="text-xs font-bold">Room Preference</FieldLabel>
+                                <NativeSelect {...field} id="child-room" className="rounded-xl">
+                                  <option value="">Unassigned / Waitlist</option>
+                                  {rooms.map((r) => (
+                                    <option key={r.id} value={r.id}>
+                                      {r.name}
+                                      {r.min_age_months !== undefined && r.max_age_months !== undefined
+                                        ? ` (${r.min_age_months}-${r.max_age_months} mos)`
+                                        : ""}
+                                    </option>
+                                  ))}
+                                </NativeSelect>
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                        </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
-                        <Controller
-                          control={studentForm.control}
-                          name="dob"
-                          render={({ field, fieldState }) => (
-                            <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                              <FieldLabel htmlFor="child-dob">Date of Birth</FieldLabel>
-                              <Input {...field} id="child-dob" type="date" />
-                              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                            </Field>
-                          )}
-                        />
-                        <Controller
-                          control={studentForm.control}
-                          name="gender"
-                          render={({ field, fieldState }) => (
-                            <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                              <FieldLabel htmlFor="child-gender">Gender</FieldLabel>
-                              <NativeSelect {...field} id="child-gender">
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                              </NativeSelect>
-                              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                            </Field>
-                          )}
-                        />
+                      {/* 2. Family & Key Worker Links */}
+                      <div className="rounded-2xl border-2 p-5 space-y-4 bg-muted/20 hover:bg-muted/30 transition-all">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 border-b pb-2">
+                          <Users className="h-4 w-4" /> 2. Parent & Key Worker Assignments
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                          <Controller
+                            control={studentForm.control}
+                            name="parentId"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="child-parent" className="text-xs font-bold">Link Registered Parent *</FieldLabel>
+                                <NativeSelect {...field} id="child-parent" className="rounded-xl">
+                                  <option value="">-- Select Parent --</option>
+                                  {parents.map((p) => (
+                                    <option key={p.id} value={p.id}>
+                                      {p.profiles?.first_name} {p.profiles?.last_name}
+                                    </option>
+                                  ))}
+                                </NativeSelect>
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                          <Controller
+                            control={studentForm.control}
+                            name="relationship"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="child-rel" className="text-xs font-bold">Relationship *</FieldLabel>
+                                <NativeSelect {...field} id="child-rel" className="rounded-xl">
+                                  <option value="Mother">Mother</option>
+                                  <option value="Father">Father</option>
+                                  <option value="Guardian">Guardian</option>
+                                </NativeSelect>
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                          <Controller
+                            control={studentForm.control}
+                            name="staffId"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="child-staff" className="text-xs font-bold">Assign Key Worker Staff</FieldLabel>
+                                <NativeSelect {...field} id="child-staff" className="rounded-xl">
+                                  <option value="">-- Unassigned --</option>
+                                  {staffList.map((st) => {
+                                    const assignedCount = (st.child_staff || []).length;
+                                    const isFull = assignedCount >= 3;
+                                    const name = st.profiles ? `${st.profiles.first_name || ""} ${st.profiles.last_name || ""}`.trim() : st.username || "Staff Member";
+                                    return (
+                                      <option key={st.id} value={st.id} disabled={isFull}>
+                                        {name} ({st.job_title || "Staff"}) — {isFull ? "⚠️ FULL (3/3)" : `${assignedCount}/3 Students`}
+                                      </option>
+                                    );
+                                  })}
+                                </NativeSelect>
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                        </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
-                        <Controller
-                          control={studentForm.control}
-                          name="roomId"
-                          render={({ field, fieldState }) => (
-                            <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                              <FieldLabel htmlFor="child-room">Room Preference</FieldLabel>
-                              <NativeSelect {...field} id="child-room">
-                                <option value="">Unassigned / Waitlist</option>
-                                {rooms.map((r) => (
-                                  <option key={r.id} value={r.id}>
-                                    {r.name}
-                                    {r.min_age_months !== undefined && r.max_age_months !== undefined
-                                      ? ` (${r.min_age_months}-${r.max_age_months} mos)`
-                                      : ""}
-                                  </option>
-                                ))}
-                              </NativeSelect>
-                              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                            </Field>
-                          )}
-                        />
-                        <Controller
-                          control={studentForm.control}
-                          name="parentId"
-                          render={({ field, fieldState }) => (
-                            <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                              <FieldLabel htmlFor="child-parent">Link Parent</FieldLabel>
-                              <NativeSelect {...field} id="child-parent">
-                                <option value="">-- Select Parent --</option>
-                                {parents.map((p) => (
-                                  <option key={p.id} value={p.id}>
-                                    {p.profiles?.first_name} {p.profiles?.last_name}
-                                  </option>
-                                ))}
-                              </NativeSelect>
-                              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                            </Field>
-                          )}
-                        />
-                      </div>
+                      {/* 3. Medical, Dietary & Consents */}
+                      <div className="rounded-2xl border-2 p-5 space-y-4 bg-muted/20 hover:bg-muted/30 transition-all">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-rose-500 flex items-center gap-2 border-b pb-2">
+                          <ShieldCheck className="h-4 w-4" /> 3. Medical Notes & Consents
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <Controller
+                            control={studentForm.control}
+                            name="allergies"
+                            render={({ field }) => (
+                              <Field className="gap-1.5">
+                                <FieldLabel htmlFor="child-allergies" className="text-xs font-bold">Allergies & Dietary Restrictions</FieldLabel>
+                                <Input {...field} id="child-allergies" placeholder="E.g. Nuts, Dairy, Gluten" className="rounded-xl" />
+                              </Field>
+                            )}
+                          />
+                          <Controller
+                            control={studentForm.control}
+                            name="medicalNotes"
+                            render={({ field }) => (
+                              <Field className="gap-1.5">
+                                <FieldLabel htmlFor="child-med" className="text-xs font-bold">Medical Notes & Health Needs</FieldLabel>
+                                <Textarea
+                                  {...field}
+                                  id="child-med"
+                                  placeholder="Special medication details or asthma info"
+                                  rows={2}
+                                  className="rounded-xl"
+                                />
+                              </Field>
+                            )}
+                          />
+                        </div>
 
-                      <Controller
-                        control={studentForm.control}
-                        name="staffId"
-                        render={({ field, fieldState }) => (
-                          <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                            <FieldLabel htmlFor="child-staff">Assign Key Worker Staff (Max 3)</FieldLabel>
-                            <NativeSelect {...field} id="child-staff">
-                              <option value="">-- Unassigned --</option>
-                              {staffList.map((st) => {
-                                const assignedCount = (st.child_staff || []).length;
-                                const isFull = assignedCount >= 3;
-                                const name = st.profiles ? `${st.profiles.first_name || ""} ${st.profiles.last_name || ""}`.trim() : st.username || "Staff Member";
-                                return (
-                                  <option key={st.id} value={st.id} disabled={isFull}>
-                                    {name} ({st.job_title || "Staff"}) — {isFull ? "⚠️ FULL (3/3 Students)" : `${assignedCount}/3 Students Assigned`}
-                                  </option>
-                                );
-                              })}
-                            </NativeSelect>
-                            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                          </Field>
-                        )}
-                      />
-
-                      <Controller
-                        control={studentForm.control}
-                        name="branch"
-                        render={({ field, fieldState }) => (
-                          <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                            <FieldLabel htmlFor="child-branch">Nursery Branch</FieldLabel>
-                            <NativeSelect {...field} id="child-branch">
-                              <option value="Branch 1">Branch 1 (Galleywall Road)</option>
-                              <option value="Branch 2">Branch 2 (Corbetts Lane)</option>
-                            </NativeSelect>
-                            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                          </Field>
-                        )}
-                      />
-
-                      <Controller
-                        control={studentForm.control}
-                        name="relationship"
-                        render={({ field, fieldState }) => (
-                          <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                            <FieldLabel htmlFor="child-rel">Relationship</FieldLabel>
-                            <NativeSelect {...field} id="child-rel">
-                              <option value="Mother">Mother</option>
-                              <option value="Father">Father</option>
-                              <option value="Guardian">Guardian</option>
-                            </NativeSelect>
-                            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                          </Field>
-                        )}
-                      />
-
-                      <Controller
-                        control={studentForm.control}
-                        name="allergies"
-                        render={({ field }) => (
-                          <Field className="gap-1.5">
-                            <FieldLabel htmlFor="child-allergies">Allergies</FieldLabel>
-                            <Input {...field} id="child-allergies" placeholder="E.g. Nuts, Dairy" />
-                          </Field>
-                        )}
-                      />
-
-                      <Controller
-                        control={studentForm.control}
-                        name="medicalNotes"
-                        render={({ field }) => (
-                          <Field className="gap-1.5">
-                            <FieldLabel htmlFor="child-med">Medical Notes</FieldLabel>
-                            <Textarea
-                              {...field}
-                              id="child-med"
-                              placeholder="Special medication details or asthma info"
-                              rows={2}
-                            />
-                          </Field>
-                        )}
-                      />
-
-                      <div className="space-y-2 rounded-xl border bg-neutral-50/50 p-3">
-                        <Controller
-                          control={studentForm.control}
-                          name="medicalConsent"
-                          render={({ field, fieldState }) => (
-                            <div className="space-y-1">
-                              <label className="flex cursor-pointer items-center gap-2 font-semibold text-xs">
-                                <input type="checkbox" checked={field.value} onChange={field.onChange} />
-                                Confirm Emergency Medical Consent
+                        <div className="space-y-3 rounded-2xl border border-primary/20 bg-primary/5 p-4">
+                          <Controller
+                            control={studentForm.control}
+                            name="medicalConsent"
+                            render={({ field, fieldState }) => (
+                              <div className="space-y-1">
+                                <label className="flex cursor-pointer items-center gap-2 font.semibold text-xs text-foreground">
+                                  <input type="checkbox" checked={field.value} onChange={field.onChange} className="rounded border-input text-primary" />
+                                  Confirm Emergency Medical Treatment Consent *
+                                </label>
+                                {fieldState.invalid && (
+                                  <p className="text-[10px] text-destructive">{fieldState.error?.message}</p>
+                                )}
+                              </div>
+                            )}
+                          />
+                          <Controller
+                            control={studentForm.control}
+                            name="photoConsent"
+                            render={({ field }) => (
+                              <label className="flex cursor-pointer items-center gap-2 font-semibold text-xs text-foreground">
+                                <input type="checkbox" checked={field.value} onChange={field.onChange} className="rounded border-input text-primary" />
+                                Confirm Photo/Media Consent for Nursery Gallery (Optional)
                               </label>
-                              {fieldState.invalid && (
-                                <p className="text-[10px] text-destructive">{fieldState.error?.message}</p>
-                              )}
-                            </div>
-                          )}
-                        />
-                        <Controller
-                          control={studentForm.control}
-                          name="photoConsent"
-                          render={({ field }) => (
-                            <label className="flex cursor-pointer items-center gap-2 font-semibold text-xs">
-                              <input type="checkbox" checked={field.value} onChange={field.onChange} />
-                              Confirm Photo/Media Consent (Optional)
-                            </label>
-                          )}
-                        />
+                            )}
+                          />
+                        </div>
                       </div>
 
-                      <DialogFooter>
-                        <Button type="submit" className="w-full" disabled={submitting}>
+                      <DialogFooter className="pt-4 border-t gap-3">
+                        <Button type="button" variant="outline" className="rounded-xl px-6" onClick={() => setStudentModalOpen(false)}>
+                          Cancel
+                        </Button>
+                        <Button type="submit" disabled={submitting} className="rounded-xl px-8 font-bold">
                           {submitting ? "Saving Student..." : "Register Child"}
                         </Button>
                       </DialogFooter>
@@ -1257,106 +1282,127 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                       Register Parent
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-h-[85vh] max-w-md overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle>Register New Parent</DialogTitle>
-                      <DialogDescription>
-                        Create a login identity profile and emergency card for a parent.
+                  <DialogContent className="max-h-[90vh] max-w-full sm:max-w-2xl md:max-w-3xl overflow-y-auto rounded-3xl p-6 sm:p-8">
+                    <DialogHeader className="pb-4 border-b">
+                      <DialogTitle className="text-xl sm:text-2xl font-black flex items-center gap-2">
+                        <Users className="h-6 w-6 text-primary" />
+                        Register New Parent Identity
+                      </DialogTitle>
+                      <DialogDescription className="text-sm">
+                        Create a parent account identity profile and emergency contact card.
                       </DialogDescription>
                     </DialogHeader>
-                    <form noValidate onSubmit={parentForm.handleSubmit(onParentSubmit)} className="space-y-4 py-2">
-                      <div className="grid grid-cols-2 gap-4">
-                        <Controller
-                          control={parentForm.control}
-                          name="firstName"
-                          render={({ field, fieldState }) => (
-                            <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                              <FieldLabel htmlFor="parent-fn">First Name</FieldLabel>
-                              <Input {...field} id="parent-fn" />
-                              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                            </Field>
-                          )}
-                        />
-                        <Controller
-                          control={parentForm.control}
-                          name="lastName"
-                          render={({ field, fieldState }) => (
-                            <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                              <FieldLabel htmlFor="parent-ln">Last Name</FieldLabel>
-                              <Input {...field} id="parent-ln" />
-                              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                            </Field>
-                          )}
-                        />
+                    <form noValidate onSubmit={parentForm.handleSubmit(onParentSubmit)} className="space-y-6 py-4">
+                      {/* 1. Identity & Contact */}
+                      <div className="rounded-2xl border-2 p-5 space-y-4 bg-muted/20 hover:bg-muted/30 transition-all">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 border-b pb-2">
+                          <Users className="h-4 w-4" /> 1. Personal Identity & Contact
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                          <Controller
+                            control={parentForm.control}
+                            name="firstName"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="parent-fn" className="text-xs font-bold">First Name *</FieldLabel>
+                                <Input {...field} id="parent-fn" placeholder="John" className="rounded-xl" />
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                          <Controller
+                            control={parentForm.control}
+                            name="lastName"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="parent-ln" className="text-xs font-bold">Last Name *</FieldLabel>
+                                <Input {...field} id="parent-ln" placeholder="Smith" className="rounded-xl" />
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                          <Controller
+                            control={parentForm.control}
+                            name="relationshipStatus"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="parent-status" className="text-xs font-bold">Relationship Status *</FieldLabel>
+                                <NativeSelect {...field} id="parent-status" className="rounded-xl">
+                                  <option value="Married">Married</option>
+                                  <option value="Single">Single</option>
+                                  <option value="Co-parenting">Co-parenting</option>
+                                  <option value="Divorced">Divorced</option>
+                                </NativeSelect>
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <Controller
+                            control={parentForm.control}
+                            name="email"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="parent-email" className="text-xs font-bold">Email Address *</FieldLabel>
+                                <Input {...field} id="parent-email" type="email" placeholder="john.smith@example.com" className="rounded-xl" />
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+
+                          <Controller
+                            control={parentForm.control}
+                            name="phone"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="parent-phone" className="text-xs font-bold">Phone Number *</FieldLabel>
+                                <Input {...field} id="parent-phone" placeholder="+44 7123 456789" className="rounded-xl" />
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                        </div>
                       </div>
 
-                      <Controller
-                        control={parentForm.control}
-                        name="email"
-                        render={({ field, fieldState }) => (
-                          <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                            <FieldLabel htmlFor="parent-email">Email Address</FieldLabel>
-                            <Input {...field} id="parent-email" type="email" placeholder="E.g. parent@example.com" />
-                            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                          </Field>
-                        )}
-                      />
+                      {/* 2. Residence & Emergency */}
+                      <div className="rounded-2xl border-2 p-5 space-y-4 bg-muted/20 hover:bg-muted/30 transition-all">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-amber-600 flex items-center gap-2 border-b pb-2">
+                          <Phone className="h-4 w-4" /> 2. Home Residence & Emergency Contact
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <Controller
+                            control={parentForm.control}
+                            name="address"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="parent-addr" className="text-xs font-bold">Home Address *</FieldLabel>
+                                <Input {...field} id="parent-addr" placeholder="12 Green Lane, London" className="rounded-xl" />
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
 
-                      <Controller
-                        control={parentForm.control}
-                        name="phone"
-                        render={({ field, fieldState }) => (
-                          <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                            <FieldLabel htmlFor="parent-phone">Phone Number</FieldLabel>
-                            <Input {...field} id="parent-phone" placeholder="+44 7123 456789" />
-                            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                          </Field>
-                        )}
-                      />
+                          <Controller
+                            control={parentForm.control}
+                            name="emergencyContact"
+                            render={({ field, fieldState }) => (
+                              <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                                <FieldLabel htmlFor="parent-emergency" className="text-xs font-bold">Emergency Contact Details *</FieldLabel>
+                                <Input {...field} id="parent-emergency" placeholder="Name / Phone / Relation" className="rounded-xl" />
+                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              </Field>
+                            )}
+                          />
+                        </div>
+                      </div>
 
-                      <Controller
-                        control={parentForm.control}
-                        name="address"
-                        render={({ field, fieldState }) => (
-                          <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                            <FieldLabel htmlFor="parent-addr">Home Address</FieldLabel>
-                            <Input {...field} id="parent-addr" placeholder="12 Green Lane, London" />
-                            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                          </Field>
-                        )}
-                      />
-
-                      <Controller
-                        control={parentForm.control}
-                        name="emergencyContact"
-                        render={({ field, fieldState }) => (
-                          <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                            <FieldLabel htmlFor="parent-emergency">Emergency Contact Details</FieldLabel>
-                            <Input {...field} id="parent-emergency" placeholder="Name / phone / relation" />
-                            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                          </Field>
-                        )}
-                      />
-
-                      <Controller
-                        control={parentForm.control}
-                        name="relationshipStatus"
-                        render={({ field, fieldState }) => (
-                          <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                            <FieldLabel htmlFor="parent-status">Relationship Status</FieldLabel>
-                            <NativeSelect {...field} id="parent-status">
-                              <option value="Married">Married</option>
-                              <option value="Single">Single</option>
-                              <option value="Co-parenting">Co-parenting</option>
-                              <option value="Divorced">Divorced</option>
-                            </NativeSelect>
-                            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                          </Field>
-                        )}
-                      />
-
-                      <DialogFooter>
-                        <Button type="submit" className="w-full" disabled={submitting}>
+                      <DialogFooter className="pt-4 border-t gap-3">
+                        <Button type="button" variant="outline" className="rounded-xl px-6" onClick={() => setParentModalOpen(false)}>
+                          Cancel
+                        </Button>
+                        <Button type="submit" disabled={submitting} className="rounded-xl px-8 font-bold">
                           {submitting ? "Saving Parent..." : "Register Parent"}
                         </Button>
                       </DialogFooter>
@@ -1677,153 +1723,165 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
 
       {/* Edit Student Modal */}
       <Dialog open={!!editingChild} onOpenChange={(open) => !open && setEditingChild(null)}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Edit Student Record</DialogTitle>
-            <DialogDescription>Update child details, room assignment, and status.</DialogDescription>
+        <DialogContent className="max-h-[90vh] max-w-full sm:max-w-3xl md:max-w-4xl overflow-y-auto rounded-3xl p-6 sm:p-8">
+          <DialogHeader className="pb-4 border-b">
+            <DialogTitle className="text-xl sm:text-2xl font-black flex items-center gap-2">
+              <Pencil className="h-6 w-6 text-primary" />
+              Edit Student Record
+            </DialogTitle>
+            <DialogDescription className="text-sm">Update child details, room assignment, and status.</DialogDescription>
           </DialogHeader>
 
-          <form noValidate onSubmit={studentEditForm.handleSubmit(onStudentEditSubmit)} className="space-y-4 pt-2">
-            <div className="grid grid-cols-2 gap-4">
-              <Controller
-                control={studentEditForm.control}
-                name="firstName"
-                render={({ field, fieldState }) => (
-                  <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="edit-child-fn">First Name *</FieldLabel>
-                    <Input {...field} id="edit-child-fn" />
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                  </Field>
-                )}
-              />
+          <form noValidate onSubmit={studentEditForm.handleSubmit(onStudentEditSubmit)} className="space-y-6 py-4">
+            {/* 1. Child Profile */}
+            <div className="rounded-2xl border-2 p-5 space-y-4 bg-muted/20 hover:bg-muted/30 transition-all">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 border-b pb-2">
+                <Baby className="h-4 w-4" /> 1. Child Profile & Status
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <Controller
+                  control={studentEditForm.control}
+                  name="firstName"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-child-fn" className="text-xs font-bold">First Name *</FieldLabel>
+                      <Input {...field} id="edit-child-fn" className="rounded-xl" />
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  control={studentEditForm.control}
+                  name="lastName"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-child-ln" className="text-xs font-bold">Last Name *</FieldLabel>
+                      <Input {...field} id="edit-child-ln" className="rounded-xl" />
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  control={studentEditForm.control}
+                  name="dob"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-child-dob" className="text-xs font-bold">Date of Birth *</FieldLabel>
+                      <Input {...field} id="edit-child-dob" type="date" className="rounded-xl" />
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+              </div>
 
-              <Controller
-                control={studentEditForm.control}
-                name="lastName"
-                render={({ field, fieldState }) => (
-                  <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="edit-child-ln">Last Name *</FieldLabel>
-                    <Input {...field} id="edit-child-ln" />
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                  </Field>
-                )}
-              />
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <Controller
+                  control={studentEditForm.control}
+                  name="gender"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-child-gender" className="text-xs font-bold">Gender *</FieldLabel>
+                      <NativeSelect {...field} id="edit-child-gender" className="rounded-xl">
+                        <option value="Boy">Boy</option>
+                        <option value="Girl">Girl</option>
+                        <option value="Other">Other</option>
+                      </NativeSelect>
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  control={studentEditForm.control}
+                  name="branch"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-child-branch" className="text-xs font-bold">Branch Location *</FieldLabel>
+                      <NativeSelect {...field} id="edit-child-branch" className="rounded-xl">
+                        <option value="Branch 1">Branch 1 (Galleywall Road)</option>
+                        <option value="Branch 2">Branch 2 (Corbetts Lane)</option>
+                      </NativeSelect>
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  control={studentEditForm.control}
+                  name="status"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-child-status" className="text-xs font-bold">Enrollment Status *</FieldLabel>
+                      <NativeSelect {...field} id="edit-child-status" className="rounded-xl">
+                        <option value="ACTIVE">ACTIVE (Enrolled)</option>
+                        <option value="WAITING_LIST">WAITING_LIST</option>
+                        <option value="INACTIVE">INACTIVE</option>
+                      </NativeSelect>
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Controller
+                  control={studentEditForm.control}
+                  name="roomId"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-child-room" className="text-xs font-bold">Classroom Assignment</FieldLabel>
+                      <NativeSelect {...field} id="edit-child-room" className="rounded-xl">
+                        <option value="">No Room (Waitlist)</option>
+                        {rooms.map((r) => (
+                          <option key={r.id} value={r.id}>
+                            {r.name}
+                            {r.min_age_months !== undefined && r.max_age_months !== undefined
+                              ? ` (${r.min_age_months}-${r.max_age_months} mos)`
+                              : ""}
+                          </option>
+                        ))}
+                      </NativeSelect>
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <Controller
-                control={studentEditForm.control}
-                name="dob"
-                render={({ field, fieldState }) => (
-                  <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="edit-child-dob">Date of Birth *</FieldLabel>
-                    <Input {...field} id="edit-child-dob" type="date" />
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                  </Field>
-                )}
-              />
-
-              <Controller
-                control={studentEditForm.control}
-                name="gender"
-                render={({ field, fieldState }) => (
-                  <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="edit-child-gender">Gender *</FieldLabel>
-                    <NativeSelect {...field} id="edit-child-gender">
-                      <option value="Boy">Boy</option>
-                      <option value="Girl">Girl</option>
-                      <option value="Other">Other</option>
-                    </NativeSelect>
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                  </Field>
-                )}
-              />
+            {/* 2. Medical & Dietary Notes */}
+            <div className="rounded-2xl border-2 p-5 space-y-4 bg-muted/20 hover:bg-muted/30 transition-all">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-rose-500 flex items-center gap-2 border-b pb-2">
+                <ShieldCheck className="h-4 w-4" /> 2. Medical Notes & Health Needs
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Controller
+                  control={studentEditForm.control}
+                  name="allergies"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-child-allergies" className="text-xs font-bold">Allergies & Dietary Restrictions</FieldLabel>
+                      <Input {...field} id="edit-child-allergies" placeholder="e.g. Nuts, Dairy" className="rounded-xl" />
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  control={studentEditForm.control}
+                  name="medicalNotes"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-child-medical" className="text-xs font-bold">Medical Notes</FieldLabel>
+                      <Textarea {...field} id="edit-child-medical" rows={2} className="rounded-xl" />
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <Controller
-                control={studentEditForm.control}
-                name="branch"
-                render={({ field, fieldState }) => (
-                  <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="edit-child-branch">Branch Location *</FieldLabel>
-                    <NativeSelect {...field} id="edit-child-branch">
-                      <option value="Branch 1">Branch 1 (Galleywall Road)</option>
-                      <option value="Branch 2">Branch 2 (Corbetts Lane)</option>
-                    </NativeSelect>
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                  </Field>
-                )}
-              />
-
-              <Controller
-                control={studentEditForm.control}
-                name="status"
-                render={({ field, fieldState }) => (
-                  <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="edit-child-status">Enrollment Status *</FieldLabel>
-                    <NativeSelect {...field} id="edit-child-status">
-                      <option value="ACTIVE">ACTIVE (Enrolled)</option>
-                      <option value="WAITING_LIST">WAITING_LIST</option>
-                      <option value="INACTIVE">INACTIVE</option>
-                    </NativeSelect>
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                  </Field>
-                )}
-              />
-            </div>
-
-            <Controller
-              control={studentEditForm.control}
-              name="roomId"
-              render={({ field, fieldState }) => (
-                <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="edit-child-room">Classroom Assignment</FieldLabel>
-                  <NativeSelect {...field} id="edit-child-room">
-                    <option value="">No Room (Waitlist)</option>
-                    {rooms.map((r) => (
-                      <option key={r.id} value={r.id}>
-                        {r.name}
-                        {r.min_age_months !== undefined && r.max_age_months !== undefined
-                          ? ` (${r.min_age_months}-${r.max_age_months} mos)`
-                          : ""}
-                      </option>
-                    ))}
-                  </NativeSelect>
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-
-            <Controller
-              control={studentEditForm.control}
-              name="allergies"
-              render={({ field, fieldState }) => (
-                <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="edit-child-allergies">Allergies & Dietary Restrictions</FieldLabel>
-                  <Input {...field} id="edit-child-allergies" placeholder="e.g. Nuts, Dairy" />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-
-            <Controller
-              control={studentEditForm.control}
-              name="medicalNotes"
-              render={({ field, fieldState }) => (
-                <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="edit-child-medical">Medical Notes</FieldLabel>
-                  <Textarea {...field} id="edit-child-medical" rows={2} />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-
-            <DialogFooter className="pt-4 border-t gap-2 flex justify-between sm:justify-between">
+            <DialogFooter className="pt-4 border-t gap-3 flex flex-col sm:flex-row sm:items-center justify-between">
               <Button
                 type="button"
                 variant="destructive"
-                className="gap-1.5"
+                className="gap-1.5 rounded-xl px-5"
                 onClick={() => {
                   const target = editingChild;
                   setEditingChild(null);
@@ -1831,13 +1889,13 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                 }}
               >
                 <Trash2 className="h-4 w-4" />
-                Delete
+                Delete Student
               </Button>
-              <div className="flex gap-2">
-                <Button type="button" variant="ghost" onClick={() => setEditingChild(null)}>
+              <div className="flex gap-2 justify-end">
+                <Button type="button" variant="outline" className="rounded-xl px-6" onClick={() => setEditingChild(null)}>
                   Cancel
                 </Button>
-                <Button type="submit" disabled={submitting}>
+                <Button type="submit" disabled={submitting} className="rounded-xl px-8 font-bold">
                   {submitting ? "Saving..." : "Update Student Record"}
                 </Button>
               </div>
