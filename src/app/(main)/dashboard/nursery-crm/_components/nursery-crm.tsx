@@ -273,7 +273,7 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
       niNumber: "",
       jobTitle: "",
       nurseryBranch: "Branch 1",
-      roomDepartment: rooms[0]?.name || "Management / Admin",
+      roomDepartment: rooms[0]?.name || "",
       employmentType: "Full-time",
       dbsCertificateNumber: "",
       username: "",
@@ -603,23 +603,17 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
 
                               return (
                                 <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                                  <FieldLabel htmlFor="staff-room" className="text-xs font-bold">Room / Department *</FieldLabel>
+                                  <FieldLabel htmlFor="staff-room" className="text-xs font-bold">Assigned Room *</FieldLabel>
                                   <NativeSelect {...field} id="staff-room" className="rounded-xl">
-                                    {availableRooms.length > 0 && (
-                                      <optgroup label="Created Nursery Classrooms">
-                                        {availableRooms.map((r) => (
-                                          <option key={r.id} value={r.name}>
-                                            {r.name} {r.branch ? `(${r.branch})` : ""}
-                                          </option>
-                                        ))}
-                                      </optgroup>
+                                    {availableRooms.length === 0 ? (
+                                      <option value="" disabled>No created rooms found</option>
+                                    ) : (
+                                      availableRooms.map((r) => (
+                                        <option key={r.id} value={r.name}>
+                                          {r.name} {r.branch ? `(${r.branch})` : ""}
+                                        </option>
+                                      ))
                                     )}
-                                    <optgroup label="General Departments">
-                                      <option value="Management / Admin">Management / Admin</option>
-                                      <option value="Kitchen / Catering">Kitchen / Catering</option>
-                                      <option value="Facilities / Operations">Facilities / Operations</option>
-                                      <option value="Float / Cover Staff">Float / Cover Staff</option>
-                                    </optgroup>
                                   </NativeSelect>
                                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                                 </Field>
