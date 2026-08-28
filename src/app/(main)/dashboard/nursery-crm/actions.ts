@@ -342,10 +342,26 @@ export async function deleteStaffAction(staffId: string) {
   }
 
   const adminClient = createAdminClient();
+
+  // 1. Fetch staff record to get profile_id
+  const { data: staffRecord } = await adminClient.from("staff").select("profile_id").eq("id", staffId).maybeSingle();
+
+  // 2. Delete staff record
   const { error } = await adminClient.from("staff").delete().eq("id", staffId);
 
   if (error) {
     throw new Error(error.message || "Failed to delete staff record.");
+  }
+
+  // 3. Clean up associated profile & user role if present
+  if (staffRecord?.profile_id) {
+    await adminClient.from("user_roles").delete().eq("user_id", staffRecord.profile_id);
+    await adminClient.from("profiles").delete().eq("id", staffRecord.profile_id);
+    try {
+      await adminClient.auth.admin.deleteUser(staffRecord.profile_id);
+    } catch {
+      // Ignore if user account was already deleted or doesn't exist
+    }
   }
 
   return { success: true };

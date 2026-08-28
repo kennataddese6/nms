@@ -2219,6 +2219,33 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
           </form>
         </DialogContent>
       </Dialog>
+      {/* Delete Staff Confirmation Dialog */}
+      <Dialog open={!!deletingStaff} onOpenChange={(open) => !open && setDeletingStaff(null)}>
+        <DialogContent className="sm:max-w-md rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-destructive flex items-center gap-2 font-bold text-xl">
+              <Trash2 className="h-5 w-5" /> Delete Staff Record
+            </DialogTitle>
+            <DialogDescription className="text-sm">
+              Are you sure you want to remove{" "}
+              <strong className="text-foreground font-bold">
+                {deletingStaff?.profiles
+                  ? `${deletingStaff.profiles.first_name || ""} ${deletingStaff.profiles.last_name || ""}`.trim()
+                  : deletingStaff?.username || "this staff member"}
+              </strong>
+              ? This action will remove the staff profile and key worker assignments from the nursery system.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 pt-4 border-t">
+            <Button variant="outline" className="rounded-xl px-5" onClick={() => setDeletingStaff(null)} disabled={submitting}>
+              Cancel
+            </Button>
+            <Button variant="destructive" className="rounded-xl px-6 font-bold" onClick={handleDeleteStaff} disabled={submitting}>
+              {submitting ? "Deleting..." : "Remove Staff Member"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
