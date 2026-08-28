@@ -564,12 +564,14 @@ export async function updateStudentAction(data: UpdateStudentInput) {
   }
 
   // 3. Update staff link if specified
-  if (validStaffId) {
+  if (data.staffId !== undefined) {
     await adminClient.from("child_staff").delete().eq("child_id", data.id);
-    await adminClient.from("child_staff").insert({
-      child_id: data.id,
-      staff_id: validStaffId,
-    });
+    if (validStaffId) {
+      await adminClient.from("child_staff").insert({
+        child_id: data.id,
+        staff_id: validStaffId,
+      });
+    }
   }
 
   return { success: true };

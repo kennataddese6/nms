@@ -169,6 +169,7 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
   const [viewingChild, setViewingChild] = React.useState<any | null>(null);
   const [editingChild, setEditingChild] = React.useState<any | null>(null);
   const [deletingChild, setDeletingChild] = React.useState<any | null>(null);
+  const [viewingStaff, setViewingStaff] = React.useState<any | null>(null);
   const [editingStaff, setEditingStaff] = React.useState<any | null>(null);
   const [deletingStaff, setDeletingStaff] = React.useState<any | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
@@ -254,6 +255,7 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
   const handleOpenEditStudent = (child: any) => {
     setEditingChild(child);
     const primaryParentLink = child.child_parents?.[0];
+    const primaryStaffLink = child.child_staff?.[0];
     studentEditForm.reset({
       firstName: child.first_name || "",
       lastName: child.last_name || "",
@@ -266,6 +268,7 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
       allergies: child.allergies || "",
       parentId: primaryParentLink?.parent_id || "",
       relationship: primaryParentLink?.relationship || "Mother",
+      staffId: primaryStaffLink?.staff_id || "",
     });
   };
 
@@ -902,6 +905,15 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
 
                           <div className="flex items-center space-x-2">
                             <Button
+                              variant="ghost"
+                              size="sm"
+                              className="rounded-xl font-bold gap-1 text-xs"
+                              onClick={() => setViewingStaff(st)}
+                            >
+                              <Eye className="h-3.5 w-3.5" />
+                              View
+                            </Button>
+                            <Button
                               variant="outline"
                               size="sm"
                               className="rounded-xl font-bold gap-1 text-xs"
@@ -1218,6 +1230,7 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                         <th className="p-4">Gender</th>
                         <th className="p-4">Branch</th>
                         <th className="p-4">Room Preference</th>
+                        <th className="p-4">Key Worker Staff</th>
                         <th className="p-4">Parents Linked</th>
                         <th className="p-4">Status</th>
                         <th className="p-4 text-right">Actions</th>
@@ -1226,6 +1239,14 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                     <tbody className="divide-y">
                       {filteredChildren.map((child) => {
                         const activeRoom = rooms.find((r) => r.id === child.room_id);
+                        const staffLink = child.child_staff?.[0];
+                        const keyWorkerStaff = staffLink?.staff || staffList.find((st) => st.id === staffLink?.staff_id);
+                        const keyWorkerName = keyWorkerStaff
+                          ? keyWorkerStaff.profiles
+                            ? `${keyWorkerStaff.profiles.first_name || ""} ${keyWorkerStaff.profiles.last_name || ""}`.trim()
+                            : keyWorkerStaff.username
+                          : null;
+
                         return (
                           <tr key={child.id} className="transition-colors hover:bg-neutral-50/50">
                             <td
@@ -1248,9 +1269,19 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                                   }`
                                 : "Waitlist"}
                             </td>
+                            <td className="p-4">
+                              {keyWorkerName ? (
+                                <Badge variant="outline" className="text-xs border-primary/40 bg-primary/5 text-primary font-semibold flex items-center gap-1 w-fit">
+                                  <UserCheck className="h-3 w-3" />
+                                  {keyWorkerName}
+                                </Badge>
+                              ) : (
+                                <span className="text-xs text-muted-foreground italic">Unassigned</span>
+                              )}
+                            </td>
                             <td className="p-4 text-muted-foreground">
                               {child.child_parents?.map((cp: any, idx: number) => (
-                                <div key={idx} className="text-xs">
+                                <div key={idx} className="text-xs font-medium">
                                   {cp.parents?.profiles?.first_name} {cp.parents?.profiles?.last_name} (
                                   {cp.relationship})
                                 </div>
@@ -1585,173 +1616,255 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
 
       {/* Student Detail Modal */}
       <Dialog open={!!viewingChild} onOpenChange={(open) => !open && setViewingChild(null)}>
-        <DialogContent className="max-w-xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center justify-between gap-2 text-xl font-bold">
+        <DialogContent className="max-h-[90vh] max-w-full sm:max-w-3xl md:max-w-4xl overflow-y-auto rounded-3xl p-6 sm:p-8">
+          <DialogHeader className="pb-4 border-b">
+            <DialogTitle className="flex items-center justify-between gap-3 text-xl sm:text-2xl font-black flex-wrap">
               <span className="flex items-center gap-2">
-                👶 {viewingChild?.first_name} {viewingChild?.last_name}
+                <Baby className="h-6 w-6 text-primary" />
+                {viewingChild?.first_name} {viewingChild?.last_name}
               </span>
-              <Badge variant="outline" className="text-xs">
+              <Badge
+                variant="outline"
+                className={
+                  viewingChild?.status === "ACTIVE"
+                    ? "border-emerald-300 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 text-xs px-3 py-1 font-bold"
+                    : "border-amber-300 bg-amber-50 text-amber-700 dark:bg-amber-950/40 text-xs px-3 py-1 font-bold"
+                }
+              >
                 {viewingChild?.status}
               </Badge>
             </DialogTitle>
-            <DialogDescription>Registered student profile details and parent contact management.</DialogDescription>
+            <DialogDescription className="text-sm">Comprehensive nursery child record, key worker assignment, and parent contacts.</DialogDescription>
           </DialogHeader>
 
-          {viewingChild && (
-            <div className="space-y-6 py-2 text-sm">
-              {/* Student Metadata Overview */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-muted/30 p-4 rounded-2xl border">
-                <div>
-                  <span className="block text-[10px] font-bold text-muted-foreground uppercase">Date of Birth</span>
-                  <span className="font-semibold text-foreground text-xs">{viewingChild.date_of_birth}</span>
-                </div>
-                <div>
-                  <span className="block text-[10px] font-bold text-muted-foreground uppercase">Gender</span>
-                  <span className="font-semibold text-foreground text-xs">{viewingChild.gender}</span>
-                </div>
-                <div>
-                  <span className="block text-[10px] font-bold text-muted-foreground uppercase">Branch</span>
-                  <span className="font-semibold text-foreground text-xs">{viewingChild.branch || "Branch 1"}</span>
-                </div>
-                <div>
-                  <span className="block text-[10px] font-bold text-muted-foreground uppercase">Room Assignment</span>
-                  <span className="font-semibold text-primary text-xs">
-                    {rooms.find((r) => r.id === viewingChild.room_id)?.name || "Waitlist"}
-                  </span>
-                </div>
-              </div>
+          {viewingChild && (() => {
+            const activeRoom = rooms.find((r) => r.id === viewingChild.room_id);
+            const staffLink = viewingChild.child_staff?.[0];
+            const keyWorkerStaff = staffLink?.staff || staffList.find((st) => st.id === staffLink?.staff_id);
+            const keyWorkerName = keyWorkerStaff
+              ? keyWorkerStaff.profiles
+                ? `${keyWorkerStaff.profiles.first_name || ""} ${keyWorkerStaff.profiles.last_name || ""}`.trim()
+                : keyWorkerStaff.username
+              : null;
 
-              {/* Medical & Allergy Notes */}
-              {(viewingChild.allergies || viewingChild.medical_notes) && (
-                <div className="space-y-2">
-                  <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                    Medical & Health Notes
+            return (
+              <div className="space-y-6 py-4 text-sm">
+                {/* 1. Student Profile & Classroom Placement */}
+                <div className="rounded-2xl border-2 p-5 space-y-4 bg-muted/20 hover:bg-muted/30 transition-all">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 border-b pb-2">
+                    <Baby className="h-4 w-4" /> 1. Child Overview & Classroom Placement
                   </h4>
-                  <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 p-3.5 rounded-xl text-xs space-y-1">
-                    {viewingChild.allergies && (
-                      <p>
-                        <strong className="text-amber-800 dark:text-amber-300">Allergies:</strong>{" "}
-                        {viewingChild.allergies}
-                      </p>
-                    )}
-                    {viewingChild.medical_notes && (
-                      <p>
-                        <strong className="text-amber-800 dark:text-amber-300">Medical Notes:</strong>{" "}
-                        {viewingChild.medical_notes}
-                      </p>
-                    )}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div>
+                      <span className="block text-[10px] font-bold text-muted-foreground uppercase">Date of Birth</span>
+                      <span className="font-bold text-foreground text-sm">{viewingChild.date_of_birth}</span>
+                    </div>
+                    <div>
+                      <span className="block text-[10px] font-bold text-muted-foreground uppercase">Gender</span>
+                      <span className="font-bold text-foreground text-sm">{viewingChild.gender}</span>
+                    </div>
+                    <div>
+                      <span className="block text-[10px] font-bold text-muted-foreground uppercase">Nursery Branch</span>
+                      <span className="font-bold text-foreground text-sm">{viewingChild.branch || "Branch 1"}</span>
+                    </div>
+                    <div>
+                      <span className="block text-[10px] font-bold text-muted-foreground uppercase">Classroom</span>
+                      <span className="font-bold text-primary text-sm">
+                        {activeRoom ? activeRoom.name : "Waitlist (Unassigned)"}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              )}
 
-              {/* Linked Parent Information & Direct Contact Options */}
-              <div className="space-y-3">
-                <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                  Linked Parent(s) & Direct Contact Options
-                </h4>
-                {!viewingChild.child_parents || viewingChild.child_parents.length === 0 ? (
-                  <p className="text-xs text-muted-foreground italic">
-                    No linked parent profile registered for this student.
-                  </p>
-                ) : (
-                  <div className="space-y-3">
-                    {viewingChild.child_parents.map((cp: any, idx: number) => {
-                      const parentProfile = cp.parents?.profiles;
-                      const parentEmail = parentProfile?.email;
-                      const parentPhone = parentProfile?.phone;
-                      const parentName = parentProfile
-                        ? `${parentProfile.first_name} ${parentProfile.last_name}`
-                        : "Parent / Guardian";
+                {/* 2. Key Worker Staff Assignment */}
+                <div className="rounded-2xl border-2 p-5 space-y-3 bg-muted/20 hover:bg-muted/30 transition-all">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 border-b pb-2">
+                    <UserCheck className="h-4 w-4 text-primary" /> 2. Assigned Key Worker Staff
+                  </h4>
+                  {keyWorkerStaff ? (
+                    <div className="p-4 border rounded-2xl bg-card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="space-y-1">
+                        <p className="font-bold text-foreground text-sm flex items-center gap-2">
+                          <span>👤 {keyWorkerName}</span>
+                          {keyWorkerStaff.preferred_name && (
+                            <span className="text-xs text-muted-foreground">(&quot;{keyWorkerStaff.preferred_name}&quot;)</span>
+                          )}
+                          <Badge variant="secondary" className="text-[10px]">
+                            {keyWorkerStaff.employment_type || "Full-time"}
+                          </Badge>
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          💼 <strong>Role:</strong> {keyWorkerStaff.job_title || "Practitioner"} • 📍 <strong>Room:</strong> {keyWorkerStaff.room_department || "General"} ({keyWorkerStaff.nursery_branch || "Branch 1"})
+                        </p>
+                        <p className="text-xs text-muted-foreground font-mono">
+                          📱 <strong>Mobile:</strong> {keyWorkerStaff.mobile_number || keyWorkerStaff.profiles?.phone || "N/A"} • 🛡️ <strong>DBS:</strong> {keyWorkerStaff.dbs_certificate_number || "Verified"}
+                        </p>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="rounded-xl font-bold gap-1 text-xs self-start sm:self-center"
+                        onClick={() => {
+                          const st = keyWorkerStaff;
+                          setViewingChild(null);
+                          setViewingStaff(st);
+                        }}
+                      >
+                        <Eye className="h-3.5 w-3.5" />
+                        View Staff Card
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="p-4 border border-dashed rounded-2xl bg-card text-center text-xs text-muted-foreground">
+                      No Key Worker Staff member is currently assigned to this student. Click &quot;Edit Student Record&quot; to assign a key worker.
+                    </div>
+                  )}
+                </div>
 
-                      return (
-                        <div key={idx} className="p-4 border rounded-2xl bg-card space-y-3">
-                          <div className="flex items-center justify-between flex-wrap gap-2">
-                            <div>
-                              <p className="font-bold text-foreground text-sm flex items-center gap-1.5">
-                                👤 {parentName}
-                                <span className="text-xs text-muted-foreground font-normal">({cp.relationship})</span>
-                              </p>
-                              <p className="text-xs text-muted-foreground mt-0.5">
-                                ✉️ {parentEmail || "No email on record"} {parentPhone ? `• 📞 ${parentPhone}` : ""}
-                              </p>
-                            </div>
+                {/* 3. Linked Parents & Direct Contact Options */}
+                <div className="rounded-2xl border-2 p-5 space-y-4 bg-muted/20 hover:bg-muted/30 transition-all">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 border-b pb-2">
+                    <Users className="h-4 w-4" /> 3. Linked Parents & Direct Contact Options
+                  </h4>
+                  {!viewingChild.child_parents || viewingChild.child_parents.length === 0 ? (
+                    <p className="text-xs text-muted-foreground italic">
+                      No linked parent profile registered for this student.
+                    </p>
+                  ) : (
+                    <div className="space-y-3">
+                      {viewingChild.child_parents.map((cp: any, idx: number) => {
+                        const parentProfile = cp.parents?.profiles;
+                        const parentEmail = parentProfile?.email;
+                        const parentPhone = parentProfile?.phone;
+                        const parentName = parentProfile
+                          ? `${parentProfile.first_name || ""} ${parentProfile.last_name || ""}`.trim()
+                          : "Parent / Guardian";
 
-                            <div className="flex items-center gap-2 flex-wrap">
-                              {parentPhone && (
-                                <>
-                                  <Button
-                                    asChild
-                                    size="sm"
-                                    className="rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs gap-1.5 shadow-sm"
-                                  >
-                                    <a href={`tel:${parentPhone}`}>
-                                      <Phone className="h-3.5 w-3.5" />
-                                      Call
-                                    </a>
-                                  </Button>
+                        return (
+                          <div key={idx} className="p-4 border rounded-2xl bg-card space-y-3">
+                            <div className="flex items-center justify-between flex-wrap gap-2">
+                              <div>
+                                <p className="font-bold text-foreground text-sm flex items-center gap-1.5">
+                                  👤 {parentName}
+                                  <span className="text-xs text-muted-foreground font-normal">({cp.relationship})</span>
+                                </p>
+                                <p className="text-xs text-muted-foreground mt-0.5">
+                                  ✉️ {parentEmail || "No email on record"} {parentPhone ? `• 📞 ${parentPhone}` : ""}
+                                </p>
+                              </div>
 
-                                  <Button
-                                    asChild
-                                    size="sm"
-                                    className="rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs gap-1.5 shadow-sm"
-                                  >
-                                    <a
-                                      href={`sms:${parentPhone}?body=${encodeURIComponent(`Hello, regarding ${viewingChild.first_name} ${viewingChild.last_name}: `)}`}
+                              <div className="flex items-center gap-2 flex-wrap">
+                                {parentPhone && (
+                                  <>
+                                    <Button
+                                      asChild
+                                      size="sm"
+                                      className="rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs gap-1.5 shadow-sm"
                                     >
-                                      <MessageSquare className="h-3.5 w-3.5" />
-                                      Text SMS
-                                    </a>
-                                  </Button>
-                                </>
-                              )}
+                                      <a href={`tel:${parentPhone}`}>
+                                        <Phone className="h-3.5 w-3.5" />
+                                        Call
+                                      </a>
+                                    </Button>
 
-                              {parentEmail && (
-                                <>
-                                  <Button
-                                    size="sm"
-                                    className="rounded-full bg-red-600 hover:bg-red-700 text-white font-bold text-xs gap-1.5 shadow-sm"
-                                    onClick={() =>
-                                      handleSendGmailToParent(
-                                        parentEmail,
-                                        `${viewingChild.first_name} ${viewingChild.last_name}`,
-                                      )
-                                    }
-                                  >
-                                    <Mail className="h-3.5 w-3.5" />
-                                    Open Gmail
-                                    <ExternalLink className="h-3 w-3 opacity-80" />
-                                  </Button>
-
-                                  <Button
-                                    asChild
-                                    variant="outline"
-                                    size="sm"
-                                    className="rounded-full text-xs font-semibold gap-1"
-                                  >
-                                    <a
-                                      href={`mailto:${parentEmail}?subject=${encodeURIComponent(`Update regarding ${viewingChild.first_name} ${viewingChild.last_name}`)}`}
+                                    <Button
+                                      asChild
+                                      size="sm"
+                                      className="rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs gap-1.5 shadow-sm"
                                     >
-                                      Default Mail
-                                    </a>
-                                  </Button>
-                                </>
-                              )}
+                                      <a
+                                        href={`sms:${parentPhone}?body=${encodeURIComponent(`Hello, regarding ${viewingChild.first_name} ${viewingChild.last_name}: `)}`}
+                                      >
+                                        <MessageSquare className="h-3.5 w-3.5" />
+                                        Text SMS
+                                      </a>
+                                    </Button>
+                                  </>
+                                )}
+
+                                {parentEmail && (
+                                  <>
+                                    <Button
+                                      size="sm"
+                                      className="rounded-full bg-red-600 hover:bg-red-700 text-white font-bold text-xs gap-1.5 shadow-sm"
+                                      onClick={() =>
+                                        handleSendGmailToParent(
+                                          parentEmail,
+                                          `${viewingChild.first_name} ${viewingChild.last_name}`,
+                                        )
+                                      }
+                                    >
+                                      <Mail className="h-3.5 w-3.5" />
+                                      Open Gmail
+                                      <ExternalLink className="h-3 w-3 opacity-80" />
+                                    </Button>
+
+                                    <Button
+                                      asChild
+                                      variant="outline"
+                                      size="sm"
+                                      className="rounded-full text-xs font-semibold gap-1"
+                                    >
+                                      <a
+                                        href={`mailto:${parentEmail}?subject=${encodeURIComponent(`Update regarding ${viewingChild.first_name} ${viewingChild.last_name}`)}`}
+                                      >
+                                        Default Mail
+                                      </a>
+                                    </Button>
+                                  </>
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
 
-          <DialogFooter className="gap-2">
+                {/* 4. Medical Notes & Consents Card */}
+                <div className="rounded-2xl border-2 p-5 space-y-4 bg-muted/20 hover:bg-muted/30 transition-all">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-rose-500 flex items-center gap-2 border-b pb-2">
+                    <ShieldCheck className="h-4 w-4" /> 4. Health, Medical Notes & Consents
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="p-3.5 rounded-xl border bg-card text-xs space-y-1">
+                      <span className="block font-bold text-muted-foreground uppercase text-[10px]">Allergies & Dietary Needs</span>
+                      <span className="font-semibold text-foreground">
+                        {viewingChild.allergies || "None specified"}
+                      </span>
+                    </div>
+                    <div className="p-3.5 rounded-xl border bg-card text-xs space-y-1">
+                      <span className="block font-bold text-muted-foreground uppercase text-[10px]">Medical Notes & Health History</span>
+                      <span className="font-semibold text-foreground">
+                        {viewingChild.medical_notes || "None specified"}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <Badge
+                      variant={viewingChild.emergency_medical_consent ? "secondary" : "outline"}
+                      className={viewingChild.emergency_medical_consent ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 font-semibold" : "text-destructive"}
+                    >
+                      Emergency Medical Treatment: {viewingChild.emergency_medical_consent ? "Confirmed" : "Not Provided"}
+                    </Badge>
+                    <Badge
+                      variant={viewingChild.photo_consent ? "secondary" : "outline"}
+                      className={viewingChild.photo_consent ? "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 font-semibold" : "text-muted-foreground"}
+                    >
+                      Photo & Media Gallery: {viewingChild.photo_consent ? "Consent Granted" : "No Consent"}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
+          <DialogFooter className="pt-4 border-t gap-3 flex flex-col sm:flex-row sm:items-center justify-between">
             <Button
+              type="button"
               variant="destructive"
-              className="gap-1.5"
+              className="gap-1.5 rounded-xl px-5"
               onClick={() => {
                 const target = viewingChild;
                 setViewingChild(null);
@@ -1761,20 +1874,23 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
               <Trash2 className="h-4 w-4" />
               Delete Student
             </Button>
-            <Button variant="outline" onClick={() => setViewingChild(null)}>
-              Close
-            </Button>
-            <Button
-              className="gap-1.5"
-              onClick={() => {
-                const target = viewingChild;
-                setViewingChild(null);
-                handleOpenEditStudent(target);
-              }}
-            >
-              <Pencil className="h-4 w-4" />
-              Edit Student Record
-            </Button>
+            <div className="flex gap-2 justify-end">
+              <Button type="button" variant="outline" className="rounded-xl px-6" onClick={() => setViewingChild(null)}>
+                Close
+              </Button>
+              <Button
+                type="button"
+                className="gap-1.5 rounded-xl px-8 font-bold"
+                onClick={() => {
+                  const target = viewingChild;
+                  setViewingChild(null);
+                  handleOpenEditStudent(target);
+                }}
+              >
+                <Pencil className="h-4 w-4" />
+                Edit Student Record
+              </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1928,6 +2044,59 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                     <Field className="gap-1.5" data-invalid={fieldState.invalid}>
                       <FieldLabel htmlFor="edit-child-medical" className="text-xs font-bold">Medical Notes</FieldLabel>
                       <Textarea {...field} id="edit-child-medical" rows={2} className="rounded-xl" />
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+              </div>
+            </div>
+            {/* 3. Key Worker & Parent Assignment */}
+            <div className="rounded-2xl border-2 p-5 space-y-4 bg-muted/20 hover:bg-muted/30 transition-all">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-amber-600 flex items-center gap-2 border-b pb-2">
+                <Users className="h-4 w-4" /> 3. Key Worker Staff & Linked Parent Assignment
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Controller
+                  control={studentEditForm.control}
+                  name="staffId"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-child-staff" className="text-xs font-bold">Assigned Key Worker Staff</FieldLabel>
+                      <NativeSelect {...field} id="edit-child-staff" className="rounded-xl">
+                        <option value="">No Key Worker Assigned</option>
+                        {staffList.map((st) => {
+                          const assignedCount = st.child_staff?.length || 0;
+                          const name = st.profiles
+                            ? `${st.profiles.first_name || ""} ${st.profiles.last_name || ""}`.trim()
+                            : st.username;
+                          return (
+                            <option key={st.id} value={st.id}>
+                              {name} ({st.job_title || "Staff"}) — {assignedCount}/3 slots
+                            </option>
+                          );
+                        })}
+                      </NativeSelect>
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  control={studentEditForm.control}
+                  name="parentId"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-child-parent" className="text-xs font-bold">Linked Parent Profile</FieldLabel>
+                      <NativeSelect {...field} id="edit-child-parent" className="rounded-xl">
+                        <option value="">No Linked Parent Profile</option>
+                        {parents.map((p) => {
+                          const name = `${p.first_name || ""} ${p.last_name || ""}`.trim() || p.email;
+                          return (
+                            <option key={p.id} value={p.id}>
+                              {name} ({p.email || p.phone})
+                            </option>
+                          );
+                        })}
+                      </NativeSelect>
                       {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
                   )}
@@ -2217,6 +2386,190 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
               </div>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+      {/* View Staff Details Modal */}
+      <Dialog open={!!viewingStaff} onOpenChange={(open) => !open && setViewingStaff(null)}>
+        <DialogContent className="max-h-[90vh] max-w-full sm:max-w-3xl md:max-w-4xl overflow-y-auto rounded-3xl p-6 sm:p-8">
+          <DialogHeader className="pb-4 border-b">
+            <DialogTitle className="flex items-center justify-between gap-3 text-xl sm:text-2xl font-black flex-wrap">
+              <span className="flex items-center gap-2">
+                <Briefcase className="h-6 w-6 text-primary" />
+                {viewingStaff?.profiles
+                  ? `${viewingStaff.profiles.first_name || ""} ${viewingStaff.profiles.last_name || ""}`.trim()
+                  : viewingStaff?.username || "Staff Member"}
+                {viewingStaff?.preferred_name && (
+                  <span className="text-sm font-normal text-muted-foreground">(&quot;{viewingStaff.preferred_name}&quot;)</span>
+                )}
+              </span>
+              <Badge variant="secondary" className="text-xs px-3 py-1 font-bold">
+                {viewingStaff?.employment_type || "Full-time"}
+              </Badge>
+            </DialogTitle>
+            <DialogDescription className="text-sm">Detailed staff profile, employment placement, and assigned key worker nursery children.</DialogDescription>
+          </DialogHeader>
+
+          {viewingStaff && (() => {
+            const assignedLinks = viewingStaff.child_staff || [];
+            const assignedChildren = children.filter((ch) =>
+              assignedLinks.some((link: any) => link.child_id === ch.id || link.children?.id === ch.id)
+            );
+
+            return (
+              <div className="space-y-6 py-4 text-sm">
+                {/* 1. Employment & Placement Card */}
+                <div className="rounded-2xl border-2 p-5 space-y-4 bg-muted/20 hover:bg-muted/30 transition-all">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 border-b pb-2">
+                    <Briefcase className="h-4 w-4" /> 1. Employment & Placement Overview
+                  </h4>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div>
+                      <span className="block text-[10px] font-bold text-muted-foreground uppercase">Job Title / Role</span>
+                      <span className="font-bold text-foreground text-sm">{viewingStaff.job_title || "Practitioner"}</span>
+                    </div>
+                    <div>
+                      <span className="block text-[10px] font-bold text-muted-foreground uppercase font-sans">Assigned Room</span>
+                      <span className="font-bold text-primary text-sm">{viewingStaff.room_department || "General"}</span>
+                    </div>
+                    <div>
+                      <span className="block text-[10px] font-bold text-muted-foreground uppercase font-sans">Nursery Branch</span>
+                      <span className="font-bold text-foreground text-sm">{viewingStaff.nursery_branch || "Branch 1"}</span>
+                    </div>
+                    <div>
+                      <span className="block text-[10px] font-bold text-muted-foreground uppercase font-sans">Start Date</span>
+                      <span className="font-bold text-foreground text-sm">{viewingStaff.start_date || "N/A"}</span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t font-mono text-xs">
+                    <div>
+                      <span className="block text-[10px] font-bold text-muted-foreground uppercase font-sans">Mobile Phone</span>
+                      <span className="font-semibold text-foreground">{viewingStaff.mobile_number || viewingStaff.profiles?.phone || "N/A"}</span>
+                    </div>
+                    <div>
+                      <span className="block text-[10px] font-bold text-muted-foreground uppercase font-sans">DBS Certificate</span>
+                      <span className="font-semibold text-emerald-600 dark:text-emerald-400">{viewingStaff.dbs_certificate_number || "Verified"}</span>
+                    </div>
+                    <div>
+                      <span className="block text-[10px] font-bold text-muted-foreground uppercase font-sans">NI Number</span>
+                      <span className="font-semibold text-foreground">{viewingStaff.ni_number || "On file"}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Emergency Contact Card */}
+                {viewingStaff.emergency_contact_name && (
+                  <div className="rounded-2xl border-2 p-5 space-y-3 bg-muted/20 hover:bg-muted/30 transition-all">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-amber-600 flex items-center gap-2 border-b pb-2">
+                      <Phone className="h-4 w-4" /> 2. Emergency Contact Details
+                    </h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div>
+                        <span className="block text-[10px] font-bold text-muted-foreground uppercase">Contact Name</span>
+                        <span className="font-bold text-foreground">{viewingStaff.emergency_contact_name}</span>
+                      </div>
+                      <div>
+                        <span className="block text-[10px] font-bold text-muted-foreground uppercase">Relationship</span>
+                        <span className="font-semibold text-foreground">{viewingStaff.emergency_contact_relationship || "Family"}</span>
+                      </div>
+                      <div>
+                        <span className="block text-[10px] font-bold text-muted-foreground uppercase font-sans">Phone Number</span>
+                        <span className="font-bold text-emerald-600 dark:text-emerald-400 font-mono">{viewingStaff.emergency_contact_number || "N/A"}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 3. Assigned Nursery Children */}
+                <div className="rounded-2xl border-2 p-5 space-y-4 bg-muted/20 hover:bg-muted/30 transition-all">
+                  <div className="flex items-center justify-between border-b pb-2">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
+                      <Baby className="h-4 w-4" /> 3. Assigned Key Worker Children ({assignedChildren.length} / 3 Max)
+                    </h4>
+                    <Badge variant={assignedChildren.length >= 3 ? "destructive" : "outline"} className="text-xs font-bold">
+                      {assignedChildren.length >= 3 ? "At Full Capacity (3/3)" : `${3 - assignedChildren.length} slots free`}
+                    </Badge>
+                  </div>
+
+                  {assignedChildren.length === 0 ? (
+                    <div className="p-6 border border-dashed rounded-2xl bg-card text-center text-xs text-muted-foreground">
+                      No children currently assigned to this key worker. You can link students to this staff member in the Students Tab or during Student Registration.
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {assignedChildren.map((child: any) => {
+                        const childRoom = rooms.find((r) => r.id === child.room_id);
+                        return (
+                          <div key={child.id} className="p-4 border rounded-2xl bg-card flex flex-col justify-between space-y-3">
+                            <div>
+                              <p className="font-bold text-foreground text-sm flex items-center justify-between">
+                                <span>👶 {child.first_name} {child.last_name}</span>
+                                <Badge variant="secondary" className="text-[10px]">
+                                  {child.branch || "Branch 1"}
+                                </Badge>
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                🎂 DOB: {child.date_of_birth} • 🚻 {child.gender}
+                              </p>
+                              <p className="text-xs font-semibold text-primary mt-0.5">
+                                🏫 Room: {childRoom ? childRoom.name : "Waitlist"}
+                              </p>
+                            </div>
+
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="rounded-xl font-bold text-xs gap-1 self-end w-full"
+                              onClick={() => {
+                                setViewingStaff(null);
+                                setViewingChild(child);
+                              }}
+                            >
+                              <Eye className="h-3.5 w-3.5" />
+                              View Student Record
+                            </Button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
+
+          <DialogFooter className="pt-4 border-t gap-3 flex flex-col sm:flex-row sm:items-center justify-between">
+            <Button
+              type="button"
+              variant="destructive"
+              className="gap-1.5 rounded-xl px-5"
+              onClick={() => {
+                const target = viewingStaff;
+                setViewingStaff(null);
+                setDeletingStaff(target);
+              }}
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete Staff Record
+            </Button>
+            <div className="flex gap-2 justify-end">
+              <Button type="button" variant="outline" className="rounded-xl px-6" onClick={() => setViewingStaff(null)}>
+                Close
+              </Button>
+              <Button
+                type="button"
+                className="gap-1.5 rounded-xl px-8 font-bold"
+                onClick={() => {
+                  const target = viewingStaff;
+                  setViewingStaff(null);
+                  handleOpenEditStaff(target);
+                }}
+              >
+                <Pencil className="h-4 w-4" />
+                Edit Staff Profile
+              </Button>
+            </div>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
       {/* Delete Staff Confirmation Dialog */}
