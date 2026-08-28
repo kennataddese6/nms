@@ -32,7 +32,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { createClient } from "@/lib/supabase/client";
 
-import { deleteStaffAction, deleteStudentAction, registerParentAction, registerStaffAction, registerStudentAction, updateStudentAction } from "../actions";
+import { deleteStaffAction, deleteStudentAction, registerParentAction, registerStaffAction, registerStudentAction, updateStaffAction, updateStudentAction } from "../actions";
 
 // ==========================================
 // SCHEMAS
@@ -79,6 +79,24 @@ const staffRegisterSchema = z
   });
 
 type StaffFormValues = z.infer<typeof staffRegisterSchema>;
+
+const staffEditSchema = z.object({
+  firstName: z.string().min(2, "First name is required"),
+  lastName: z.string().min(2, "Last name is required"),
+  preferredName: z.string().optional(),
+  mobileNumber: z.string().min(5, "Mobile number is required"),
+  niNumber: z.string().min(5, "National Insurance number is required"),
+  jobTitle: z.string().min(2, "Job title / role is required"),
+  nurseryBranch: z.string().min(2, "Nursery location / branch is required"),
+  roomDepartment: z.string().min(2, "Room / department is required"),
+  employmentType: z.string().min(1, "Employment type is required"),
+  dbsCertificateNumber: z.string().min(5, "DBS certificate number is required"),
+  emergencyContactName: z.string().min(2, "Emergency contact name is required"),
+  emergencyContactRelationship: z.string().min(2, "Relationship is required"),
+  emergencyContactNumber: z.string().min(5, "Emergency contact number is required"),
+});
+
+type StaffEditFormValues = z.infer<typeof staffEditSchema>;
 
 const studentRegisterSchema = z.object({
   firstName: z.string().min(2, "First name is required"),
@@ -151,6 +169,7 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
   const [viewingChild, setViewingChild] = React.useState<any | null>(null);
   const [editingChild, setEditingChild] = React.useState<any | null>(null);
   const [deletingChild, setDeletingChild] = React.useState<any | null>(null);
+  const [editingStaff, setEditingStaff] = React.useState<any | null>(null);
   const [deletingStaff, setDeletingStaff] = React.useState<any | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
 
@@ -177,10 +196,52 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
     try {
       await deleteStaffAction(deletingStaff.id);
       toast.success("Staff record removed successfully!");
+      if (editingStaff?.id === deletingStaff.id) setEditingStaff(null);
       setDeletingStaff(null);
       router.refresh();
     } catch (err: any) {
       toast.error("Failed to remove staff", { description: err.message });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const staffEditForm = useForm<StaffEditFormValues>({
+    resolver: zodResolver(staffEditSchema),
+  });
+
+  const handleOpenEditStaff = (st: any) => {
+    setEditingStaff(st);
+    staffEditForm.reset({
+      firstName: st.profiles?.first_name || "",
+      lastName: st.profiles?.last_name || "",
+      preferredName: st.preferred_name || "",
+      mobileNumber: st.mobile_number || st.profiles?.phone || "",
+      niNumber: st.ni_number || "",
+      jobTitle: st.job_title || "",
+      nurseryBranch: st.nursery_branch || "Branch 1",
+      roomDepartment: st.room_department || rooms[0]?.name || "",
+      employmentType: st.employment_type || "Full-time",
+      dbsCertificateNumber: st.dbs_certificate_number || "",
+      emergencyContactName: st.emergency_contact_name || "",
+      emergencyContactRelationship: st.emergency_contact_relationship || "",
+      emergencyContactNumber: st.emergency_contact_number || "",
+    });
+  };
+
+  const onStaffEditSubmit = async (data: StaffEditFormValues) => {
+    if (!editingStaff) return;
+    setSubmitting(true);
+    try {
+      await updateStaffAction({
+        staffId: editingStaff.id,
+        ...data,
+      });
+      toast.success("Staff record updated successfully!");
+      setEditingStaff(null);
+      router.refresh();
+    } catch (err: any) {
+      toast.error("Failed to update staff record", { description: err.message });
     } finally {
       setSubmitting(false);
     }
@@ -839,14 +900,25 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
                             </p>
                           </div>
 
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-destructive hover:bg-destructive/10"
-                            onClick={() => setDeletingStaff(st)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          <div className="flex items-center space-x-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="rounded-xl font-bold gap-1 text-xs"
+                              onClick={() => handleOpenEditStaff(st)}
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                              Edit
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-destructive hover:bg-destructive/10 rounded-xl"
+                              onClick={() => setDeletingStaff(st)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     );
@@ -1912,6 +1984,239 @@ export function NurseryCrm({ initialParents, initialChildren, initialStaff = [],
               {submitting ? "Deleting..." : "Delete Student"}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* Edit Staff Modal */}
+      <Dialog open={!!editingStaff} onOpenChange={(open) => !open && setEditingStaff(null)}>
+        <DialogContent className="max-h-[90vh] max-w-full sm:max-w-3xl md:max-w-4xl overflow-y-auto rounded-3xl p-6 sm:p-8">
+          <DialogHeader className="pb-4 border-b">
+            <DialogTitle className="text-xl sm:text-2xl font-black flex items-center gap-2">
+              <Pencil className="h-6 w-6 text-primary" />
+              Edit Staff Profile
+            </DialogTitle>
+            <DialogDescription className="text-sm">Update staff employment details, classroom placement, and emergency contact card.</DialogDescription>
+          </DialogHeader>
+
+          <form noValidate onSubmit={staffEditForm.handleSubmit(onStaffEditSubmit)} className="space-y-6 py-4">
+            {/* 1. Personal Details */}
+            <div className="rounded-2xl border-2 p-5 space-y-4 bg-muted/20 hover:bg-muted/30 transition-all">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 border-b pb-2">
+                <Users className="h-4 w-4" /> 1. Personal Details
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <Controller
+                  control={staffEditForm.control}
+                  name="firstName"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-staff-fn" className="text-xs font-bold">First Name *</FieldLabel>
+                      <Input {...field} id="edit-staff-fn" className="rounded-xl" />
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  control={staffEditForm.control}
+                  name="lastName"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-staff-ln" className="text-xs font-bold">Last Name *</FieldLabel>
+                      <Input {...field} id="edit-staff-ln" className="rounded-xl" />
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  control={staffEditForm.control}
+                  name="preferredName"
+                  render={({ field }) => (
+                    <Field className="gap-1.5">
+                      <FieldLabel htmlFor="edit-staff-pn" className="text-xs font-bold">Preferred Name</FieldLabel>
+                      <Input {...field} id="edit-staff-pn" className="rounded-xl" />
+                    </Field>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Controller
+                  control={staffEditForm.control}
+                  name="mobileNumber"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-staff-phone" className="text-xs font-bold">Mobile Number *</FieldLabel>
+                      <Input {...field} id="edit-staff-phone" className="rounded-xl" />
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  control={staffEditForm.control}
+                  name="niNumber"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-staff-ni" className="text-xs font-bold">National Insurance Number *</FieldLabel>
+                      <Input {...field} id="edit-staff-ni" className="font-mono rounded-xl" />
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* 2. Work & Placement */}
+            <div className="rounded-2xl border-2 p-5 space-y-4 bg-muted/20 hover:bg-muted/30 transition-all">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 border-b pb-2">
+                <Briefcase className="h-4 w-4" /> 2. Work Details & Placement
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <Controller
+                  control={staffEditForm.control}
+                  name="jobTitle"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-staff-title" className="text-xs font-bold">Job Title / Role *</FieldLabel>
+                      <Input {...field} id="edit-staff-title" className="rounded-xl" />
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  control={staffEditForm.control}
+                  name="nurseryBranch"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-staff-branch" className="text-xs font-bold">Nursery Branch *</FieldLabel>
+                      <NativeSelect {...field} id="edit-staff-branch" className="rounded-xl">
+                        <option value="Branch 1">Branch 1</option>
+                        <option value="Branch 2">Branch 2</option>
+                      </NativeSelect>
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  control={staffEditForm.control}
+                  name="employmentType"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-staff-emp" className="text-xs font-bold">Employment Type *</FieldLabel>
+                      <NativeSelect {...field} id="edit-staff-emp" className="rounded-xl">
+                        <option value="Full-time">Full-time</option>
+                        <option value="Part-time">Part-time</option>
+                        <option value="Apprenticeship">Apprenticeship</option>
+                        <option value="Bank">Bank</option>
+                        <option value="Agency">Agency</option>
+                        <option value="Volunteer">Volunteer</option>
+                      </NativeSelect>
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Controller
+                  control={staffEditForm.control}
+                  name="roomDepartment"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-staff-room" className="text-xs font-bold">Assigned Room *</FieldLabel>
+                      <NativeSelect {...field} id="edit-staff-room" className="rounded-xl">
+                        {rooms.length === 0 ? (
+                          <option value="" disabled>No created rooms found</option>
+                        ) : (
+                          rooms.map((r) => (
+                            <option key={r.id} value={r.name}>
+                              {r.name} {r.branch ? `(${r.branch})` : ""}
+                            </option>
+                          ))
+                        )}
+                      </NativeSelect>
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  control={staffEditForm.control}
+                  name="dbsCertificateNumber"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-staff-dbs" className="text-xs font-bold">DBS Certificate Number *</FieldLabel>
+                      <Input {...field} id="edit-staff-dbs" className="font-mono rounded-xl" />
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* 3. Emergency Contact */}
+            <div className="rounded-2xl border-2 p-5 space-y-4 bg-muted/20 hover:bg-muted/30 transition-all">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-amber-600 flex items-center gap-2 border-b pb-2">
+                <Phone className="h-4 w-4" /> 3. Emergency Contact Card
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <Controller
+                  control={staffEditForm.control}
+                  name="emergencyContactName"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-staff-ecn" className="text-xs font-bold">Contact Name *</FieldLabel>
+                      <Input {...field} id="edit-staff-ecn" className="rounded-xl" />
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  control={staffEditForm.control}
+                  name="emergencyContactRelationship"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-staff-ecr" className="text-xs font-bold">Relationship *</FieldLabel>
+                      <Input {...field} id="edit-staff-ecr" className="rounded-xl" />
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  control={staffEditForm.control}
+                  name="emergencyContactNumber"
+                  render={({ field, fieldState }) => (
+                    <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="edit-staff-ecnum" className="text-xs font-bold">Emergency Phone *</FieldLabel>
+                      <Input {...field} id="edit-staff-ecnum" className="rounded-xl" />
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                    </Field>
+                  )}
+                />
+              </div>
+            </div>
+
+            <DialogFooter className="pt-4 border-t gap-3 flex flex-col sm:flex-row sm:items-center justify-between">
+              <Button
+                type="button"
+                variant="destructive"
+                className="gap-1.5 rounded-xl px-5"
+                onClick={() => {
+                  const target = editingStaff;
+                  setEditingStaff(null);
+                  setDeletingStaff(target);
+                }}
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete Staff Record
+              </Button>
+              <div className="flex gap-2 justify-end">
+                <Button type="button" variant="outline" className="rounded-xl px-6" onClick={() => setEditingStaff(null)}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={submitting} className="rounded-xl px-8 font-bold">
+                  {submitting ? "Saving..." : "Update Staff Profile"}
+                </Button>
+              </div>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </div>

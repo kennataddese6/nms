@@ -254,6 +254,83 @@ export async function registerStaffAction(data: RegisterStaffInput) {
   return { success: true };
 }
 
+export interface UpdateStaffInput {
+  staffId: string;
+  firstName: string;
+  lastName: string;
+  jobTitle: string;
+  nurseryBranch: string;
+  roomDepartment: string;
+  employmentType: string;
+  dbsCertificateNumber: string;
+  mobileNumber: string;
+  niNumber: string;
+  preferredName?: string;
+  emergencyContactName: string;
+  emergencyContactRelationship: string;
+  emergencyContactNumber: string;
+}
+
+export async function updateStaffAction(data: UpdateStaffInput) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized: Log in required.");
+  }
+
+  const adminClient = createAdminClient();
+
+  // 1. Fetch target staff record
+  const { data: staffRecord, error: fetchErr } = await adminClient
+    .from("staff")
+    .select("profile_id")
+    .eq("id", data.staffId)
+    .single();
+
+  if (fetchErr || !staffRecord) {
+    throw new Error("Staff record not found.");
+  }
+
+  // 2. Update profile name & phone
+  if (staffRecord.profile_id) {
+    await adminClient
+      .from("profiles")
+      .update({
+        first_name: data.firstName,
+        last_name: data.lastName,
+        phone: data.mobileNumber,
+      })
+      .eq("id", staffRecord.profile_id);
+  }
+
+  // 3. Update staff details
+  const { error: updateErr } = await adminClient
+    .from("staff")
+    .update({
+      job_title: data.jobTitle,
+      nursery_branch: data.nurseryBranch,
+      room_department: data.roomDepartment,
+      employment_type: data.employmentType,
+      dbs_certificate_number: data.dbsCertificateNumber,
+      mobile_number: data.mobileNumber,
+      ni_number: data.niNumber,
+      preferred_name: data.preferredName || null,
+      emergency_contact_name: data.emergencyContactName,
+      emergency_contact_relationship: data.emergencyContactRelationship,
+      emergency_contact_number: data.emergencyContactNumber,
+    })
+    .eq("id", data.staffId);
+
+  if (updateErr) {
+    throw new Error(updateErr.message || "Failed to update staff record.");
+  }
+
+  return { success: true };
+}
+
 export async function deleteStaffAction(staffId: string) {
   const supabase = await createClient();
   const {
